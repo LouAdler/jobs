@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lead Data Analyst - PCG Performance-Based Interview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c5aa0 0%, #1e3c72 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72, #2c5aa0);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.3rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .role-context {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .context-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .context-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #2c5aa0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .context-card h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .context-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .context-card li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .context-card li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #2c5aa0;
+            font-weight: bold;
+        }
+
+        .candidate-info {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-field label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .info-field input {
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .info-field input:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            margin-bottom: 40px;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #2c5aa0, #1e3c72);
+            color: white;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .step-number {
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .step-title {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        .step-title h3 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .step-title p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .step-content {
+            padding: 30px;
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .question-section h4 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-left: 4px solid #2c5aa0;
+            padding-left: 15px;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .question strong {
+            color: #1e3c72;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .pcg-specific {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left-color: #2c5aa0;
+        }
+
+        .notes-area {
+            margin-top: 15px;
+        }
+
+        .notes-area textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .notes-area textarea:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+        }
+
+        .tips {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .tips h5 {
+            color: #e65100;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .tips ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tips li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .tips li:before {
+            content: "💡";
+            position: absolute;
+            left: 0;
+        }
+
+        .timer {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid #28a745;
+        }
+
+        .timer strong {
+            color: #155724;
+            font-size: 1.1rem;
+        }
+
+        .kpo-highlight {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .kpo-highlight h5 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2c5aa0, #1e3c72);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .context-grid, .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .step-title {
+                margin-left: 0;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Lead Data Analyst Performance-Based Interview</h1>
+            <p>Public Consulting Group (PCG) • Customized for Role-Specific Assessment</p>
+        </div>
+
+        <div class="role-context">
+            <div class="context-grid">
+                <div class="context-card">
+                    <h3>🎯 Key Performance Objectives</h3>
+                    <ul>
+                        <li>Drive data architecture & client delivery (<2% error rates)</li>
+                        <li>Lead analyst team to 90%+ on-time delivery</li>
+                        <li>Standardize QA & interoperability protocols</li>
+                        <li>Integrate AI to improve performance</li>
+                    </ul>
+                </div>
+                
+                <div class="context-card">
+                    <h3>🏢 PCG Culture Factors</h3>
+                    <ul>
+                        <li>Public service urgency + consulting precision</li>
+                        <li>Self-directed in ambiguity</li>
+                        <li>Mission-driven accountability</li>
+                        <li>Fast-paced with tight client timelines</li>
+                    </ul>
+                </div>
+                
+                <div class="context-card">
+                    <h3>🔧 Technical Environment</h3>
+                    <ul>
+                        <li>Power BI, SQL, ETL pipelines, Access</li>
+                        <li>EDPlan & state education data systems</li>
+                        <li>K-12, special education, federal compliance</li>
+                        <li>PowerApps flows, JIRA/Asana</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="candidate-info">
+            <div class="info-grid">
+                <div class="info-field">
+                    <label for="candidate-name">Candidate Name</label>
+                    <input type="text" id="candidate-name" placeholder="Enter candidate name">
+                </div>
+                <div class="info-field">
+                    <label for="position">Position</label>
+                    <input type="text" id="position" value="Lead Data Analyst - PCG" readonly>
+                </div>
+                <div class="info-field">
+                    <label for="interviewer">Interviewer</label>
+                    <input type="text" id="interviewer" placeholder="Enter your name">
+                </div>
+                <div class="info-field">
+                    <label for="date">Date</label>
+                    <input type="date" id="date">
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Step 1: Welcome and Review Job/Motivation -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">1</div>
+                    <div class="step-title">
+                        <h3>Welcome and Review Job/Motivation</h3>
+                        <p>Determine general fit and motivation for PCG's mission</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="timer">
+                        <strong>⏱️ Recommended Time: 10-15 minutes</strong>
+                    </div>
+                    
+                    <div class="question-section">
+                        <h4>Opening Questions</h4>
+                        <div class="question pcg-specific">
+                            <strong>Job Overview & Fit:</strong>
+                            "Let me give you a short overview of this Lead Data Analyst role at PCG. You'll be leading data operations for K-12 school districts and state education agencies, managing a team of analysts while being hands-on with complex ETL work, Power BI development, and ensuring <2% error rates across all client deliverables. You'll work directly with large school districts on special education compliance and federal program reporting. Given this, can you give me a quick overview of how your background relates to this position?"
+                        </div>
+                        <div class="question">
+                            <strong>Motivation Deep Dive:</strong>
+                            "What are you looking for now in a new job?" 
+                            <br><em>Follow-up: "Why is having leadership responsibilities and public sector impact important to you now?"</em>
+                        </div>
+                        <div class="question">
+                            <strong>Job Search Status:</strong>
+                            "What's your current job hunting status? How long have you been looking?"
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Notes & Key Insights:</strong></label>
+                        <textarea placeholder="Document candidate's motivations, understanding of public sector consulting, leadership interests, and initial alignment..."></textarea>
+                    </div>
+
+                    <div class="tips">
+                        <h5>🎯 PCG-Specific Look For</h5>
+                        <ul>
+                            <li>State sincere interest but make candidate earn the job</li>
+                            <li>Listen 4x more than you talk; don't oversell</li>
+                            <li>Mention other strong contenders to create urgency</li>
+                            <li>Link role to PCG's big mission and client impact</li>
+                            <li>Address concerns directly and honestly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 8: Measure First Impression Again -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">8</div>
+                    <div class="step-title">
+                        <h3>Measure First Impression Again</h3>
+                        <p>Compare initial vs. final assessment to identify bias</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="question-section">
+                        <h4>Bias Recognition Exercise</h4>
+                        <div class="question">
+                            <strong>Final Impression Comparison:</strong>
+                            How does your current assessment compare to your initial reaction? Did they open up more? Did you observe their true personality through their accomplishments? Is their true personality consistent with PCG's needs?
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Impression Change Analysis:</strong></label>
+                        <textarea placeholder="Document how your impression changed, what you learned about the candidate, and how this pattern might affect future interviews..."></textarea>
+                    </div>
+
+                    <div class="tips">
+                        <h5>🔍 Pattern Recognition</h5>
+                        <ul>
+                            <li>Track impression changes across all interviews</li>
+                            <li>This pattern reveals your personal biases</li>
+                            <li>Consider actual impact on PCG team and clients</li>
+                            <li>Determine if true personality fits role demands</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="generateReport()">📊 Complete PCG Scorecard</button>
+                <button class="btn btn-secondary" onclick="saveNotes()">💾 Save Interview Notes</button>
+                <button class="btn btn-primary" onclick="printInterview()">🖨️ Print Interview Guide</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('date').valueAsDate = new Date();
+        });
+
+        function toggleStep(header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.textContent = '▼';
+            } else {
+                content.classList.add('active');
+                icon.textContent = '▲';
+            }
+        }
+
+        function generateReport() {
+            const candidateName = document.getElementById('candidate-name').value;
+            if (!candidateName) {
+                alert('Please enter candidate name before generating scorecard.');
+                return;
+            }
+            
+            alert(`PCG Custom Scorecard generated for ${candidateName}!\n\nThis will evaluate:\n• KPO achievement potential\n• Technical data architecture skills\n• Team leadership capabilities\n• PCG culture fit\n• Public sector consulting readiness`);
+        }
+
+        function saveNotes() {
+            const data = {
+                candidate: document.getElementById('candidate-name').value,
+                position: document.getElementById('position').value,
+                interviewer: document.getElementById('interviewer').value,
+                date: document.getElementById('date').value,
+                notes: Array.from(document.querySelectorAll('textarea')).map(ta => ta.value)
+            };
+            
+            // In a real implementation, this would save to a database
+            console.log('Saving PCG interview data:', data);
+            alert('PCG interview notes saved successfully!');
+        }
+
+        function printInterview() {
+            window.print();
+        }
+
+        // Auto-save functionality
+        setInterval(function() {
+            const textareas = document.querySelectorAll('textarea');
+            const hasContent = Array.from(textareas).some(ta => ta.value.trim().length > 0);
+            if (hasContent) {
+                console.log('Auto-saving PCG interview...');
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
+                            <li>Genuine interest in education/public sector impact</li>
+                            <li>Understanding of consulting client demands</li>
+                            <li>Motivation for both technical and leadership work</li>
+                            <li>Career move vs. just wanting any job</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Measure Impact of First Impression -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">2</div>
+                    <div class="step-title">
+                        <h3>Measure Impact of First Impression</h3>
+                        <p>Recognize and manage interviewer bias</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="question-section">
+                        <h4>Bias Check (Complete Privately)</h4>
+                        <div class="question">
+                            <strong>Record your immediate emotional reaction:</strong>
+                            Relaxed, uptight, or neutral? What specifically caused this reaction?
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Initial Impression & Cause:</strong></label>
+                        <textarea placeholder="Document your first impression and what specifically caused it (appearance, communication style, energy, etc.)"></textarea>
+                    </div>
+
+                    <div class="tips">
+                        <h5>⚖️ Bias Mitigation Strategy</h5>
+                        <ul>
+                            <li>If positive impression: Look for evidence of incompetence, be appropriately tough</li>
+                            <li>If negative impression: Look for evidence of competence, give benefit of doubt</li>
+                            <li>Ask same questions to all candidates</li>
+                            <li>Be cynical, get proof, examples, facts</li>
+                            <li>Re-measure impression at end of interview</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Review Work History and Background -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">3</div>
+                    <div class="step-title">
+                        <h3>Review Work History and Background</h3>
+                        <p>Look for Achiever Pattern in data/analytics roles</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="timer">
+                        <strong>⏱️ Recommended Time: 20-25 minutes</strong>
+                    </div>
+
+                    <div class="question-section">
+                        <h4>Career Progression Analysis</h4>
+                        <div class="question pcg-specific">
+                            <strong>Recent Role Deep Dive:</strong>
+                            "Please tell me about your most recent job. What was your position, the company, your duties in data analysis/management, team structure, and any recognition you received?"
+                            <br><em>Repeat for past 3-4 roles, going back 5-10 years</em>
+                        </div>
+                        <div class="question">
+                            <strong>For Each Position, Obtain:</strong>
+                            • Overview, title, type of data work<br>
+                            • Draw org chart & how team was built<br>
+                            • Dates, why left, explain gaps<br>
+                            • Highlights, big data projects, major focus<br>
+                            • Recognition, raises, promotions
+                        </div>
+                    </div>
+
+                    <div class="kpo-highlight">
+                        <h5>🔍 Look for Achiever Pattern Evidence</h5>
+                        <p><strong>Growth Indicators:</strong> Promotions, expanding scope, larger data sets, more complex projects</p>
+                        <p><strong>Recognition:</strong> Awards, above-average raises, high-visibility assignments</p>
+                        <p><strong>Stretch Gaps:</strong> Project size/complexity, influence, team leadership growth</p>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Career Trajectory Assessment:</strong></label>
+                        <textarea placeholder="Document Achiever Pattern evidence, career progression, reasons for job changes, and growth trend in data/analytics roles..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Assess Major Accomplishments -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">4</div>
+                    <div class="step-title">
+                        <h3>Assess Major Accomplishments</h3>
+                        <p>Focus on data architecture, ETL, and analytics achievements</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="timer">
+                        <strong>⏱️ Recommended Time: 12-15 minutes each (2-3 accomplishments)</strong>
+                    </div>
+
+                    <div class="question-section">
+                        <h4>Major Accomplishment Analysis</h4>
+                        <div class="question pcg-specific">
+                            <strong>Most Significant Data Project:</strong>
+                            "Can you please tell me about your most significant accomplishment in data analysis or management? Consider a project or system you built that you're quite proud of or where you excelled."
+                        </div>
+                        <div class="question pcg-specific">
+                            <strong>PCG-Comparable Project:</strong>
+                            "One major challenge we face is integrating data from 15+ different school district systems (student info, special ed, transportation, finance) into unified compliance reports with <2% error rates. Please tell me about something comparable you've led - a complex data integration or ETL project with multiple sources and strict quality requirements."
+                        </div>
+                    </div>
+
+                    <div class="question-section">
+                        <h4>📋 Deep Dive Follow-up Questions</h4>
+                        <div class="question">
+                            <strong>For Each Accomplishment:</strong>
+                            • Overview of company, environment, resources<br>
+                            • Team and org structure<br>
+                            • When? How long? What results achieved?<br>
+                            • What results were expected vs. delivered?<br>
+                            • How did you plan the data project?<br>
+                            • 2-3 examples of initiative you took<br>
+                            • What data processes did you change/improve?<br>
+                            • Biggest technical challenges faced<br>
+                            • What data skills were needed/enhanced?<br>
+                            • Where did you exceed expectations?<br>
+                            • What recognition did you receive?
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Accomplishment #1 Analysis:</strong></label>
+                        <textarea placeholder="Document the data project scope, technical approach, quality measures, results achieved, and lessons learned..."></textarea>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Accomplishment #2 Analysis:</strong></label>
+                        <textarea placeholder="Look for patterns in how they approach complex data challenges, ensure quality, and deliver results..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4a: Assess Major Team Accomplishments -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">4a</div>
+                    <div class="step-title">
+                        <h3>Assess Major Team Accomplishments</h3>
+                        <p>Leadership experience with analyst teams</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="timer">
+                        <strong>⏱️ Recommended Time: 10-12 minutes each team example</strong>
+                    </div>
+
+                    <div class="question-section">
+                        <h4>Team Leadership Analysis</h4>
+                        <div class="question pcg-specific">
+                            <strong>Leading Data Team:</strong>
+                            "Can you tell me about a major team accomplishment in data analysis or analytics? Consider one where you led the team of analysts or data professionals."
+                        </div>
+                        <div class="question">
+                            <strong>Key Team Member Role:</strong>
+                            "Tell me about another significant team success where you were a key member but not the leader of a data/analytics team."
+                        </div>
+                    </div>
+
+                    <div class="question-section">
+                        <h4>🤝 Team Leadership Deep Dive</h4>
+                        <div class="question">
+                            <strong>For Each Team Example:</strong>
+                            • Draw org chart with titles/roles<br>
+                            • What was your role, why were you chosen?<br>
+                            • What was the plan & were results met?<br>
+                            • What were biggest team challenges?<br>
+                            • How did you influence team results?<br>
+                            • 3 examples of initiative helping other analysts<br>
+                            • Examples of coaching/mentoring others<br>
+                            • Biggest team conflict & how resolved<br>
+                            • Any team recognition received?
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Team Leadership Assessment:</strong></label>
+                        <textarea placeholder="Evaluate leadership style, team development skills, conflict resolution, and ability to deliver results through analyst teams..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Discuss Major Job-related Problems -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">5</div>
+                    <div class="step-title">
+                        <h3>Discuss Major Job-related Problems</h3>
+                        <p>Test problem-solving with real PCG challenges</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="question-section">
+                        <h4>Real PCG Challenge</h4>
+                        <div class="question pcg-specific">
+                            <strong>Complex Data Integration Problem:</strong>
+                            "One major problem we're now facing is this: A large school district has special education data errors that have been incorrectly categorized for 6 months, affecting federal compliance reporting. The state audit is in 6 weeks, data is spread across 12 systems, and we need to maintain client trust while fixing everything. How would you go about addressing this? What would you need to know and how would you plan it out?"
+                        </div>
+                        <div class="question">
+                            <strong>Anchor with Experience:</strong>
+                            "What have you done that's most similar to this type of data crisis or quality emergency?"
+                        </div>
+                    </div>
+
+                    <div class="question-section">
+                        <h4>🧠 Problem-Solving Framework</h4>
+                        <div class="question">
+                            <strong>Systematic Approach:</strong>
+                            • What would you need to know first?<br>
+                            • What would you do first, and why?<br>
+                            • Who else would you involve?<br>
+                            • How would you prioritize the data fixes?<br>
+                            • How would you find the critical issues?<br>
+                            • What resources would you need?<br>
+                            • How long would it take, and why?<br>
+                            • How would you handle client communication?<br>
+                            • How would you prevent this in the future?
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Problem-Solving Assessment:</strong></label>
+                        <textarea placeholder="Evaluate systematic thinking, crisis management, client handling, and technical problem-solving approach..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Let the Candidate Ask Questions -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">6</div>
+                    <div class="step-title">
+                        <h3>Let the Candidate Ask Questions</h3>
+                        <p>Assess preparation level and genuine curiosity</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="question-section">
+                        <h4>Question Quality Assessment</h4>
+                        <div class="question">
+                            <strong>Opening for Questions:</strong>
+                            "Based on what we've discussed so far, do you have any questions about the role, team, PCG's approach, or the challenges we face?"
+                        </div>
+                    </div>
+
+                    <div class="tips">
+                        <h5>📝 Question Quality Indicators</h5>
+                        <ul>
+                            <li><strong>Excellent:</strong> Technical challenges, team dynamics, client relationships, growth opportunities</li>
+                            <li><strong>Good:</strong> Role-specific responsibilities, training, success metrics</li>
+                            <li><strong>Concerning:</strong> Only compensation, basic info easily researched, no questions</li>
+                        </ul>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Question Quality & Engagement Level:</strong></label>
+                        <textarea placeholder="Document their questions, level of preparation, curiosity about PCG's mission, and depth of interest..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 7: Recruit Using Win-Win Hiring Opportunity -->
+            <div class="step">
+                <div class="step-header" onclick="toggleStep(this)">
+                    <div class="step-number">7</div>
+                    <div class="step-title">
+                        <h3>Recruit Using Win-Win Hiring Opportunity</h3>
+                        <p>Position PCG opportunity and assess mutual interest</p>
+                    </div>
+                    <div class="toggle-icon">▼</div>
+                </div>
+                <div class="step-content">
+                    <div class="question-section">
+                        <h4>Interest & Fit Evaluation</h4>
+                        <div class="question pcg-specific">
+                            <strong>Interest Assessment:</strong>
+                            "While I've seen a few other very strong candidates, I'm also impressed with some of the data work you've done, particularly [specific example]. Is this Lead Data Analyst role at PCG of interest? Why? Why not?"
+                        </div>
+                        <div class="question">
+                            <strong>Win-Win Positioning:</strong>
+                            "A win-win hiring outcome requires a job to offer a combination of stretch, growth and impact. This role offers stretch through managing complex education data integration, growth through leading a team and working with AI tools, and impact through directly affecting how millions of students receive services. How does this align with what you're looking for?"
+                        </div>
+                        <div class="question">
+                            <strong>Interest Scale & Needs:</strong>
+                            "How interested are you on a 1-10 scale? What would you need to know to get to an 8 or 9?"
+                        </div>
+                    </div>
+
+                    <div class="notes-area">
+                        <label><strong>Recruiting Notes & Next Steps:</strong></label>
+                        <textarea placeholder="Document interest level, concerns to address, other opportunities, timeline, and recruiting strategy..."></textarea>
+                    </div>
+
+                    <div class="tips">
+                        <h5>🎯 Recruiting Strategy</h5>
+                        <ul>
+                            <li>State
