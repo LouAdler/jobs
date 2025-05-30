@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Quality of Hire Talent Scorecard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .candidate-info {
+            background: #ecf0f1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-field label {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .info-field input {
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .score-display {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .score-display .total-score {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 0 10px;
+            color: #3498db;
+        }
+        
+        .scorecard {
+            padding: 30px;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .factors {
+            padding: 20px;
+            background: #fafbfc;
+        }
+        
+        .factor {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .factor-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        
+        .factor-score {
+            font-size: 1.2em;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: #ecf0f1;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .factor-score.scored {
+            background: #3498db;
+            color: white;
+        }
+        
+        .rating-scale {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .rating-option {
+            text-align: center;
+            padding: 10px 5px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            min-height: 100px;
+        }
+        
+        .rating-option:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .rating-option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        .rating-level {
+            font-size: 1.5em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .rating-label {
+            font-size: 0.8em;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .rating-description {
+            font-size: 0.7em;
+            line-height: 1.3;
+            padding: 0 5px;
+        }
+        
+        .evidence-section {
+            margin-top: 15px;
+        }
+        
+        .evidence-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .analyze-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .analyze-btn:hover {
+            background: #2980b9;
+        }
+        
+        .evidence-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .evidence-feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .evidence-feedback.show {
+            display: block;
+        }
+        
+        .feedback-positive {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .feedback-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+        
+        .feedback-negative {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .feedback-message {
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .feedback-suggestions {
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .feedback-suggestions ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+        
+        .summary {
+            background: #f5f7fa;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .summary h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .summary-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .summary-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .recommendation {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            padding: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-scale {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Intelligent Quality of Hire Talent Scorecard</h1>
+            <p>Evidence-Based Evaluation with AI-Powered Bias Detection</p>
+        </div>
+        
+        <div class="candidate-info">
+            <div class="info-field">
+                <label>Candidate Name</label>
+                <input type="text" id="candidate" placeholder="Enter candidate name">
+            </div>
+            <div class="info-field">
+                <label>Position</label>
+                <input type="text" id="position" placeholder="Enter position">
+            </div>
+            <div class="info-field">
+                <label>Interviewer</label>
+                <input type="text" id="interviewer" placeholder="Enter interviewer name">
+            </div>
+            <div class="info-field">
+                <label>Date</label>
+                <input type="date" id="date">
+            </div>
+        </div>
+        
+        <div class="score-display">
+            Total Score: <span class="total-score" id="totalScore">0</span> / <span id="maxScore">55</span>
+            | Average: <span id="averageScore">0.0</span>
+            | Evidence Quality: <span id="evidenceQuality">Not Evaluated</span>
+        </div>
+        
+        <div class="scorecard">
+            <!-- BASIC COMPETENCIES -->
+            <div class="category">
+                <div class="category-header">BASIC COMPETENCIES</div>
+                <div class="factors">
+                    <!-- 1. Primary Skills -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Primary Skills</span>
+                            <span class="factor-score" id="score-primary-skills">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('primary-skills', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Bare minimum. Has the basics but needs training.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('primary-skills', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Has the basics but needs training.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('primary-skills', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Covers all direct job needs well.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('primary-skills', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Extremely strong in all job needs.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('primary-skills', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Broad. Brings far more to the table.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('primary-skills')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-primary-skills" placeholder="Document specific examples of technical skills, certifications, tools mastered, projects completed..."></textarea>
+                            <div class="evidence-feedback" id="feedback-primary-skills"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 2. Experience -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Experience</span>
+                            <span class="factor-score" id="score-experience">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('experience', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Minimum threshold.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('experience', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Meets most, but not all needs.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('experience', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Meets all experience needs.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('experience', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Broader and related experience.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('experience', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Excellent background for role.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('experience')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-experience" placeholder="Document years of experience, specific roles, companies, industries, scope of responsibilities..."></textarea>
+                            <div class="evidence-feedback" id="feedback-experience"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 3. Achiever Pattern & Growth Trend -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Achiever Pattern & Growth Trend</span>
+                            <span class="factor-score" id="score-achiever-pattern">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('achiever-pattern', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">No evidence the person is in the top 50%. Spotty trend.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('achiever-pattern', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Some, but not sure if person is in top 50%. Flatter trend.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('achiever-pattern', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Evidence clearly indicates person is in top 25%! Upward growth.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('achiever-pattern', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Evidence clearly indicates person is in top 10-15%. Steep upward path.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('achiever-pattern', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Evidence clearly indicates person is in top 5%. Handles big stretch roles.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('achiever-pattern')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-achiever-pattern" placeholder="Document promotions, awards, rankings, performance reviews, expanding responsibilities..."></textarea>
+                            <div class="evidence-feedback" id="feedback-achiever-pattern"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ESSENTIAL CORE COMPETENCES -->
+            <div class="category">
+                <div class="category-header">ESSENTIAL CORE COMPETENCES (In Comparison to the KPOs/OKRs for the Role)</div>
+                <div class="factors">
+                    <!-- 4. Talent & Overall Technical Ability -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Talent & Overall Technical Ability</span>
+                            <span class="factor-score" id="score-technical-ability">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('technical-ability', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Nothing remarkable. Needs too much extra training and support.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('technical-ability', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Can do the work, but needs added training, support or coaching.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('technical-ability', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Technically tops. An asset. Can learn quickly. Covers all job needs.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('technical-ability', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Top-notch. Trains others. Constantly improving. Brings more to the table.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('technical-ability', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Brilliant. Sets standards. Leader in field. Sought out. Recognized.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('technical-ability')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-technical-ability" placeholder="Document complex problems solved, innovations, thought leadership, industry recognition..."></textarea>
+                            <div class="evidence-feedback" id="feedback-technical-ability"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 5. Management & Organizational Ability -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Management & Organizational Ability</span>
+                            <span class="factor-score" id="score-management-ability">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('management-ability', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Seems reactive. Misses most deadlines or projects aren't comparable.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('management-ability', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Projects are comparable but seems more reactive than forward-looking.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('management-ability', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Has planned, organized and executed comparable projects.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('management-ability', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Excellent. Plans, anticipates, communicates, and succeeds.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('management-ability', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Outstanding organizational results with comparable projects and teams.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('management-ability')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-management-ability" placeholder="Document project sizes, budgets, timelines met, team sizes managed, planning methods..."></textarea>
+                            <div class="evidence-feedback" id="feedback-management-ability"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 6. Team Skills (EQ) & Development, Leadership -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Team Skills (EQ) & Development, Leadership</span>
+                            <span class="factor-score" id="score-team-skills">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('team-skills', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Hasn't worked on comparable teams or little team growth.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('team-skills', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Has worked on comparable teams and has some team growth.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('team-skills', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Good fit on comparable teams. Has developed strong comparable teams.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('team-skills', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Clear positive team track. Coaches others. Recognized for strong team skills.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('team-skills', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Impressive x-func team growth. Asked to lead. Persuades, motivates, coaches.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('team-skills')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-team-skills" placeholder="Document team achievements, people developed, cross-functional projects, conflict resolution..."></textarea>
+                            <div class="evidence-feedback" id="feedback-team-skills"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 7. Thinking & Job-related Problem-solving -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Thinking & Job-related Problem-solving</span>
+                            <span class="factor-score" id="score-problem-solving">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('problem-solving', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Didn't understand any key issues or develop any solutions.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('problem-solving', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Understood most job related issues, developed okay solutions.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('problem-solving', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Clearly understood all key issues and developed strong solutions.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('problem-solving', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Understood all key & less obvious issues. Reaches out for best solutions.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('problem-solving', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Provides deeper level of insight. Offers multiple unique solutions.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('problem-solving')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-problem-solving" placeholder="Document specific problems solved, analysis methods, solutions implemented, results achieved..."></textarea>
+                            <div class="evidence-feedback" id="feedback-problem-solving"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SITUATIONAL FIT FACTORS -->
+            <div class="category">
+                <div class="category-header">SITUATIONAL FIT FACTORS – WEIGHT THESE FACTORS HIGHER</div>
+                <div class="factors">
+                    <!-- 8. Job Fit with Recent Comparable Results -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Job Fit with Recent Comparable Results</span>
+                            <span class="factor-score" id="score-job-fit">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('job-fit', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Accomplishments are not directly comparable or not recent.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('job-fit', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Some comparable accomplishments, but inconsistent or not recent.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('job-fit', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Major and subtask accomplishments are recent, strong and comparable.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('job-fit', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Achieved outstanding results under similar conditions.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('job-fit', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Full job match with exceptional results – scope, pace, team, resources.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('job-fit')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-job-fit" placeholder="Document specific comparable accomplishments, scope of work, team sizes, budgets, timelines..."></textarea>
+                            <div class="evidence-feedback" id="feedback-job-fit"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 9. Managerial Fit -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Managerial Fit</span>
+                            <span class="factor-score" id="score-managerial-fit">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('managerial-fit', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Mismatch between candidate's & manager's style.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('managerial-fit', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Limited, but has worked with similar managers.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('managerial-fit', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Successfully worked with similar managers.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('managerial-fit', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Person easily adapts to a variety of manager styles.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('managerial-fit', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Super fit. Coaches upwards. Both are flexible.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('managerial-fit')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-managerial-fit" placeholder="Document types of managers worked with, management styles adapted to, upward feedback given..."></textarea>
+                            <div class="evidence-feedback" id="feedback-managerial-fit"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 10. Culture & Environment -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Culture & Environment</span>
+                            <span class="factor-score" id="score-culture-environment">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('culture-environment', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Complete mismatch on culture & environment.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('culture-environment', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Reasonable match on culture and environment.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('culture-environment', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Close match on culture and environment.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('culture-environment', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Excellent match and has made similar transfers.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('culture-environment', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Thrives in this type of environment, culture.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('culture-environment')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-culture-environment" placeholder="Document company cultures thrived in, pace preferences, decision-making styles, values alignment..."></textarea>
+                            <div class="evidence-feedback" id="feedback-culture-environment"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- 11. Motivation -->
+                    <div class="factor">
+                        <div class="factor-header">
+                            <span class="factor-name">Motivation</span>
+                            <span class="factor-score" id="score-motivation">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('motivation', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Little evidence of motivation to do this type of work.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Will do the core work but needs extra pushing.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Self-motivated to do work with normal supervision.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Takes initiative to learn and do more, faster and better.</span>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Totally committed to get it done. Constantly gets better.</span>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('motivation')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-motivation" placeholder="Document examples of going extra mile, volunteering for projects, self-improvement, passion indicators..."></textarea>
+                            <div class="evidence-feedback" id="feedback-motivation"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2>Interview Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <span class="summary-label">Total Score</span>
+                    <span class="summary-value" id="summaryTotal">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Average Score</span>
+                    <span class="summary-value" id="summaryAverage">0.0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Factors Scored</span>
+                    <span class="summary-value" id="factorsScored">0/11</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Completion</span>
+                    <span class="summary-value" id="completionRate">0%</span>
+                </div>
+            </div>
+            <div class="recommendation">
+                <h3>Recommendation</h3>
+                <p id="recommendationText">Complete the scoring to see the recommendation.</p>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn" onclick="saveScorecard()">Save Scorecard</button>
+            <button class="btn" onclick="analyzeAllEvidence()">Analyze All Evidence</button>
+            <button class="btn btn-secondary" onclick="resetScorecard()">Reset All</button>
+            <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize with today's date
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Store scores and evidence quality
+        const scores = {};
+        const evidenceQuality = {};
+        const totalFactors = 11;
+        
+        // Evidence analysis criteria
+        const evidenceCriteria = {
+            'primary-skills': {
+                keywords: ['certification', 'tool', 'technology', 'software', 'language', 'framework', 'years', 'expert', 'proficient'],
+                specificity: ['specific tools named', 'years of experience', 'certifications listed', 'projects described'],
+                biasIndicators: ['feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 'cultural fit']
+            },
+            'experience': {
+                keywords: ['years', 'company', 'role', 'position', 'industry', 'sector', 'responsibility', 'managed', 'led'],
+                specificity: ['specific companies', 'exact years', 'role titles', 'quantified scope'],
+                biasIndicators: ['young', 'old', 'energetic', 'fresh', 'seasoned', 'overqualified']
+            },
+            'achiever-pattern': {
+                keywords: ['promoted', 'award', 'recognition', 'top', 'percent', 'ranking', 'increased', 'improved', 'growth'],
+                specificity: ['specific promotions', 'quantified achievements', 'awards named', 'percentile rankings'],
+                biasIndicators: ['ambitious', 'hungry', 'driven', 'aggressive', 'pushy']
+            },
+            'technical-ability': {
+                keywords: ['solved', 'implemented', 'designed', 'architected', 'optimized', 'innovation', 'patent', 'published'],
+                specificity: ['specific problems solved', 'technologies used', 'results achieved', 'innovations described'],
+                biasIndicators: ['smart', 'bright', 'sharp', 'technical', 'nerdy', 'geeky']
+            },
+            'management-ability': {
+                keywords: ['project', 'budget', 'timeline', 'team', 'deadline', 'planned', 'organized', 'delivered'],
+                specificity: ['project sizes', 'budget amounts', 'team sizes', 'completion rates'],
+                biasIndicators: ['bossy', 'commanding', 'soft', 'tough', 'strict']
+            },
+            'team-skills': {
+                keywords: ['team', 'collaborated', 'cross-functional', 'stakeholder', 'conflict', 'coached', 'mentored', 'developed'],
+                specificity: ['team sizes', 'specific collaborations', 'people developed', 'conflicts resolved'],
+                biasIndicators: ['likeable', 'friendly', 'personable', 'charismatic', 'quiet', 'loud']
+            },
+            'problem-solving': {
+                keywords: ['analyzed', 'solution', 'problem', 'resolved', 'approach', 'methodology', 'framework', 'result'],
+                specificity: ['specific problems', 'methodologies used', 'solutions implemented', 'results quantified'],
+                biasIndicators: ['clever', 'quick', 'slow', 'methodical', 'creative']
+            },
+            'job-fit': {
+                keywords: ['similar', 'comparable', 'same', 'experience', 'scope', 'scale', 'industry', 'role'],
+                specificity: ['exact comparisons', 'scope quantified', 'direct parallels', 'recent timeframe'],
+                biasIndicators: ['perfect', 'ideal', 'dream', 'exactly']
+            },
+            'managerial-fit': {
+                keywords: ['manager', 'supervisor', 'reporting', 'style', 'feedback', 'autonomy', 'direction', 'adapted'],
+                specificity: ['manager types', 'specific adaptations', 'feedback examples', 'style descriptions'],
+                biasIndicators: ['easy', 'difficult', 'demanding', 'laid-back']
+            },
+            'culture-environment': {
+                keywords: ['culture', 'environment', 'pace', 'values', 'startup', 'corporate', 'collaborative', 'competitive'],
+                specificity: ['specific cultures', 'company examples', 'pace descriptions', 'value alignments'],
+                biasIndicators: ['fit in', 'one of us', 'different', 'unique']
+            },
+            'motivation': {
+                keywords: ['volunteered', 'initiated', 'extra', 'passion', 'interest', 'excited', 'committed', 'dedicated'],
+                specificity: ['specific examples', 'initiatives taken', 'extra efforts', 'time invested'],
+                biasIndicators: ['eager', 'desperate', 'needy', 'overenthusiastic']
+            }
+        };
+        
+        function setScore(factorId, score, element) {
+            // Clear previous selection
+            const parent = element.parentElement;
+            parent.querySelectorAll('.rating-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Set new selection
+            element.classList.add('selected');
+            
+            // Store score
+            scores[factorId] = score;
+            
+            // Update display
+            const scoreDisplay = document.getElementById('score-' + factorId);
+            scoreDisplay.textContent = score;
+            scoreDisplay.classList.add('scored');
+            
+            // Update totals
+            updateTotals();
+        }
+        
+        function analyzeEvidence(factorId) {
+            const evidence = document.getElementById('evidence-' + factorId).value;
+            const currentScore = scores[factorId] || 0;
+            const criteria = evidenceCriteria[factorId];
+            
+            // Analyze evidence quality
+            const analysis = evaluateEvidence(evidence, criteria, currentScore);
+            
+            // Display feedback
+            displayFeedback(factorId, analysis);
+            
+            // Store evidence quality
+            evidenceQuality[factorId] = analysis.quality;
+            
+            // Update overall evidence quality
+            updateEvidenceQuality();
+        }
+        
+        function evaluateEvidence(evidence, criteria, currentScore) {
+            const analysis = {
+                quality: 'poor',
+                hasSpecificExamples: false,
+                hasBias: false,
+                suggestedScore: currentScore,
+                feedback: '',
+                suggestions: []
+            };
+            
+            // Check if evidence is empty
+            if (!evidence || evidence.trim().length < 20) {
+                analysis.feedback = 'No substantial evidence provided.';
+                analysis.suggestions.push('Provide specific examples and details');
+                return analysis;
+            }
+            
+            // Convert to lowercase for analysis
+            const evidenceLower = evidence.toLowerCase();
+            
+            // Check for keywords
+            const keywordCount = criteria.keywords.filter(keyword => 
+                evidenceLower.includes(keyword)
+            ).length;
+            
+            // Check for specific examples
+            const hasNumbers = /\d+/.test(evidence);
+            const hasSpecificNames = /[A-Z][a-z]+/.test(evidence);
+            const hasMetrics = /%|dollar|\$|€|£|million|thousand|hundred/.test(evidenceLower);
+            
+            analysis.hasSpecificExamples = hasNumbers || hasSpecificNames || hasMetrics;
+            
+            // Check for bias indicators
+            const biasCount = criteria.biasIndicators.filter(indicator => 
+                evidenceLower.includes(indicator)
+            ).length;
+            
+            analysis.hasBias = biasCount > 0;
+            
+            // Determine quality and suggested score
+            if (keywordCount >= 3 && analysis.hasSpecificExamples && !analysis.hasBias) {
+                analysis.quality = 'excellent';
+                analysis.feedback = 'Excellent evidence with specific examples and no apparent bias.';
+                
+                // Suggest score based on evidence strength
+                if (evidenceLower.includes('exceptional') || evidenceLower.includes('top 5%') || evidenceLower.includes('award')) {
+                    analysis.suggestedScore = 5;
+                } else if (evidenceLower.includes('strong') || evidenceLower.includes('significant') || evidenceLower.includes('major')) {
+                    analysis.suggestedScore = 4;
+                } else {
+                    analysis.suggestedScore = 3;
+                }
+            } else if (keywordCount >= 2 && (analysis.hasSpecificExamples || !analysis.hasBias)) {
+                analysis.quality = 'good';
+                analysis.feedback = 'Good evidence but could be strengthened.';
+                analysis.suggestedScore = 3;
+                
+                if (!analysis.hasSpecificExamples) {
+                    analysis.suggestions.push('Add specific metrics, numbers, or examples');
+                }
+                if (analysis.hasBias) {
+                    analysis.suggestions.push('Remove subjective language and focus on facts');
+                }
+            } else {
+                analysis.quality = 'poor';
+                analysis.feedback = 'Evidence lacks specificity or contains bias.';
+                analysis.suggestedScore = currentScore > 3 ? 2 : currentScore;
+                
+                analysis.suggestions.push('Provide concrete examples with metrics');
+                analysis.suggestions.push('Focus on observable behaviors and results');
+                analysis.suggestions.push('Remove subjective assessments');
+            }
+            
+            // Check if current score matches evidence
+            if (currentScore > 0 && Math.abs(currentScore - analysis.suggestedScore) > 1) {
+                analysis.feedback += ` Current rating of ${currentScore} may not align with evidence provided.`;
+                analysis.suggestions.push(`Consider adjusting rating to ${analysis.suggestedScore} based on evidence`);
+            }
+            
+            return analysis;
+        }
+        
+        function displayFeedback(factorId, analysis) {
+            const feedbackDiv = document.getElementById('feedback-' + factorId);
+            
+            let feedbackClass = 'feedback-positive';
+            if (analysis.quality === 'poor') {
+                feedbackClass = 'feedback-negative';
+            } else if (analysis.quality === 'good') {
+                feedbackClass = 'feedback-warning';
+            }
+            
+            let html = `
+                <div class="feedback-title">Evidence Analysis:</div>
+                <div class="feedback-message">${analysis.feedback}</div>
+            `;
+            
+            if (analysis.suggestions.length > 0) {
+                html += `
+                    <div class="feedback-suggestions">
+                        <strong>Suggestions:</strong>
+                        <ul>
+                            ${analysis.suggestions.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            feedbackDiv.className = `evidence-feedback show ${feedbackClass}`;
+            feedbackDiv.innerHTML = html;
+        }
+        
+        function analyzeAllEvidence() {
+            Object.keys(evidenceCriteria).forEach(factorId => {
+                if (document.getElementById('evidence-' + factorId).value) {
+                    analyzeEvidence(factorId);
+                }
+            });
+        }
+        
+        function updateEvidenceQuality() {
+            const qualityScores = Object.values(evidenceQuality);
+            if (qualityScores.length === 0) {
+                document.getElementById('evidenceQuality').textContent = 'Not Evaluated';
+                return;
+            }
+            
+            const excellentCount = qualityScores.filter(q => q === 'excellent').length;
+            const goodCount = qualityScores.filter(q => q === 'good').length;
+            const poorCount = qualityScores.filter(q => q === 'poor').length;
+            
+            let overallQuality = 'Poor';
+            if (excellentCount >= qualityScores.length * 0.7) {
+                overallQuality = 'Excellent';
+            } else if ((excellentCount + goodCount) >= qualityScores.length * 0.7) {
+                overallQuality = 'Good';
+            } else if (poorCount < qualityScores.length * 0.3) {
+                overallQuality = 'Fair';
+            }
+            
+            document.getElementById('evidenceQuality').textContent = overallQuality;
+        }
+        
+        function updateTotals() {
+            const scoredCount = Object.keys(scores).length;
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            const averageScore = scoredCount > 0 ? (totalScore / scoredCount).toFixed(1) : '0.0';
+            const completionRate = Math.round((scoredCount / totalFactors) * 100);
+            
+            // Update displays
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('summaryTotal').textContent = totalScore;
+            document.getElementById('summaryAverage').textContent = averageScore;
+            document.getElementById('averageScore').textContent = averageScore;
+            document.getElementById('factorsScored').textContent = scoredCount + '/' + totalFactors;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+            
+            // Update recommendation
+            if (completionRate === 100) {
+                const avg = parseFloat(averageScore);
+                let recommendation = '';
+                
+                if (avg >= 4.5) {
+                    recommendation = '<strong>STRONG HIRE:</strong> This candidate demonstrates exceptional qualifications across all dimensions. They are in the top tier of talent and should be pursued aggressively.';
+                } else if (avg >= 3.5) {
+                    recommendation = '<strong>HIRE:</strong> This is a solid candidate who meets or exceeds requirements in most areas. They show strong potential for success in this role.';
+                } else if (avg >= 2.5) {
+                    recommendation = '<strong>CONDITIONAL HIRE:</strong> This candidate meets basic requirements but has some gaps. Consider additional interviews or assessments in weak areas.';
+                } else if (avg >= 2.0) {
+                    recommendation = '<strong>RECONSIDER:</strong> Significant concerns exist about this candidate\'s fit for the role. Only proceed if there are compelling reasons.';
+                } else {
+                    recommendation = '<strong>NO HIRE:</strong> This candidate does not meet the minimum requirements for success in this role.';
+                }
+                
+                document.getElementById('recommendationText').innerHTML = recommendation;
+            } else {
+                document.getElementById('recommendationText').textContent = `Complete all ${totalFactors} factors to generate a full recommendation. Currently ${completionRate}% complete.`;
+            }
+        }
+        
+        function saveScorecard() {
+            const data = {
+                candidate: document.getElementById('candidate').value,
+                position: document.getElementById('position').value,
+                interviewer: document.getElementById('interviewer').value,
+                date: document.getElementById('date').value,
+                scores: scores,
+                evidence: {},
+                evidenceQuality: evidenceQuality
+            };
+            
+            // Collect evidence
+            Object.keys(evidenceCriteria).forEach(factorId => {
+                data.evidence[factorId] = document.getElementById('evidence-' + factorId).value;
+            });
+            
+            // Download as JSON
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scorecard_${data.candidate || 'candidate'}_${data.date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Scorecard saved successfully!');
+        }
+        
+        function resetScorecard() {
+            if (confirm('Are you sure you want to reset all scores and evidence? This cannot be undone.')) {
+                // Clear scores
+                Object.keys(scores).forEach(key => delete scores[key]);
+                Object.keys(evidenceQuality).forEach(key => delete evidenceQuality[key]);
+                
+                // Clear UI
+                document.querySelectorAll('.rating-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                document.querySelectorAll('.factor-score').forEach(score => {
+                    score.textContent = '-';
+                    score.classList.remove('scored');
+                });
+                
+                document.querySelectorAll('.evidence-input').forEach(textarea => {
+                    textarea.value = '';
+                });
+                
+                document.querySelectorAll('.evidence-feedback').forEach(feedback => {
+                    feedback.classList.remove('show');
+                });
+                
+                // Update totals
+                updateTotals();
+                updateEvidenceQuality();
+            }
+        }
+    </script>
+</body>
+</html>
