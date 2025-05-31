@@ -1128,4 +1128,449 @@
                     
                     <!-- 11. Motivation -->
                     <div class="factor">
-                        <div
+                        <div class="factor-header">
+                            <span class="factor-name">Motivation</span>
+                            <span class="factor-score" id="score-motivation">-</span>
+                        </div>
+                        <div class="rating-scale">
+                            <div class="rating-option" onclick="setScore('motivation', 1, this)">
+                                <span class="rating-level">1</span>
+                                <span class="rating-label">Minimal</span>
+                                <span class="rating-description">Little evidence of motivation to do this type of work.</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level 1 - Minimal Evidence:</h4>
+                                    <p>Person hasn't done anything closely similar to the work that needs to be done or scope and scale is a complete mismatch.</p>
+                                </div>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 2, this)">
+                                <span class="rating-level">2</span>
+                                <span class="rating-label">Adequate</span>
+                                <span class="rating-description">Will do the core work but needs extra pushing.</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level 2 - Adequate Evidence:</h4>
+                                    <p>The person has done some work similar to what's required but it hasn't been too recent, or the information is unclear, or the person isn't motivated to do this type of work.</p>
+                                </div>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 3, this)">
+                                <span class="rating-level">3</span>
+                                <span class="rating-label">Strong</span>
+                                <span class="rating-description">Self-motivated to do work with normal supervision.</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level 3 - Strong Evidence:</h4>
+                                    <p>There is specific recent evidence that person is self-motivated to do this work at high levels of quality without direction. Evidence is based on multiple examples of taking the initiative doing comparable work and showing a high degree of responsibility and satisfaction by doing it.</p>
+                                </div>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 4, this)">
+                                <span class="rating-level">4</span>
+                                <span class="rating-label">Great</span>
+                                <span class="rating-description">Takes initiative to learn and do more, faster and better.</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level 4 - Outstanding Evidence:</h4>
+                                    <p>There is specific recent evidence the person is highly self-motivated to do this work on a scope, scale and pace standpoint. In addition, the person has received formal recognition for doing so. He/she has been assigned tasks that map to this type of work.</p>
+                                </div>
+                            </div>
+                            <div class="rating-option" onclick="setScore('motivation', 5, this)">
+                                <span class="rating-level">5</span>
+                                <span class="rating-label">Superb</span>
+                                <span class="rating-description">Totally committed to get it done. Constantly gets better.</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level 5 - Superb Evidence:</h4>
+                                    <p>Not only is there specific recent evidence the person has excelled at doing this work but there is supporting information to validate this. This includes formal recognition. Being assigned this type of work or being hired to do it. Also consider public recognition as part of this recognition.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="evidence-section">
+                            <label class="evidence-label">
+                                Evidence & Notes:
+                                <button class="analyze-btn" onclick="analyzeEvidence('motivation')">Analyze Evidence</button>
+                            </label>
+                            <textarea class="evidence-input" id="evidence-motivation" placeholder="Document examples of going extra mile, volunteering for projects, self-improvement, passion indicators..."></textarea>
+                            <div class="evidence-feedback" id="feedback-motivation"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary">
+            <h2>Interview Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <span class="summary-label">Total Score</span>
+                    <span class="summary-value" id="summaryTotal">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Average Score</span>
+                    <span class="summary-value" id="summaryAverage">0.0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Factors Scored</span>
+                    <span class="summary-value" id="factorsScored">0/11</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Completion</span>
+                    <span class="summary-value" id="completionRate">0%</span>
+                </div>
+            </div>
+            <div class="recommendation">
+                <h3>Recommendation</h3>
+                <p id="recommendationText">Complete the scoring to see the recommendation.</p>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn" onclick="saveScorecard()">Save Scorecard</button>
+            <button class="btn" onclick="analyzeAllEvidence()">Analyze All Evidence</button>
+            <button class="btn btn-secondary" onclick="resetScorecard()">Reset All</button>
+            <button class="btn btn-secondary" onclick="window.print()">Print</button>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize with today's date
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Store scores and evidence quality
+        const scores = {};
+        const evidenceQuality = {};
+        const totalFactors = 11;
+        
+        // Evidence analysis criteria
+        const evidenceCriteria = {
+            'primary-skills': {
+                keywords: ['certification', 'tool', 'technology', 'software', 'language', 'framework', 'years', 'expert', 'proficient'],
+                specificity: ['specific tools named', 'years of experience', 'certifications listed', 'projects described'],
+                biasIndicators: ['feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 'cultural fit']
+            },
+            'experience': {
+                keywords: ['years', 'company', 'role', 'position', 'industry', 'sector', 'responsibility', 'managed', 'led'],
+                specificity: ['specific companies', 'exact years', 'role titles', 'quantified scope'],
+                biasIndicators: ['young', 'old', 'energetic', 'fresh', 'seasoned', 'overqualified']
+            },
+            'achiever-pattern': {
+                keywords: ['promoted', 'award', 'recognition', 'top', 'percent', 'ranking', 'increased', 'improved', 'growth'],
+                specificity: ['specific promotions', 'quantified achievements', 'awards named', 'percentile rankings'],
+                biasIndicators: ['ambitious', 'hungry', 'driven', 'aggressive', 'pushy']
+            },
+            'technical-ability': {
+                keywords: ['solved', 'implemented', 'designed', 'architected', 'optimized', 'innovation', 'patent', 'published'],
+                specificity: ['specific problems solved', 'technologies used', 'results achieved', 'innovations described'],
+                biasIndicators: ['smart', 'bright', 'sharp', 'technical', 'nerdy', 'geeky']
+            },
+            'management-ability': {
+                keywords: ['project', 'budget', 'timeline', 'team', 'deadline', 'planned', 'organized', 'delivered'],
+                specificity: ['project sizes', 'budget amounts', 'team sizes', 'completion rates'],
+                biasIndicators: ['bossy', 'commanding', 'soft', 'tough', 'strict']
+            },
+            'team-skills': {
+                keywords: ['team', 'collaborated', 'cross-functional', 'stakeholder', 'conflict', 'coached', 'mentored', 'developed'],
+                specificity: ['team sizes', 'specific collaborations', 'people developed', 'conflicts resolved'],
+                biasIndicators: ['likeable', 'friendly', 'personable', 'charismatic', 'quiet', 'loud']
+            },
+            'problem-solving': {
+                keywords: ['analyzed', 'solution', 'problem', 'resolved', 'approach', 'methodology', 'framework', 'result'],
+                specificity: ['specific problems', 'methodologies used', 'solutions implemented', 'results quantified'],
+                biasIndicators: ['clever', 'quick', 'slow', 'methodical', 'creative']
+            },
+            'job-fit': {
+                keywords: ['similar', 'comparable', 'same', 'experience', 'scope', 'scale', 'industry', 'role'],
+                specificity: ['exact comparisons', 'scope quantified', 'direct parallels', 'recent timeframe'],
+                biasIndicators: ['perfect', 'ideal', 'dream', 'exactly']
+            },
+            'managerial-fit': {
+                keywords: ['manager', 'supervisor', 'reporting', 'style', 'feedback', 'autonomy', 'direction', 'adapted'],
+                specificity: ['manager types', 'specific adaptations', 'feedback examples', 'style descriptions'],
+                biasIndicators: ['easy', 'difficult', 'demanding', 'laid-back']
+            },
+            'culture-environment': {
+                keywords: ['culture', 'environment', 'pace', 'values', 'startup', 'corporate', 'collaborative', 'competitive'],
+                specificity: ['specific cultures', 'company examples', 'pace descriptions', 'value alignments'],
+                biasIndicators: ['fit in', 'one of us', 'different', 'unique']
+            },
+            'motivation': {
+                keywords: ['volunteered', 'initiated', 'extra', 'passion', 'interest', 'excited', 'committed', 'dedicated'],
+                specificity: ['specific examples', 'initiatives taken', 'extra efforts', 'time invested'],
+                biasIndicators: ['eager', 'desperate', 'needy', 'overenthusiastic']
+            }
+        };
+        
+        function setScore(factorId, score, element) {
+            // Clear previous selection
+            const parent = element.parentElement;
+            parent.querySelectorAll('.rating-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Set new selection
+            element.classList.add('selected');
+            
+            // Store score
+            scores[factorId] = score;
+            
+            // Update display
+            const scoreDisplay = document.getElementById('score-' + factorId);
+            scoreDisplay.textContent = score;
+            scoreDisplay.classList.add('scored');
+            
+            // Update totals
+            updateTotals();
+        }
+        
+        function analyzeEvidence(factorId) {
+            const evidence = document.getElementById('evidence-' + factorId).value;
+            const currentScore = scores[factorId] || 0;
+            const criteria = evidenceCriteria[factorId];
+            
+            // Analyze evidence quality
+            const analysis = evaluateEvidence(evidence, criteria, currentScore);
+            
+            // Display feedback
+            displayFeedback(factorId, analysis);
+            
+            // Store evidence quality
+            evidenceQuality[factorId] = analysis.quality;
+            
+            // Update overall evidence quality
+            updateEvidenceQuality();
+        }
+        
+        function evaluateEvidence(evidence, criteria, currentScore) {
+            const analysis = {
+                quality: 'poor',
+                hasSpecificExamples: false,
+                hasBias: false,
+                suggestedScore: currentScore,
+                feedback: '',
+                suggestions: []
+            };
+            
+            // Check if evidence is empty
+            if (!evidence || evidence.trim().length < 20) {
+                analysis.feedback = 'No substantial evidence provided.';
+                analysis.suggestions.push('Provide specific examples and details');
+                return analysis;
+            }
+            
+            // Convert to lowercase for analysis
+            const evidenceLower = evidence.toLowerCase();
+            
+            // Check for keywords
+            const keywordCount = criteria.keywords.filter(keyword => 
+                evidenceLower.includes(keyword)
+            ).length;
+            
+            // Check for specific examples
+            const hasNumbers = /\d+/.test(evidence);
+            const hasSpecificNames = /[A-Z][a-z]+/.test(evidence);
+            const hasMetrics = /%|dollar|\$|€|£|million|thousand|hundred/.test(evidenceLower);
+            
+            analysis.hasSpecificExamples = hasNumbers || hasSpecificNames || hasMetrics;
+            
+            // Check for bias indicators
+            const biasCount = criteria.biasIndicators.filter(indicator => 
+                evidenceLower.includes(indicator)
+            ).length;
+            
+            analysis.hasBias = biasCount > 0;
+            
+            // Determine quality and suggested score
+            if (keywordCount >= 3 && analysis.hasSpecificExamples && !analysis.hasBias) {
+                analysis.quality = 'excellent';
+                analysis.feedback = 'Excellent evidence with specific examples and no apparent bias.';
+                
+                // Suggest score based on evidence strength
+                if (evidenceLower.includes('exceptional') || evidenceLower.includes('top 5%') || evidenceLower.includes('award')) {
+                    analysis.suggestedScore = 5;
+                } else if (evidenceLower.includes('strong') || evidenceLower.includes('significant') || evidenceLower.includes('major')) {
+                    analysis.suggestedScore = 4;
+                } else {
+                    analysis.suggestedScore = 3;
+                }
+            } else if (keywordCount >= 2 && (analysis.hasSpecificExamples || !analysis.hasBias)) {
+                analysis.quality = 'good';
+                analysis.feedback = 'Good evidence but could be strengthened.';
+                analysis.suggestedScore = 3;
+                
+                if (!analysis.hasSpecificExamples) {
+                    analysis.suggestions.push('Add specific metrics, numbers, or examples');
+                }
+                if (analysis.hasBias) {
+                    analysis.suggestions.push('Remove subjective language and focus on facts');
+                }
+            } else {
+                analysis.quality = 'poor';
+                analysis.feedback = 'Evidence lacks specificity or contains bias.';
+                analysis.suggestedScore = currentScore > 3 ? 2 : currentScore;
+                
+                analysis.suggestions.push('Provide concrete examples with metrics');
+                analysis.suggestions.push('Focus on observable behaviors and results');
+                analysis.suggestions.push('Remove subjective assessments');
+            }
+            
+            // Check if current score matches evidence
+            if (currentScore > 0 && Math.abs(currentScore - analysis.suggestedScore) > 1) {
+                analysis.feedback += ` Current rating of ${currentScore} may not align with evidence provided.`;
+                analysis.suggestions.push(`Consider adjusting rating to ${analysis.suggestedScore} based on evidence`);
+            }
+            
+            return analysis;
+        }
+        
+        function displayFeedback(factorId, analysis) {
+            const feedbackDiv = document.getElementById('feedback-' + factorId);
+            
+            let feedbackClass = 'feedback-positive';
+            if (analysis.quality === 'poor') {
+                feedbackClass = 'feedback-negative';
+            } else if (analysis.quality === 'good') {
+                feedbackClass = 'feedback-warning';
+            }
+            
+            let html = `
+                <div class="feedback-title">Evidence Analysis:</div>
+                <div class="feedback-message">${analysis.feedback}</div>
+            `;
+            
+            if (analysis.suggestions.length > 0) {
+                html += `
+                    <div class="feedback-suggestions">
+                        <strong>Suggestions:</strong>
+                        <ul>
+                            ${analysis.suggestions.map(s => `<li>${s}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            feedbackDiv.className = `evidence-feedback show ${feedbackClass}`;
+            feedbackDiv.innerHTML = html;
+        }
+        
+        function analyzeAllEvidence() {
+            Object.keys(evidenceCriteria).forEach(factorId => {
+                if (document.getElementById('evidence-' + factorId).value) {
+                    analyzeEvidence(factorId);
+                }
+            });
+        }
+        
+        function updateEvidenceQuality() {
+            const qualityScores = Object.values(evidenceQuality);
+            if (qualityScores.length === 0) {
+                document.getElementById('evidenceQuality').textContent = 'Not Evaluated';
+                return;
+            }
+            
+            const excellentCount = qualityScores.filter(q => q === 'excellent').length;
+            const goodCount = qualityScores.filter(q => q === 'good').length;
+            const poorCount = qualityScores.filter(q => q === 'poor').length;
+            
+            let overallQuality = 'Poor';
+            if (excellentCount >= qualityScores.length * 0.7) {
+                overallQuality = 'Excellent';
+            } else if ((excellentCount + goodCount) >= qualityScores.length * 0.7) {
+                overallQuality = 'Good';
+            } else if (poorCount < qualityScores.length * 0.3) {
+                overallQuality = 'Fair';
+            }
+            
+            document.getElementById('evidenceQuality').textContent = overallQuality;
+        }
+        
+        function updateTotals() {
+            const scoredCount = Object.keys(scores).length;
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            const averageScore = scoredCount > 0 ? (totalScore / scoredCount).toFixed(1) : '0.0';
+            const completionRate = Math.round((scoredCount / totalFactors) * 100);
+            
+            // Update displays
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('summaryTotal').textContent = totalScore;
+            document.getElementById('summaryAverage').textContent = averageScore;
+            document.getElementById('averageScore').textContent = averageScore;
+            document.getElementById('factorsScored').textContent = scoredCount + '/' + totalFactors;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+            
+            // Update recommendation
+            if (completionRate === 100) {
+                const avg = parseFloat(averageScore);
+                let recommendation = '';
+                
+                if (avg >= 4.5) {
+                    recommendation = '<strong>STRONG HIRE:</strong> This candidate demonstrates exceptional qualifications across all dimensions. They are in the top tier of talent and should be pursued aggressively.';
+                } else if (avg >= 3.5) {
+                    recommendation = '<strong>HIRE:</strong> This is a solid candidate who meets or exceeds requirements in most areas. They show strong potential for success in this role.';
+                } else if (avg >= 2.5) {
+                    recommendation = '<strong>CONDITIONAL HIRE:</strong> This candidate meets basic requirements but has some gaps. Consider additional interviews or assessments in weak areas.';
+                } else if (avg >= 2.0) {
+                    recommendation = '<strong>RECONSIDER:</strong> Significant concerns exist about this candidate\'s fit for the role. Only proceed if there are compelling reasons.';
+                } else {
+                    recommendation = '<strong>NO HIRE:</strong> This candidate does not meet the minimum requirements for success in this role.';
+                }
+                
+                document.getElementById('recommendationText').innerHTML = recommendation;
+            } else {
+                document.getElementById('recommendationText').textContent = `Complete all ${totalFactors} factors to generate a full recommendation. Currently ${completionRate}% complete.`;
+            }
+        }
+        
+        function saveScorecard() {
+            const data = {
+                candidate: document.getElementById('candidate').value,
+                position: document.getElementById('position').value,
+                interviewer: document.getElementById('interviewer').value,
+                date: document.getElementById('date').value,
+                scores: scores,
+                evidence: {},
+                evidenceQuality: evidenceQuality
+            };
+            
+            // Collect evidence
+            Object.keys(evidenceCriteria).forEach(factorId => {
+                data.evidence[factorId] = document.getElementById('evidence-' + factorId).value;
+            });
+            
+            // Download as JSON
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scorecard_${data.candidate || 'candidate'}_${data.date}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Scorecard saved successfully!');
+        }
+        
+        function resetScorecard() {
+            if (confirm('Are you sure you want to reset all scores and evidence? This cannot be undone.')) {
+                // Clear scores
+                Object.keys(scores).forEach(key => delete scores[key]);
+                Object.keys(evidenceQuality).forEach(key => delete evidenceQuality[key]);
+                
+                // Clear UI
+                document.querySelectorAll('.rating-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                document.querySelectorAll('.factor-score').forEach(score => {
+                    score.textContent = '-';
+                    score.classList.remove('scored');
+                });
+                
+                document.querySelectorAll('.evidence-input').forEach(textarea => {
+                    textarea.value = '';
+                });
+                
+                document.querySelectorAll('.evidence-feedback').forEach(feedback => {
+                    feedback.classList.remove('show');
+                });
+                
+                // Update totals
+                updateTotals();
+                updateEvidenceQuality();
+            }
+        }
+    </script>
+</body>
+</html>
