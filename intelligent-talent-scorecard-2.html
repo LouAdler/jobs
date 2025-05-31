@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intelligent Quality of Hire Talent Scorecard</title>
+    <title>Quality of Hire Talent Scorecard - Advanced Evidence Analysis</title>
     <style>
         * {
             margin: 0;
@@ -107,7 +107,6 @@
             padding: 15px 20px;
             font-size: 1.2em;
             font-weight: 600;
-            cursor: pointer;
         }
         
         .factors {
@@ -182,6 +181,24 @@
             border-color: #2980b9;
         }
         
+        .rating-option.suggested {
+            border-color: #27ae60;
+            border-width: 3px;
+        }
+        
+        .rating-option.suggested::after {
+            content: '✓ Suggested';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #27ae60;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+        
         .rating-level {
             font-size: 1.5em;
             font-weight: 700;
@@ -244,30 +261,9 @@
         }
         
         .evidence-tooltip p {
-            margin: 0 0 8px 0;
+            margin: 0;
             font-size: 0.8em;
             line-height: 1.4;
-        }
-        
-        .evidence-examples {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .evidence-examples li {
-            padding-left: 15px;
-            position: relative;
-            margin-bottom: 4px;
-            font-size: 0.75em;
-            line-height: 1.3;
-        }
-        
-        .evidence-examples li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
-            color: #3498db;
         }
         
         .evidence-section {
@@ -319,10 +315,16 @@
             display: block;
         }
         
-        .feedback-positive {
+        .feedback-excellent {
             background: #d4edda;
             border: 1px solid #c3e6cb;
             color: #155724;
+        }
+        
+        .feedback-good {
+            background: #cce5ff;
+            border: 1px solid #b8daff;
+            color: #004085;
         }
         
         .feedback-warning {
@@ -331,30 +333,117 @@
             color: #856404;
         }
         
-        .feedback-negative {
+        .feedback-poor {
             background: #f8d7da;
             border: 1px solid #f5c6cb;
             color: #721c24;
         }
         
-        .feedback-title {
-            font-weight: 600;
-            margin-bottom: 5px;
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
         
-        .feedback-message {
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1em;
+        }
+        
+        .match-score {
+            background: rgba(0,0,0,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .feedback-content {
             font-size: 0.9em;
             line-height: 1.5;
         }
         
-        .feedback-suggestions {
-            margin-top: 10px;
-            font-size: 0.9em;
+        .evidence-match-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
         
-        .feedback-suggestions ul {
-            margin-left: 20px;
-            margin-top: 5px;
+        .match-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+        
+        .match-indicator {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        
+        .match-indicator.found {
+            background: #28a745;
+            color: white;
+        }
+        
+        .match-indicator.missing {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .match-indicator.partial {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .missing-evidence {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+        }
+        
+        .missing-evidence h5 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            color: #dc3545;
+        }
+        
+        .missing-evidence ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.85em;
+        }
+        
+        .missing-evidence li {
+            margin-bottom: 4px;
+        }
+        
+        .suggested-improvements {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .suggested-improvements h5 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            color: #2980b9;
+        }
+        
+        .suggested-improvements ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.85em;
         }
         
         .summary {
@@ -366,6 +455,7 @@
         .summary h2 {
             color: #2c3e50;
             margin-bottom: 20px;
+            text-align: center;
         }
         
         .summary-grid {
@@ -404,11 +494,29 @@
             border-left: 5px solid #3498db;
         }
         
+        .overall-evidence {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .overall-evidence textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+            margin-top: 10px;
+        }
+        
         .action-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
-            padding: 30px;
+            margin-top: 30px;
         }
         
         .btn {
@@ -444,14 +552,20 @@
             .evidence-tooltip {
                 display: none !important;
             }
+            .analyze-btn {
+                display: none !important;
+            }
+            .action-buttons {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Intelligent Quality of Hire Talent Scorecard</h1>
-            <p>Evidence-Based Evaluation with AI-Powered Bias Detection</p>
+            <h1>Quality of Hire Talent Scorecard</h1>
+            <p>Advanced Evidence-Based Evaluation with Master Criteria Matching</p>
         </div>
         
         <div class="candidate-info">
@@ -474,726 +588,18 @@
         </div>
         
         <div class="score-display">
-            Total Score: <span class="total-score" id="totalScore">0</span> / <span id="maxScore">55</span>
+            Total Score: <span class="total-score" id="totalScore">0</span> / 55
             | Average: <span id="averageScore">0.0</span>
-            | Evidence Quality: <span id="evidenceQuality">Not Evaluated</span>
+            | Completion: <span id="completion">0%</span>
         </div>
         
-        <div class="scorecard">
-            <!-- BASIC COMPETENCIES -->
-            <div class="category">
-                <div class="category-header">BASIC COMPETENCIES</div>
-                <div class="factors">
-                    <!-- 1. Primary Skills -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Primary Skills</span>
-                            <span class="factor-score" id="score-primary-skills">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('primary-skills', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Bare minimum. Has the basics but needs training.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Has difficulty articulating specific technical skills or provides vague, general responses with no concrete examples of expertise.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('primary-skills', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Has the basics but needs training.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Can describe a few technical skills but does not provide in-depth evidence of applying them in practical situations.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('primary-skills', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Covers all direct job needs well.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Describes technical skills with specific examples of use in relevant job settings. Evidence supports strong competence in key technical areas.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('primary-skills', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Extremely strong in all job needs.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Demonstrates deep technical expertise with evidence of applying skills to solve complex problems. Consistently performs at a high level in technical tasks.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('primary-skills', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Broad. Brings far more to the table.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Displays superior technical skills with multiple examples of innovation and leadership in applying these skills to high-impact projects.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('primary-skills')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-primary-skills" placeholder="Document specific examples of technical skills, certifications, tools mastered, projects completed..."></textarea>
-                            <div class="evidence-feedback" id="feedback-primary-skills"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 2. Experience -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Experience</span>
-                            <span class="factor-score" id="score-experience">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('experience', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Minimum threshold.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Provides little evidence of effective organizational skills. Struggles with task management and prioritization.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('experience', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Meets most, but not all needs.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Describes basic organizational skills but lacks depth in planning and managing complex projects or tasks.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('experience', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Meets all experience needs.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Provides strong examples of effective organizational skills, managing tasks, and time effectively in medium-complexity projects.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('experience', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Broader and related experience.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Demonstrates excellent organizational skills with evidence of managing complex projects, multitasking effectively, and delivering on time.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('experience', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Excellent background for role.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Displays outstanding organizational skills with a proven track record of handling highly complex projects, prioritizing effectively, and consistently delivering exceptional results.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('experience')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-experience" placeholder="Document years of experience, specific roles, companies, industries, scope of responsibilities..."></textarea>
-                            <div class="evidence-feedback" id="feedback-experience"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 3. Achiever Pattern & Growth Trend -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Achiever Pattern & Growth Trend</span>
-                            <span class="factor-score" id="score-achiever-pattern">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('achiever-pattern', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">No evidence the person is in the top 50%. Spotty trend.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Has trouble explaining work history or job transitions. Evidence of a lack of depth or pattern in roles, with little explanation of decisions.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('achiever-pattern', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Some, but not sure if person is in top 50%. Flatter trend.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Provides some detail about past jobs, but the narrative is unclear or lacks depth in terms of progression and rationale for moves.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('achiever-pattern', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Evidence clearly indicates person is in top 25%! Upward growth.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Explains work history clearly with logical career progression. Provides evidence of growth, skill development, and logical transitions between roles. Due to ability and motivation the person has been assigned projects doing comparable work.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('achiever-pattern', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Evidence clearly indicates person is in top 10-15%. Steep upward path.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Shows a deliberate and strategic career path with clear evidence of increasing responsibility and skill development. Job transitions are well-justified and supported.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('achiever-pattern', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Evidence clearly indicates person is in top 5%. Handles big stretch roles.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Presents an outstanding career trajectory marked by clear, deliberate progression. Moves are highly strategic, and the candidate provides deep insights into decision-making.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('achiever-pattern')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-achiever-pattern" placeholder="Document promotions, awards, rankings, performance reviews, expanding responsibilities..."></textarea>
-                            <div class="evidence-feedback" id="feedback-achiever-pattern"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- ESSENTIAL CORE COMPETENCES -->
-            <div class="category">
-                <div class="category-header">ESSENTIAL CORE COMPETENCES (In Comparison to the KPOs/OKRs for the Role)</div>
-                <div class="factors">
-                    <!-- 4. Talent & Overall Technical Ability -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Talent & Overall Technical Ability</span>
-                            <span class="factor-score" id="score-technical-ability">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('technical-ability', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Nothing remarkable. Needs too much extra training and support.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Has difficulty articulating specific technical skills or provides vague, general responses with no concrete examples of expertise.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('technical-ability', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Can do the work, but needs added training, support or coaching.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Can describe a few technical skills but does not provide in-depth evidence of applying them in practical situations.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('technical-ability', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Technically tops. An asset. Can learn quickly. Covers all job needs.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Describes technical skills with specific examples of use in relevant job settings. Evidence supports strong competence in key technical areas.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('technical-ability', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Top-notch. Trains others. Constantly improving. Brings more to the table.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Demonstrates deep technical expertise with evidence of applying skills to solve complex problems. Consistently performs at a high level in technical tasks.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('technical-ability', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Brilliant. Sets standards. Leader in field. Sought out. Recognized.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Displays superior technical skills with multiple examples of innovation and leadership in applying these skills to high-impact projects.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('technical-ability')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-technical-ability" placeholder="Document complex problems solved, innovations, thought leadership, industry recognition..."></textarea>
-                            <div class="evidence-feedback" id="feedback-technical-ability"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 5. Management & Organizational Ability -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Management & Organizational Ability</span>
-                            <span class="factor-score" id="score-management-ability">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('management-ability', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Seems reactive. Misses most deadlines or projects aren't comparable.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Candidate struggles to provide clear examples of managing or developing others. Lacks evidence of leadership ability or direct involvement in people management. Little to no experience with coaching or team development.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('management-ability', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Projects are comparable but seems more reactive than forward-looking.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Candidate provides some examples of managing others but relies on intuition more than structured leadership techniques. Shows basic people management abilities but lacks a clear track record of development or team leadership.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('management-ability', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Has planned, organized and executed comparable projects.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Candidate demonstrates effective management of individuals and teams with clear evidence of leading others to achieve set goals. Provides examples of developing talent within the team and improving team performance.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('management-ability', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Excellent. Plans, anticipates, communicates, and succeeds.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Candidate shows strong leadership and management skills with consistent success in developing others and leading teams to high performance. Demonstrates an ability to mentor and grow talent within the organization.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('management-ability', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Outstanding organizational results with comparable projects and teams.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Candidate exhibits exceptional leadership and management capabilities. Has a track record of building high-performing teams and developing future leaders. Demonstrates a strong ability to inspire, coach, and elevate others consistently to top-tier performance.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('management-ability')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-management-ability" placeholder="Document project sizes, budgets, timelines met, team sizes managed, planning methods..."></textarea>
-                            <div class="evidence-feedback" id="feedback-management-ability"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 6. Team Skills (EQ) & Development, Leadership -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Team Skills (EQ) & Development, Leadership</span>
-                            <span class="factor-score" id="score-team-skills">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('team-skills', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Hasn't worked on comparable teams or little team growth.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Struggles to provide examples of effective teamwork. Seems unclear about the value of collaboration and cross-functional work.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('team-skills', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Has worked on comparable teams and has some team growth.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Provides some examples of working in teams but lacks depth or fails to highlight key contributions to the team's success.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('team-skills', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Good fit on comparable teams. Has developed strong comparable teams.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Provides clear evidence of working effectively in teams, with examples of contributing to team success and collaborating across functions.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('team-skills', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Clear positive team track. Coaches others. Recognized for strong team skills.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Demonstrates strong team skills with evidence of leading teams to success. Consistently fosters collaboration and cross-functional cooperation.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('team-skills', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Impressive x-func team growth. Asked to lead. Persuades, motivates, coaches.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Exhibits superior team skills with a history of leading high-performing teams and fostering collaboration in challenging environments.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('team-skills')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-team-skills" placeholder="Document team achievements, people developed, cross-functional projects, conflict resolution..."></textarea>
-                            <div class="evidence-feedback" id="feedback-team-skills"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 7. Thinking & Job-related Problem-solving -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Thinking & Job-related Problem-solving</span>
-                            <span class="factor-score" id="score-problem-solving">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('problem-solving', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Didn't understand any key issues or develop any solutions.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Struggles to articulate any clear examples of problem-solving. Responses are vague and lack specifics, indicating minimal analytical thinking.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('problem-solving', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Understood most job related issues, developed okay solutions.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Able to describe a few problem-solving experiences but lacks depth or analysis. Relies more on intuition rather than structured approaches.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('problem-solving', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Clearly understood all key issues and developed strong solutions.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Provides clear examples of problem-solving using logical and structured approaches. Demonstrates ability to think analytically in solving medium complexity issues.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('problem-solving', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Understood all key & less obvious issues. Reaches out for best solutions.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Demonstrates exceptional analytical thinking with evidence of solving complex problems in high-pressure environments. Shows ability to adapt strategies effectively.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('problem-solving', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Provides deeper level of insight. Offers multiple unique solutions.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Consistently exhibits superior problem-solving abilities with a track record of innovative solutions to highly complex and unique problems. Provides multiple examples where their approach was key to organizational success.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('problem-solving')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-problem-solving" placeholder="Document specific problems solved, analysis methods, solutions implemented, results achieved..."></textarea>
-                            <div class="evidence-feedback" id="feedback-problem-solving"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- SITUATIONAL FIT FACTORS -->
-            <div class="category">
-                <div class="category-header">SITUATIONAL FIT FACTORS – WEIGHT THESE FACTORS HIGHER</div>
-                <div class="factors">
-                    <!-- 8. Job Fit with Recent Comparable Results -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Job Fit with Recent Comparable Results</span>
-                            <span class="factor-score" id="score-job-fit">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('job-fit', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Accomplishments are not directly comparable or not recent.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Person hasn't done anything closely similar to the work that needs to be done or scope and scale is a complete mismatch.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('job-fit', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Some comparable accomplishments, but inconsistent or not recent.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>The person has done some work similar to what's required but it hasn't been too recent, or the information is unclear, or the person isn't motivated to do this type of work.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('job-fit', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Major and subtask accomplishments are recent, strong and comparable.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>There is specific recent evidence that person is self-motivated to do this work at high levels of quality without direction. Evidence is based on multiple examples of taking the initiative doing comparable work and showing a high degree of responsibility and satisfaction by doing it.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('job-fit', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Achieved outstanding results under similar conditions.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>There is specific recent evidence the person is highly self-motivated to do this work on a scope, scale and pace standpoint. In addition, the person has received formal recognition for doing so. He/she has been assigned tasks that map to this type of work.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('job-fit', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Full job match with exceptional results – scope, pace, team, resources.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Not only is there specific recent evidence the person has excelled at doing this work but there is supporting information to validate this. This includes formal recognition. Being assigned this type of work or being hired to do it. Also consider public recognition as part of this recognition.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('job-fit')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-job-fit" placeholder="Document specific comparable accomplishments, scope of work, team sizes, budgets, timelines..."></textarea>
-                            <div class="evidence-feedback" id="feedback-job-fit"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 9. Managerial Fit -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Managerial Fit</span>
-                            <span class="factor-score" id="score-managerial-fit">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('managerial-fit', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Mismatch between candidate's & manager's style.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>The candidate consistently struggles to align with the manager's leadership style. They experience frequent misunderstandings, are resistant to direction, and are unable to adapt to the manager's approach, leading to friction and inefficiency.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('managerial-fit', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Limited, but has worked with similar managers.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>The candidate is generally able to follow the manager's leadership but lacks flexibility. While they can work under the current style, they may struggle to adapt if the leadership approach changes or if the manager applies different methods under various circumstances.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('managerial-fit', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Successfully worked with similar managers.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>The candidate demonstrates a solid ability to work well under the manager's leadership and is adaptable to changes in leadership style. The person is able to take direction but success is not dependent on the manager providing direction or training.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('managerial-fit', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Person easily adapts to a variety of manager styles.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>The candidate not only aligns well with the manager's style but also anticipates and adapts to changes driven by external factors (e.g., market pressures, organizational shifts). Person displays flexibility and an understanding that different situations may call for adjustments in leadership.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('managerial-fit', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Super fit. Coaches upwards. Both are flexible.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>The candidate thrives under any managerial style, whether directive, collaborative, hands-off, or any other. They are highly adaptable, quickly grasp the intent behind different approaches, and can adjust seamlessly to changes in leadership style while continuing to perform at a high level.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('managerial-fit')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-managerial-fit" placeholder="Document types of managers worked with, management styles adapted to, upward feedback given..."></textarea>
-                            <div class="evidence-feedback" id="feedback-managerial-fit"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 10. Culture & Environment -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Culture & Environment</span>
-                            <span class="factor-score" id="score-culture-environment">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('culture-environment', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Complete mismatch on culture & environment.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Displays minimal understanding or alignment with the company's culture. Provides vague or conflicting examples.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('culture-environment', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Reasonable match on culture and environment.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>Shows some alignment with the company's culture but lacks depth in understanding or articulating fit.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('culture-environment', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Close match on culture and environment.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>Demonstrates strong alignment with the company's culture with clear examples of fitting into similar cultural environments.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('culture-environment', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Excellent match and has made similar transfers.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>Exhibits outstanding cultural alignment with clear examples of thriving in similar environments and contributing positively to the culture.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('culture-environment', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Thrives in this type of environment, culture.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Displays superb alignment with the company's culture, consistently embodying the values and behaviors that drive success in the organization.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('culture-environment')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-culture-environment" placeholder="Document company cultures thrived in, pace preferences, decision-making styles, values alignment..."></textarea>
-                            <div class="evidence-feedback" id="feedback-culture-environment"></div>
-                        </div>
-                    </div>
-                    
-                    <!-- 11. Motivation -->
-                    <div class="factor">
-                        <div class="factor-header">
-                            <span class="factor-name">Motivation</span>
-                            <span class="factor-score" id="score-motivation">-</span>
-                        </div>
-                        <div class="rating-scale">
-                            <div class="rating-option" onclick="setScore('motivation', 1, this)">
-                                <span class="rating-level">1</span>
-                                <span class="rating-label">Minimal</span>
-                                <span class="rating-description">Little evidence of motivation to do this type of work.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 1 - Minimal Evidence:</h4>
-                                    <p>Person hasn't done anything closely similar to the work that needs to be done or scope and scale is a complete mismatch.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('motivation', 2, this)">
-                                <span class="rating-level">2</span>
-                                <span class="rating-label">Adequate</span>
-                                <span class="rating-description">Will do the core work but needs extra pushing.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 2 - Adequate Evidence:</h4>
-                                    <p>The person has done some work similar to what's required but it hasn't been too recent, or the information is unclear, or the person isn't motivated to do this type of work.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('motivation', 3, this)">
-                                <span class="rating-level">3</span>
-                                <span class="rating-label">Strong</span>
-                                <span class="rating-description">Self-motivated to do work with normal supervision.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 3 - Strong Evidence:</h4>
-                                    <p>There is specific recent evidence that person is self-motivated to do this work at high levels of quality without direction. Evidence is based on multiple examples of taking the initiative doing comparable work and showing a high degree of responsibility and satisfaction by doing it.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('motivation', 4, this)">
-                                <span class="rating-level">4</span>
-                                <span class="rating-label">Great</span>
-                                <span class="rating-description">Takes initiative to learn and do more, faster and better.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 4 - Outstanding Evidence:</h4>
-                                    <p>There is specific recent evidence the person is highly self-motivated to do this work on a scope, scale and pace standpoint. In addition, the person has received formal recognition for doing so. He/she has been assigned tasks that map to this type of work.</p>
-                                </div>
-                            </div>
-                            <div class="rating-option" onclick="setScore('motivation', 5, this)">
-                                <span class="rating-level">5</span>
-                                <span class="rating-label">Superb</span>
-                                <span class="rating-description">Totally committed to get it done. Constantly gets better.</span>
-                                <div class="evidence-tooltip">
-                                    <h4>Level 5 - Superb Evidence:</h4>
-                                    <p>Not only is there specific recent evidence the person has excelled at doing this work but there is supporting information to validate this. This includes formal recognition. Being assigned this type of work or being hired to do it. Also consider public recognition as part of this recognition.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="evidence-section">
-                            <label class="evidence-label">
-                                Evidence & Notes:
-                                <button class="analyze-btn" onclick="analyzeEvidence('motivation')">Analyze Evidence</button>
-                            </label>
-                            <textarea class="evidence-input" id="evidence-motivation" placeholder="Document examples of going extra mile, volunteering for projects, self-improvement, passion indicators..."></textarea>
-                            <div class="evidence-feedback" id="feedback-motivation"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="scorecard" id="scorecard">
+            <!-- Dynamic content will be inserted here -->
         </div>
         
         <div class="summary">
-            <h2>Interview Summary</h2>
+            <h2>OVERALL FIT BASED ON SHARED EVIDENCE</h2>
+            
             <div class="summary-grid">
                 <div class="summary-card">
                     <span class="summary-label">Total Score</span>
@@ -1208,211 +614,526 @@
                     <span class="summary-value" id="factorsScored">0/11</span>
                 </div>
                 <div class="summary-card">
-                    <span class="summary-label">Completion</span>
-                    <span class="summary-value" id="completionRate">0%</span>
+                    <span class="summary-label">Evidence Quality</span>
+                    <span class="summary-value" id="evidenceQualityScore">-</span>
                 </div>
             </div>
+            
             <div class="recommendation">
                 <h3>Recommendation</h3>
                 <p id="recommendationText">Complete the scoring to see the recommendation.</p>
             </div>
-        </div>
-        
-        <div class="action-buttons">
-            <button class="btn" onclick="saveScorecard()">Save Scorecard</button>
-            <button class="btn" onclick="analyzeAllEvidence()">Analyze All Evidence</button>
-            <button class="btn btn-secondary" onclick="resetScorecard()">Reset All</button>
-            <button class="btn btn-secondary" onclick="window.print()">Print</button>
+            
+            <div class="overall-evidence">
+                <label style="font-weight: 600; color: #7f8c8d;">
+                    Provide evidence below used to rank each factor using the Performance-based Interview. 
+                    Have everyone explain their evidence to determine total score.
+                </label>
+                <textarea id="overall-evidence" placeholder="Summarize key evidence and observations from the interview..."></textarea>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn" onclick="saveScorecard()">Save Scorecard</button>
+                <button class="btn" onclick="exportScorecard()">Export PDF</button>
+                <button class="btn btn-secondary" onclick="resetScorecard()">Reset All</button>
+            </div>
         </div>
     </div>
     
     <script>
-        // DEMO PROTECTION - Add this at the very beginning
-        (function() {
-            // Add persistent watermark
-            const watermark = document.createElement('div');
-            watermark.innerHTML = 'DEMO VERSION - NOT FOR COMMERCIAL USE<br>© 2024 Lou Adler. Contact: info@louadlergroup.com';
-            watermark.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: rgba(220, 53, 69, 0.9);
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                font-weight: bold;
-                font-size: 14px;
-                z-index: 10000;
-                pointer-events: none;
-                text-align: center;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            `;
-            setTimeout(() => document.body.appendChild(watermark), 100);
-            
-            // Add diagonal watermark
-            const bgWatermark = document.createElement('div');
-            bgWatermark.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) rotate(-45deg);
-                font-size: 120px;
-                color: rgba(220, 53, 69, 0.1);
-                pointer-events: none;
-                z-index: 9999;
-                font-weight: bold;
-                white-space: nowrap;
-            `;
-            bgWatermark.textContent = 'DEMO ONLY';
-            setTimeout(() => document.body.appendChild(bgWatermark), 100);
-            
-            // Disable right-click context menu
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                alert('Right-click is disabled in demo version.');
-                return false;
-            });
-            
-            // Disable text selection
-            document.addEventListener('selectstart', function(e) {
-                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                }
-            });
-            
-            // Disable copy keyboard shortcuts
-            document.addEventListener('keydown', function(e) {
-                // Disable Ctrl+A, Ctrl+C, Ctrl+X
-                if (e.ctrlKey && (e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 88)) {
-                    e.preventDefault();
-                    alert('Copy/paste is disabled in demo version.');
-                    return false;
-                }
-                // Disable F12 (Developer Tools)
-                if (e.keyCode === 123) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-            
-            // Disable print
-            window.addEventListener('beforeprint', function(e) {
-                alert('Printing is disabled in demo version. Please contact info@louadlergroup.com for full version.');
-                e.preventDefault();
-                e.stopPropagation();
-                return false;
-            });
-            
-            // Add demo limitations flag
-            window.DEMO_MODE = true;
-            window.DEMO_LIMIT = 5; // Limit to 5 factors in demo
-        })();
-        
-        // Initialize with today's date
+        // Initialize
         document.getElementById('date').valueAsDate = new Date();
         
-        // Store scores and evidence quality
+        // Global variables
         const scores = {};
         const evidenceQuality = {};
+        const suggestedScores = {};
         const totalFactors = 11;
         
-        // Evidence analysis criteria
-        const evidenceCriteria = {
+        // Master criteria for evidence matching
+        const masterCriteria = {
             'primary-skills': {
-                keywords: ['certification', 'tool', 'technology', 'software', 'language', 'framework', 'years', 'expert', 'proficient'],
-                specificity: ['specific tools named', 'years of experience', 'certifications listed', 'projects described'],
-                biasIndicators: ['feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 'cultural fit']
+                factor: 'Primary Skills',
+                levels: {
+                    1: {
+                        description: 'Bare minimum',
+                        evidence: 'Has difficulty articulating specific technical skills or provides vague, general responses with no concrete examples.',
+                        required: ['difficulty articulating', 'vague responses', 'no examples'],
+                        indicators: ['unclear', 'general', 'basic understanding only']
+                    },
+                    2: {
+                        description: 'Has basics but needs training',
+                        evidence: 'Can describe a few technical skills but does not provide in-depth evidence of applying them in practical situations.',
+                        required: ['few skills', 'lacks depth', 'limited application'],
+                        indicators: ['some knowledge', 'theoretical understanding', 'needs support']
+                    },
+                    3: {
+                        description: 'Covers all job needs well',
+                        evidence: 'Describes technical skills with specific examples of use in relevant job settings. Evidence supports strong competence.',
+                        required: ['specific examples', 'relevant job settings', 'strong competence'],
+                        indicators: ['applied skills', 'concrete examples', 'job-relevant experience']
+                    },
+                    4: {
+                        description: 'Extremely strong in all needs',
+                        evidence: 'Demonstrates deep technical expertise with evidence of applying skills to solve complex problems.',
+                        required: ['deep expertise', 'complex problems', 'consistent high performance'],
+                        indicators: ['advanced applications', 'problem-solving', 'technical leadership']
+                    },
+                    5: {
+                        description: 'Brings far more to table',
+                        evidence: 'Displays superior technical skills with multiple examples of innovation and leadership in high-impact projects.',
+                        required: ['superior skills', 'innovation', 'leadership', 'high-impact'],
+                        indicators: ['industry recognition', 'thought leadership', 'transformational impact']
+                    }
+                }
             },
             'experience': {
-                keywords: ['years', 'company', 'role', 'position', 'industry', 'sector', 'responsibility', 'managed', 'led'],
-                specificity: ['specific companies', 'exact years', 'role titles', 'quantified scope'],
-                biasIndicators: ['young', 'old', 'energetic', 'fresh', 'seasoned', 'overqualified']
+                factor: 'Experience',
+                levels: {
+                    1: {
+                        description: 'Minimum threshold',
+                        evidence: 'Provides little evidence of effective organizational skills. Struggles with task management.',
+                        required: ['little evidence', 'struggles', 'poor organization'],
+                        indicators: ['limited experience', 'basic tasks only']
+                    },
+                    2: {
+                        description: 'Meets most, but not all needs',
+                        evidence: 'Describes basic organizational skills but lacks depth in planning and managing complex projects.',
+                        required: ['basic skills', 'lacks depth', 'simple projects only'],
+                        indicators: ['some experience', 'routine tasks', 'limited scope']
+                    },
+                    3: {
+                        description: 'Meets all experience needs',
+                        evidence: 'Provides strong examples of effective organizational skills, managing tasks and time effectively.',
+                        required: ['strong examples', 'effective management', 'medium complexity'],
+                        indicators: ['relevant experience', 'successful delivery', 'good planning']
+                    },
+                    4: {
+                        description: 'Broader and related experience',
+                        evidence: 'Demonstrates excellent organizational skills with evidence of managing complex projects and delivering on time.',
+                        required: ['excellent skills', 'complex projects', 'on-time delivery'],
+                        indicators: ['diverse experience', 'large scale projects', 'consistent success']
+                    },
+                    5: {
+                        description: 'Excellent background for role',
+                        evidence: 'Displays outstanding organizational skills with proven track record of highly complex projects.',
+                        required: ['outstanding skills', 'highly complex', 'exceptional results'],
+                        indicators: ['executive level', 'transformational projects', 'industry best practices']
+                    }
+                }
             },
             'achiever-pattern': {
-                keywords: ['promoted', 'award', 'recognition', 'top', 'percent', 'ranking', 'increased', 'improved', 'growth'],
-                specificity: ['specific promotions', 'quantified achievements', 'awards named', 'percentile rankings'],
-                biasIndicators: ['ambitious', 'hungry', 'driven', 'aggressive', 'pushy']
+                factor: 'Achiever Pattern & Growth Trend',
+                levels: {
+                    1: {
+                        description: 'Not in top 50%. Spotty trend',
+                        evidence: 'Has trouble explaining work history or job transitions. Lack of depth or pattern in roles.',
+                        required: ['trouble explaining', 'no pattern', 'lack of depth'],
+                        indicators: ['job hopping', 'lateral moves only', 'no clear progression']
+                    },
+                    2: {
+                        description: 'Maybe top 50%. Flatter trend',
+                        evidence: 'Provides some detail about past jobs, but narrative is unclear or lacks progression.',
+                        required: ['some detail', 'unclear narrative', 'limited progression'],
+                        indicators: ['slow growth', 'few achievements', 'average performance']
+                    },
+                    3: {
+                        description: 'Top 25%! Upward growth',
+                        evidence: 'Explains work history clearly with logical career progression and evidence of growth.',
+                        required: ['clear history', 'logical progression', 'evidence of growth', 'comparable work'],
+                        indicators: ['promotions', 'increased responsibility', 'skill development']
+                    },
+                    4: {
+                        description: 'Top 10-15%. Steep upward path',
+                        evidence: 'Shows deliberate and strategic career path with clear evidence of increasing responsibility.',
+                        required: ['strategic path', 'increasing responsibility', 'well-justified moves'],
+                        indicators: ['rapid advancement', 'stretch assignments', 'exceeds expectations']
+                    },
+                    5: {
+                        description: 'Top 5%. Handles big stretch roles',
+                        evidence: 'Presents outstanding career trajectory marked by clear, deliberate progression.',
+                        required: ['outstanding trajectory', 'deliberate progression', 'strategic insights'],
+                        indicators: ['executive potential', 'game-changing roles', 'industry recognition']
+                    }
+                }
             },
             'technical-ability': {
-                keywords: ['solved', 'implemented', 'designed', 'architected', 'optimized', 'innovation', 'patent', 'published'],
-                specificity: ['specific problems solved', 'technologies used', 'results achieved', 'innovations described'],
-                biasIndicators: ['smart', 'bright', 'sharp', 'technical', 'nerdy', 'geeky']
+                factor: 'Talent & Overall Technical Ability',
+                levels: {
+                    1: {
+                        description: 'Nothing remarkable. Needs too much training',
+                        evidence: 'Nothing remarkable. Needs too much extra training and support.',
+                        required: ['needs extensive training', 'no standout skills', 'requires support'],
+                        indicators: ['basic knowledge only', 'significant gaps']
+                    },
+                    2: {
+                        description: 'Can do work, but needs support',
+                        evidence: 'Can do the work, but needs added training, support or coaching.',
+                        required: ['can do work', 'needs training', 'requires coaching'],
+                        indicators: ['competent', 'some gaps', 'development needed']
+                    },
+                    3: {
+                        description: 'Technically tops. An asset',
+                        evidence: 'Technically tops. An asset. Can learn quickly. Covers all job needs.',
+                        required: ['technically strong', 'quick learner', 'covers all needs'],
+                        indicators: ['self-sufficient', 'reliable expertise', 'adds value']
+                    },
+                    4: {
+                        description: 'Top-notch. Trains others',
+                        evidence: 'Top-notch. Trains others. Constantly improving. Brings more to the table.',
+                        required: ['trains others', 'constantly improving', 'exceeds requirements'],
+                        indicators: ['mentor', 'innovator', 'go-to expert']
+                    },
+                    5: {
+                        description: 'Brilliant. Sets standards',
+                        evidence: 'Brilliant. Sets standards. Leader in field. Sought out. Recognized.',
+                        required: ['sets standards', 'leader in field', 'recognized expert'],
+                        indicators: ['thought leader', 'industry speaker', 'published author']
+                    }
+                }
             },
             'management-ability': {
-                keywords: ['project', 'budget', 'timeline', 'team', 'deadline', 'planned', 'organized', 'delivered'],
-                specificity: ['project sizes', 'budget amounts', 'team sizes', 'completion rates'],
-                biasIndicators: ['bossy', 'commanding', 'soft', 'tough', 'strict']
+                factor: 'Management & Organizational Ability',
+                levels: {
+                    1: {
+                        description: 'Seems reactive. Misses deadlines',
+                        evidence: 'Candidate struggles to provide clear examples of managing or developing others.',
+                        required: ['struggles with examples', 'lacks leadership', 'no management experience'],
+                        indicators: ['reactive', 'poor planning', 'missed deadlines']
+                    },
+                    2: {
+                        description: 'More reactive than forward-looking',
+                        evidence: 'Provides some examples of managing others but relies on intuition more than structure.',
+                        required: ['some examples', 'intuition-based', 'basic management'],
+                        indicators: ['limited planning', 'informal approach', 'small teams only']
+                    },
+                    3: {
+                        description: 'Has planned & executed comparable projects',
+                        evidence: 'Demonstrates effective management with clear evidence of leading others to achieve goals.',
+                        required: ['effective management', 'achieved goals', 'developed talent'],
+                        indicators: ['structured approach', 'successful projects', 'team development']
+                    },
+                    4: {
+                        description: 'Excellent. Plans, anticipates, succeeds',
+                        evidence: 'Shows strong leadership with consistent success in developing others and high performance.',
+                        required: ['strong leadership', 'develops others', 'high performance'],
+                        indicators: ['strategic planning', 'mentoring', 'exceeds targets']
+                    },
+                    5: {
+                        description: 'Outstanding organizational results',
+                        evidence: 'Exceptional leadership with track record of building high-performing teams and future leaders.',
+                        required: ['exceptional leadership', 'high-performing teams', 'develops leaders'],
+                        indicators: ['transformational leader', 'culture builder', 'succession planning']
+                    }
+                }
             },
             'team-skills': {
-                keywords: ['team', 'collaborated', 'cross-functional', 'stakeholder', 'conflict', 'coached', 'mentored', 'developed'],
-                specificity: ['team sizes', 'specific collaborations', 'people developed', 'conflicts resolved'],
-                biasIndicators: ['likeable', 'friendly', 'personable', 'charismatic', 'quiet', 'loud']
+                factor: 'Team Skills (EQ) & Development, Leadership',
+                levels: {
+                    1: {
+                        description: 'Little team growth',
+                        evidence: 'Struggles to provide examples of effective teamwork. Unclear about collaboration value.',
+                        required: ['struggles with examples', 'unclear on collaboration', 'limited teamwork'],
+                        indicators: ['works alone', 'avoids collaboration', 'conflict issues']
+                    },
+                    2: {
+                        description: 'Has some team growth',
+                        evidence: 'Provides some examples of working in teams but lacks depth or key contributions.',
+                        required: ['some examples', 'lacks depth', 'limited contribution'],
+                        indicators: ['participates', 'follows others', 'basic cooperation']
+                    },
+                    3: {
+                        description: 'Good fit. Developed strong teams',
+                        evidence: 'Clear evidence of working effectively in teams with examples of contributing to success.',
+                        required: ['effective teamwork', 'contributes to success', 'cross-functional'],
+                        indicators: ['collaborates well', 'supports others', 'positive influence']
+                    },
+                    4: {
+                        description: 'Coaches others. Recognized for team skills',
+                        evidence: 'Strong team skills with evidence of leading teams to success and fostering collaboration.',
+                        required: ['leads teams', 'fosters collaboration', 'coaches others'],
+                        indicators: ['team builder', 'conflict resolver', 'culture champion']
+                    },
+                    5: {
+                        description: 'Impressive growth. Asked to lead',
+                        evidence: 'Superior team skills with history of leading high-performing teams in challenging environments.',
+                        required: ['superior skills', 'high-performing teams', 'challenging environments'],
+                        indicators: ['transformational', 'builds leaders', 'organizational impact']
+                    }
+                }
             },
             'problem-solving': {
-                keywords: ['analyzed', 'solution', 'problem', 'resolved', 'approach', 'methodology', 'framework', 'result'],
-                specificity: ['specific problems', 'methodologies used', 'solutions implemented', 'results quantified'],
-                biasIndicators: ['clever', 'quick', 'slow', 'methodical', 'creative']
+                factor: 'Thinking & Job-related Problem-solving',
+                levels: {
+                    1: {
+                        description: 'Didn\'t understand key issues',
+                        evidence: 'Struggles to articulate any clear examples of problem-solving. Vague responses.',
+                        required: ['struggles to articulate', 'vague responses', 'no clear examples'],
+                        indicators: ['confused', 'superficial analysis', 'no solutions']
+                    },
+                    2: {
+                        description: 'Understood most issues, okay solutions',
+                        evidence: 'Able to describe a few problem-solving experiences but lacks depth or analysis.',
+                        required: ['few experiences', 'lacks depth', 'basic solutions'],
+                        indicators: ['surface level', 'obvious solutions', 'limited analysis']
+                    },
+                    3: {
+                        description: 'Understood all issues, strong solutions',
+                        evidence: 'Clear examples of problem-solving using logical and structured approaches.',
+                        required: ['clear examples', 'logical approach', 'structured thinking'],
+                        indicators: ['analytical', 'systematic', 'effective solutions']
+                    },
+                    4: {
+                        description: 'Understood less obvious issues',
+                        evidence: 'Exceptional analytical thinking with evidence of solving complex problems.',
+                        required: ['exceptional thinking', 'complex problems', 'adaptable strategies'],
+                        indicators: ['innovative', 'sees patterns', 'anticipates issues']
+                    },
+                    5: {
+                        description: 'Deeper insight. Multiple unique solutions',
+                        evidence: 'Superior problem-solving with track record of innovative solutions to unique problems.',
+                        required: ['superior abilities', 'innovative solutions', 'organizational impact'],
+                        indicators: ['breakthrough thinking', 'paradigm shifts', 'thought leader']
+                    }
+                }
             },
             'job-fit': {
-                keywords: ['similar', 'comparable', 'same', 'experience', 'scope', 'scale', 'industry', 'role'],
-                specificity: ['exact comparisons', 'scope quantified', 'direct parallels', 'recent timeframe'],
-                biasIndicators: ['perfect', 'ideal', 'dream', 'exactly']
+                factor: 'Job Fit with Recent Comparable Results',
+                levels: {
+                    1: {
+                        description: 'Not comparable or not recent',
+                        evidence: 'Person hasn\'t done anything closely similar or scope and scale is complete mismatch.',
+                        required: ['nothing similar', 'complete mismatch', 'wrong scope/scale'],
+                        indicators: ['different industry', 'different role', 'no transferable skills']
+                    },
+                    2: {
+                        description: 'Some comparable, but inconsistent',
+                        evidence: 'Has done some similar work but not recent, unclear, or not motivated for this work.',
+                        required: ['some similar work', 'not recent', 'unclear motivation'],
+                        indicators: ['partial match', 'dated experience', 'different context']
+                    },
+                    3: {
+                        description: 'Recent, strong and comparable',
+                        evidence: 'Specific recent evidence of self-motivation to do this work at high quality levels.',
+                        required: ['recent evidence', 'self-motivated', 'high quality', 'comparable work'],
+                        indicators: ['direct match', 'proven success', 'eager to continue']
+                    },
+                    4: {
+                        description: 'Outstanding results under similar conditions',
+                        evidence: 'Highly self-motivated with formal recognition for similar work at same scope and pace.',
+                        required: ['highly motivated', 'formal recognition', 'same scope/pace'],
+                        indicators: ['exceeded targets', 'awards/recognition', 'sought after']
+                    },
+                    5: {
+                        description: 'Full match with exceptional results',
+                        evidence: 'Excelled at this exact work with validation through recognition and assignments.',
+                        required: ['excelled', 'exact match', 'validated success', 'public recognition'],
+                        indicators: ['industry leader', 'sets benchmarks', 'trains others']
+                    }
+                }
             },
             'managerial-fit': {
-                keywords: ['manager', 'supervisor', 'reporting', 'style', 'feedback', 'autonomy', 'direction', 'adapted'],
-                specificity: ['manager types', 'specific adaptations', 'feedback examples', 'style descriptions'],
-                biasIndicators: ['easy', 'difficult', 'demanding', 'laid-back']
+                factor: 'Managerial Fit',
+                levels: {
+                    1: {
+                        description: 'Mismatch between styles',
+                        evidence: 'Candidate consistently struggles to align with manager\'s leadership style.',
+                        required: ['struggles to align', 'frequent misunderstandings', 'resistance'],
+                        indicators: ['conflict', 'poor communication', 'inflexible']
+                    },
+                    2: {
+                        description: 'Limited, but has worked with similar',
+                        evidence: 'Generally able to follow leadership but lacks flexibility.',
+                        required: ['follows leadership', 'lacks flexibility', 'limited adaptation'],
+                        indicators: ['needs direction', 'one style only', 'some friction']
+                    },
+                    3: {
+                        description: 'Successfully worked with similar managers',
+                        evidence: 'Solid ability to work well under manager\'s leadership and adapt to changes.',
+                        required: ['works well', 'adapts to changes', 'takes direction'],
+                        indicators: ['flexible', 'good communication', 'positive relationship']
+                    },
+                    4: {
+                        description: 'Easily adapts to variety of styles',
+                        evidence: 'Aligns well and anticipates changes driven by external factors.',
+                        required: ['aligns well', 'anticipates changes', 'flexible approach'],
+                        indicators: ['highly adaptable', 'reads situations', 'proactive']
+                    },
+                    5: {
+                        description: 'Super fit. Coaches upwards',
+                        evidence: 'Thrives under any managerial style with seamless adjustments.',
+                        required: ['thrives anywhere', 'seamless adjustment', 'adds value upward'],
+                        indicators: ['coaches up', 'enhances leadership', 'partnership']
+                    }
+                }
             },
             'culture-environment': {
-                keywords: ['culture', 'environment', 'pace', 'values', 'startup', 'corporate', 'collaborative', 'competitive'],
-                specificity: ['specific cultures', 'company examples', 'pace descriptions', 'value alignments'],
-                biasIndicators: ['fit in', 'one of us', 'different', 'unique']
+                factor: 'Culture & Environment',
+                levels: {
+                    1: {
+                        description: 'Complete mismatch',
+                        evidence: 'Displays minimal understanding or alignment with company culture.',
+                        required: ['minimal understanding', 'no alignment', 'conflicting values'],
+                        indicators: ['wrong fit', 'clashes', 'uncomfortable']
+                    },
+                    2: {
+                        description: 'Reasonable match',
+                        evidence: 'Shows some alignment with company culture but lacks depth.',
+                        required: ['some alignment', 'lacks depth', 'surface understanding'],
+                        indicators: ['partial fit', 'learning curve', 'some concerns']
+                    },
+                    3: {
+                        description: 'Close match',
+                        evidence: 'Strong alignment with clear examples of fitting similar cultural environments.',
+                        required: ['strong alignment', 'similar environments', 'clear examples'],
+                        indicators: ['good fit', 'shares values', 'comfortable']
+                    },
+                    4: {
+                        description: 'Excellent match, made similar transfers',
+                        evidence: 'Outstanding cultural alignment with examples of thriving and contributing.',
+                        required: ['outstanding alignment', 'thrives', 'contributes to culture'],
+                        indicators: ['enhances culture', 'role model', 'ambassador']
+                    },
+                    5: {
+                        description: 'Thrives in this type of environment',
+                        evidence: 'Superb alignment, consistently embodying values that drive success.',
+                        required: ['superb alignment', 'embodies values', 'drives success'],
+                        indicators: ['culture builder', 'change agent', 'inspirational']
+                    }
+                }
             },
             'motivation': {
-                keywords: ['volunteered', 'initiated', 'extra', 'passion', 'interest', 'excited', 'committed', 'dedicated'],
-                specificity: ['specific examples', 'initiatives taken', 'extra efforts', 'time invested'],
-                biasIndicators: ['eager', 'desperate', 'needy', 'overenthusiastic']
+                factor: 'Motivation',
+                levels: {
+                    1: {
+                        description: 'Little evidence of motivation',
+                        evidence: 'Person hasn\'t done anything similar or scope/scale is complete mismatch.',
+                        required: ['nothing similar', 'wrong scope', 'no interest shown'],
+                        indicators: ['disengaged', 'going through motions', 'no enthusiasm']
+                    },
+                    2: {
+                        description: 'Will do core work but needs pushing',
+                        evidence: 'Has done some similar work but not recent or person isn\'t motivated.',
+                        required: ['some similar work', 'needs pushing', 'limited interest'],
+                        indicators: ['does minimum', 'external motivation', 'inconsistent effort']
+                    },
+                    3: {
+                        description: 'Self-motivated with normal supervision',
+                        evidence: 'Recent evidence of self-motivation to do this work at high quality.',
+                        required: ['self-motivated', 'high quality', 'takes initiative'],
+                        indicators: ['reliable', 'meets expectations', 'positive attitude']
+                    },
+                    4: {
+                        description: 'Takes initiative to do more, faster, better',
+                        evidence: 'Highly self-motivated with formal recognition for this type of work.',
+                        required: ['highly motivated', 'formal recognition', 'exceeds expectations'],
+                        indicators: ['goes extra mile', 'continuous improvement', 'drives results']
+                    },
+                    5: {
+                        description: 'Totally committed. Constantly gets better',
+                        evidence: 'Excelled at this work with validation through recognition and assignments.',
+                        required: ['total commitment', 'validated excellence', 'constant improvement'],
+                        indicators: ['passionate', 'inspirational', 'unstoppable drive']
+                    }
+                }
             }
         };
         
-        function setScore(factorId, score, element) {
-            // DEMO LIMITATION - Check if demo limit reached
-            if (window.DEMO_MODE && Object.keys(scores).length >= window.DEMO_LIMIT && !scores[factorId]) {
-                alert(`DEMO VERSION LIMITED TO ${window.DEMO_LIMIT} FACTORS\n\nTo evaluate all 11 factors, please purchase the full version.\n\nContact: info@louadlergroup.com`);
+        // Build scorecard dynamically
+        function buildScorecard() {
+            const scorecardDiv = document.getElementById('scorecard');
+            let html = '';
+            
+            const categories = {
+                'BASIC COMPETENCIES': ['primary-skills', 'experience', 'achiever-pattern'],
+                'ESSENTIAL CORE COMPETENCES (In Comparison to the KPOs/OKRs for the Role)': ['technical-ability', 'management-ability', 'team-skills', 'problem-solving'],
+                'SITUATIONAL FIT FACTORS – WEIGHT THESE FACTORS HIGHER': ['job-fit', 'managerial-fit', 'culture-environment', 'motivation']
+            };
+            
+            Object.entries(categories).forEach(([categoryName, factorIds]) => {
+                html += `
+                    <div class="category">
+                        <div class="category-header">${categoryName}</div>
+                        <div class="factors">
+                `;
+                
+                factorIds.forEach(factorId => {
+                    const factor = masterCriteria[factorId];
+                    html += createFactorHTML(factorId, factor);
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            scorecardDiv.innerHTML = html;
+        }
+        
+        // Create factor HTML with evidence tooltips
+        function createFactorHTML(factorId, factorData) {
+            const ratingLabels = ['Minimal', 'Adequate', 'Strong', 'Great', 'Superb'];
+            
+            return `
+                <div class="factor" data-factor-id="${factorId}">
+                    <div class="factor-header">
+                        <span class="factor-name">${factorData.factor}</span>
+                        <span class="factor-score" id="score-${factorId}">-</span>
+                    </div>
+                    <div class="rating-scale" id="rating-scale-${factorId}">
+                        ${[1, 2, 3, 4, 5].map(level => `
+                            <div class="rating-option" id="rating-${factorId}-${level}" onclick="setScore('${factorId}', ${level}, this)">
+                                <span class="rating-level">${level}</span>
+                                <span class="rating-label">${ratingLabels[level - 1]}</span>
+                                <span class="rating-description">${factorData.levels[level].description}</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level ${level} Evidence:</h4>
+                                    <p>${factorData.levels[level].evidence}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="evidence-section">
+                        <label class="evidence-label">
+                            Evidence & Notes:
+                            <button class="analyze-btn" onclick="analyzeEvidence('${factorId}')">
+                                Analyze Evidence
+                            </button>
+                        </label>
+                        <textarea class="evidence-input" 
+                                  id="evidence-${factorId}" 
+                                  placeholder="Document specific evidence for ${factorData.factor.toLowerCase()}..."
+                                  onkeyup="onEvidenceChange('${factorId}')"></textarea>
+                        <div class="evidence-feedback" id="feedback-${factorId}"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Advanced evidence analysis against master criteria
+        function analyzeEvidence(factorId) {
+            const evidence = document.getElementById('evidence-' + factorId).value;
+            const factorData = masterCriteria[factorId];
+            
+            if (!evidence || evidence.trim().length < 20) {
+                displayFeedback(factorId, {
+                    level: 0,
+                    quality: 'insufficient',
+                    message: 'Please provide more detailed evidence to enable analysis.',
+                    missing: ['Specific examples', 'Concrete details', 'Measurable outcomes']
+                });
                 return;
             }
             
-            // Clear previous selection
-            const parent = element.parentElement;
-            parent.querySelectorAll('.rating-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
+            // Analyze evidence against each level's criteria
+            const analysis = analyzeAgainstMasterCriteria(evidence, factorId);
             
-            // Set new selection
-            element.classList.add('selected');
+            // Display detailed feedback
+            displayDetailedFeedback(factorId, analysis);
             
-            // Store score
-            scores[factorId] = score;
-            
-            // Update display
-            const scoreDisplay = document.getElementById('score-' + factorId);
-            scoreDisplay.textContent = score;
-            scoreDisplay.classList.add('scored');
-            
-            // Update totals
-            updateTotals();
-        }
-        
-        function analyzeEvidence(factorId) {
-            const evidence = document.getElementById('evidence-' + factorId).value;
-            const currentScore = scores[factorId] || 0;
-            const criteria = evidenceCriteria[factorId];
-            
-            // Analyze evidence quality
-            const analysis = evaluateEvidence(evidence, criteria, currentScore);
-            
-            // Display feedback
-            displayFeedback(factorId, analysis);
+            // Update suggested score visual
+            updateSuggestedScore(factorId, analysis.suggestedLevel);
             
             // Store evidence quality
             evidenceQuality[factorId] = analysis.quality;
@@ -1421,149 +1142,282 @@
             updateEvidenceQuality();
         }
         
-        function evaluateEvidence(evidence, criteria, currentScore) {
+        // Analyze evidence against master criteria for each level
+        function analyzeAgainstMasterCriteria(evidence, factorId) {
+            const factorData = masterCriteria[factorId];
+            const evidenceLower = evidence.toLowerCase();
             const analysis = {
+                suggestedLevel: 1,
+                matchDetails: {},
                 quality: 'poor',
-                hasSpecificExamples: false,
-                hasBias: false,
-                suggestedScore: currentScore,
-                feedback: '',
-                suggestions: []
+                confidence: 0,
+                biasDetected: [],
+                strengths: [],
+                gaps: []
             };
             
-            // Check if evidence is empty
-            if (!evidence || evidence.trim().length < 20) {
-                analysis.feedback = 'No substantial evidence provided.';
-                analysis.suggestions.push('Provide specific examples and details');
-                return analysis;
+            // Check for bias indicators
+            const biasTerms = [
+                'feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 'cultural fit',
+                'young', 'old', 'energetic', 'fresh', 'seasoned', 'overqualified',
+                'aggressive', 'pushy', 'quiet', 'loud', 'likeable', 'friendly'
+            ];
+            
+            biasTerms.forEach(term => {
+                if (evidenceLower.includes(term)) {
+                    analysis.biasDetected.push(term);
+                }
+            });
+            
+            // Analyze against each level
+            let bestMatch = { level: 1, score: 0 };
+            
+            for (let level = 5; level >= 1; level--) {
+                const levelData = factorData.levels[level];
+                const matchResult = {
+                    requiredMatches: 0,
+                    indicatorMatches: 0,
+                    totalRequired: levelData.required.length,
+                    totalIndicators: levelData.indicators.length,
+                    matchedRequired: [],
+                    matchedIndicators: [],
+                    missingRequired: [],
+                    missingIndicators: []
+                };
+                
+                // Check required elements
+                levelData.required.forEach(req => {
+                    const keywords = req.toLowerCase().split(' ').filter(w => w.length > 3);
+                    const matched = keywords.some(keyword => evidenceLower.includes(keyword));
+                    if (matched) {
+                        matchResult.requiredMatches++;
+                        matchResult.matchedRequired.push(req);
+                    } else {
+                        matchResult.missingRequired.push(req);
+                    }
+                });
+                
+                // Check indicators
+                levelData.indicators.forEach(indicator => {
+                    if (evidenceLower.includes(indicator.toLowerCase())) {
+                        matchResult.indicatorMatches++;
+                        matchResult.matchedIndicators.push(indicator);
+                    } else {
+                        matchResult.missingIndicators.push(indicator);
+                    }
+                });
+                
+                // Calculate match score
+                const requiredScore = matchResult.totalRequired > 0 ? 
+                    (matchResult.requiredMatches / matchResult.totalRequired) : 0;
+                const indicatorScore = matchResult.totalIndicators > 0 ? 
+                    (matchResult.indicatorMatches / matchResult.totalIndicators) : 0;
+                const totalScore = (requiredScore * 0.7) + (indicatorScore * 0.3);
+                
+                matchResult.matchPercentage = Math.round(totalScore * 100);
+                analysis.matchDetails[level] = matchResult;
+                
+                // Update best match if this level scores higher
+                if (totalScore > bestMatch.score) {
+                    bestMatch = { level, score: totalScore };
+                }
             }
             
-            // Convert to lowercase for analysis
-            const evidenceLower = evidence.toLowerCase();
+            // Set suggested level based on best match
+            analysis.suggestedLevel = bestMatch.score >= 0.6 ? bestMatch.level : 
+                                    bestMatch.score >= 0.4 ? Math.max(1, bestMatch.level - 1) : 1;
             
-            // Check for keywords
-            const keywordCount = criteria.keywords.filter(keyword => 
-                evidenceLower.includes(keyword)
-            ).length;
-            
-            // Check for specific examples
-            const hasNumbers = /\d+/.test(evidence);
-            const hasSpecificNames = /[A-Z][a-z]+/.test(evidence);
-            const hasMetrics = /%|dollar|\$|€|£|million|thousand|hundred/.test(evidenceLower);
-            
-            analysis.hasSpecificExamples = hasNumbers || hasSpecificNames || hasMetrics;
-            
-            // Check for bias indicators
-            const biasCount = criteria.biasIndicators.filter(indicator => 
-                evidenceLower.includes(indicator)
-            ).length;
-            
-            analysis.hasBias = biasCount > 0;
-            
-            // Determine quality and suggested score
-            if (keywordCount >= 3 && analysis.hasSpecificExamples && !analysis.hasBias) {
+            // Determine quality and confidence
+            if (bestMatch.score >= 0.8 && analysis.biasDetected.length === 0) {
                 analysis.quality = 'excellent';
-                analysis.feedback = 'Excellent evidence with specific examples and no apparent bias.';
-                
-                // Suggest score based on evidence strength
-                if (evidenceLower.includes('exceptional') || evidenceLower.includes('top 5%') || evidenceLower.includes('award')) {
-                    analysis.suggestedScore = 5;
-                } else if (evidenceLower.includes('strong') || evidenceLower.includes('significant') || evidenceLower.includes('major')) {
-                    analysis.suggestedScore = 4;
-                } else {
-                    analysis.suggestedScore = 3;
-                }
-            } else if (keywordCount >= 2 && (analysis.hasSpecificExamples || !analysis.hasBias)) {
+                analysis.confidence = 'high';
+            } else if (bestMatch.score >= 0.6 && analysis.biasDetected.length <= 1) {
                 analysis.quality = 'good';
-                analysis.feedback = 'Good evidence but could be strengthened.';
-                analysis.suggestedScore = 3;
-                
-                if (!analysis.hasSpecificExamples) {
-                    analysis.suggestions.push('Add specific metrics, numbers, or examples');
-                }
-                if (analysis.hasBias) {
-                    analysis.suggestions.push('Remove subjective language and focus on facts');
-                }
+                analysis.confidence = 'medium';
+            } else if (bestMatch.score >= 0.4) {
+                analysis.quality = 'fair';
+                analysis.confidence = 'low';
             } else {
                 analysis.quality = 'poor';
-                analysis.feedback = 'Evidence lacks specificity or contains bias.';
-                analysis.suggestedScore = currentScore > 3 ? 2 : currentScore;
-                
-                analysis.suggestions.push('Provide concrete examples with metrics');
-                analysis.suggestions.push('Focus on observable behaviors and results');
-                analysis.suggestions.push('Remove subjective assessments');
+                analysis.confidence = 'very low';
             }
             
-            // Check if current score matches evidence
-            if (currentScore > 0 && Math.abs(currentScore - analysis.suggestedScore) > 1) {
-                analysis.feedback += ` Current rating of ${currentScore} may not align with evidence provided.`;
-                analysis.suggestions.push(`Consider adjusting rating to ${analysis.suggestedScore} based on evidence`);
-            }
+            // Extract strengths and gaps
+            const suggestedMatch = analysis.matchDetails[analysis.suggestedLevel];
+            analysis.strengths = suggestedMatch.matchedRequired.concat(suggestedMatch.matchedIndicators);
+            analysis.gaps = suggestedMatch.missingRequired;
             
             return analysis;
         }
         
-        function displayFeedback(factorId, analysis) {
+        // Display detailed feedback based on analysis
+        function displayDetailedFeedback(factorId, analysis) {
             const feedbackDiv = document.getElementById('feedback-' + factorId);
+            const factorData = masterCriteria[factorId];
+            const suggestedLevel = analysis.suggestedLevel;
+            const matchData = analysis.matchDetails[suggestedLevel];
             
-            let feedbackClass = 'feedback-positive';
-            if (analysis.quality === 'poor') {
-                feedbackClass = 'feedback-negative';
-            } else if (analysis.quality === 'good') {
-                feedbackClass = 'feedback-warning';
-            }
+            let feedbackClass = 'feedback-poor';
+            if (analysis.quality === 'excellent') feedbackClass = 'feedback-excellent';
+            else if (analysis.quality === 'good') feedbackClass = 'feedback-good';
+            else if (analysis.quality === 'fair') feedbackClass = 'feedback-warning';
             
             let html = `
-                <div class="feedback-title">Evidence Analysis:</div>
-                <div class="feedback-message">${analysis.feedback}</div>
-            `;
+                <div class="feedback-header">
+                    <div class="feedback-title">Evidence Analysis - ${factorData.factor}</div>
+                    <div class="match-score">${matchData.matchPercentage}% Match</div>
+                </div>
+                <div class="feedback-content">
+                    <p><strong>Suggested Rating: Level ${suggestedLevel}</strong> - ${factorData.levels[suggestedLevel].description}</p>
+                    <p>Confidence: <strong>${analysis.confidence}</strong> | Evidence Quality: <strong>${analysis.quality}</strong></p>
+                `;
             
-            if (analysis.suggestions.length > 0) {
+            // Show matched criteria
+            if (matchData.matchedRequired.length > 0) {
                 html += `
-                    <div class="feedback-suggestions">
-                        <strong>Suggestions:</strong>
+                    <div class="evidence-match-details">
+                        <h5 style="color: #28a745; margin-bottom: 8px;">✓ Evidence Found For:</h5>
+                `;
+                matchData.matchedRequired.forEach(item => {
+                    html += `<div class="match-item">
+                        <span class="match-indicator found">✓</span>
+                        <span>${item}</span>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Show missing criteria
+            if (matchData.missingRequired.length > 0) {
+                html += `
+                    <div class="missing-evidence">
+                        <h5>Missing Evidence For Level ${suggestedLevel}:</h5>
                         <ul>
-                            ${analysis.suggestions.map(s => `<li>${s}</li>`).join('')}
+                            ${matchData.missingRequired.map(item => `<li>${item}</li>`).join('')}
                         </ul>
                     </div>
                 `;
             }
             
+            // Show bias warnings
+            if (analysis.biasDetected.length > 0) {
+                html += `
+                    <div class="missing-evidence">
+                        <h5>⚠️ Potential Bias Detected:</h5>
+                        <ul>
+                            <li>Subjective terms found: ${analysis.biasDetected.join(', ')}</li>
+                            <li>Consider replacing with objective, measurable evidence</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Show improvement suggestions for next level
+            if (suggestedLevel < 5) {
+                const nextLevel = suggestedLevel + 1;
+                const nextLevelData = factorData.levels[nextLevel];
+                html += `
+                    <div class="suggested-improvements">
+                        <h5>To Achieve Level ${nextLevel} (${nextLevelData.description}):</h5>
+                        <ul>
+                            ${nextLevelData.required.slice(0, 3).map(req => `<li>Add evidence of: ${req}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            
             feedbackDiv.className = `evidence-feedback show ${feedbackClass}`;
             feedbackDiv.innerHTML = html;
         }
         
-        function analyzeAllEvidence() {
-            Object.keys(evidenceCriteria).forEach(factorId => {
-                if (document.getElementById('evidence-' + factorId).value) {
-                    analyzeEvidence(factorId);
-                }
+        // Update suggested score visual indicator
+        function updateSuggestedScore(factorId, suggestedLevel) {
+            // Clear previous suggestions
+            const ratingScale = document.getElementById(`rating-scale-${factorId}`);
+            ratingScale.querySelectorAll('.rating-option').forEach(option => {
+                option.classList.remove('suggested');
             });
+            
+            // Add suggestion to appropriate level
+            const suggestedOption = document.getElementById(`rating-${factorId}-${suggestedLevel}`);
+            if (suggestedOption) {
+                suggestedOption.classList.add('suggested');
+            }
+            
+            // Store suggested score
+            suggestedScores[factorId] = suggestedLevel;
         }
         
+        // Real-time evidence change handler
+        function onEvidenceChange(factorId) {
+            // Debounce the analysis
+            if (window.evidenceTimeout) {
+                clearTimeout(window.evidenceTimeout);
+            }
+            
+            window.evidenceTimeout = setTimeout(() => {
+                const evidence = document.getElementById('evidence-' + factorId).value;
+                if (evidence.length > 50) {
+                    // Perform lightweight analysis for real-time feedback
+                    const analysis = analyzeAgainstMasterCriteria(evidence, factorId);
+                    updateSuggestedScore(factorId, analysis.suggestedLevel);
+                }
+            }, 500);
+        }
+        
+        // Set score
+        function setScore(factorId, score, element) {
+            // Clear previous selection
+            const factor = element.closest('.factor');
+            factor.querySelectorAll('.rating-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Set new selection
+            element.classList.add('selected');
+            scores[factorId] = score;
+            
+            // Update display
+            const scoreDisplay = document.getElementById('score-' + factorId);
+            scoreDisplay.textContent = score;
+            scoreDisplay.classList.add('scored');
+            
+            // Check if score matches suggestion
+            if (suggestedScores[factorId] && suggestedScores[factorId] !== score) {
+                const evidence = document.getElementById('evidence-' + factorId).value;
+                if (evidence.length > 50) {
+                    // Re-analyze to show why there might be a mismatch
+                    setTimeout(() => analyzeEvidence(factorId), 100);
+                }
+            }
+            
+            // Update totals
+            updateTotals();
+        }
+        
+        // Update evidence quality score
         function updateEvidenceQuality() {
             const qualityScores = Object.values(evidenceQuality);
             if (qualityScores.length === 0) {
-                document.getElementById('evidenceQuality').textContent = 'Not Evaluated';
+                document.getElementById('evidenceQualityScore').textContent = '-';
                 return;
             }
             
-            const excellentCount = qualityScores.filter(q => q === 'excellent').length;
-            const goodCount = qualityScores.filter(q => q === 'good').length;
-            const poorCount = qualityScores.filter(q => q === 'poor').length;
+            const qualityMap = { 'excellent': 4, 'good': 3, 'fair': 2, 'poor': 1, 'insufficient': 0 };
+            const totalScore = qualityScores.reduce((sum, q) => sum + (qualityMap[q] || 0), 0);
+            const averageScore = totalScore / qualityScores.length;
             
             let overallQuality = 'Poor';
-            if (excellentCount >= qualityScores.length * 0.7) {
-                overallQuality = 'Excellent';
-            } else if ((excellentCount + goodCount) >= qualityScores.length * 0.7) {
-                overallQuality = 'Good';
-            } else if (poorCount < qualityScores.length * 0.3) {
-                overallQuality = 'Fair';
-            }
+            if (averageScore >= 3.5) overallQuality = 'Excellent';
+            else if (averageScore >= 2.5) overallQuality = 'Good';
+            else if (averageScore >= 1.5) overallQuality = 'Fair';
             
-            document.getElementById('evidenceQuality').textContent = overallQuality;
+            document.getElementById('evidenceQualityScore').textContent = overallQuality;
         }
         
+        // Update totals
         function updateTotals() {
             const scoredCount = Object.keys(scores).length;
             const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
@@ -1576,7 +1430,7 @@
             document.getElementById('summaryAverage').textContent = averageScore;
             document.getElementById('averageScore').textContent = averageScore;
             document.getElementById('factorsScored').textContent = scoredCount + '/' + totalFactors;
-            document.getElementById('completionRate').textContent = completionRate + '%';
+            document.getElementById('completion').textContent = completionRate + '%';
             
             // Update recommendation
             if (completionRate === 100) {
@@ -1595,74 +1449,95 @@
                     recommendation = '<strong>NO HIRE:</strong> This candidate does not meet the minimum requirements for success in this role.';
                 }
                 
+                // Add evidence quality consideration
+                const evidenceQualityText = document.getElementById('evidenceQualityScore').textContent;
+                if (evidenceQualityText === 'Poor' || evidenceQualityText === 'Fair') {
+                    recommendation += '<br><br><strong>⚠️ Note:</strong> Evidence quality is ' + evidenceQualityText.toLowerCase() + 
+                                    '. Consider gathering more specific, objective evidence before making a final decision.';
+                }
+                
                 document.getElementById('recommendationText').innerHTML = recommendation;
             } else {
                 document.getElementById('recommendationText').textContent = `Complete all ${totalFactors} factors to generate a full recommendation. Currently ${completionRate}% complete.`;
             }
         }
         
+        // Save scorecard
         function saveScorecard() {
-            if (window.DEMO_MODE) {
-                alert('SAVE FEATURE DISABLED IN DEMO VERSION\n\nTo save and export scorecards, please purchase the full version.\n\nContact: info@louadlergroup.com\n\nVisit: www.louadlergroup.com');
-                return;
-            }
-            
             const data = {
                 candidate: document.getElementById('candidate').value,
                 position: document.getElementById('position').value,
                 interviewer: document.getElementById('interviewer').value,
                 date: document.getElementById('date').value,
                 scores: scores,
+                suggestedScores: suggestedScores,
                 evidence: {},
-                evidenceQuality: evidenceQuality
+                evidenceQuality: evidenceQuality,
+                overallEvidence: document.getElementById('overall-evidence').value,
+                totalScore: document.getElementById('totalScore').textContent,
+                averageScore: document.getElementById('averageScore').textContent,
+                timestamp: new Date().toISOString()
             };
             
             // Collect evidence
-            Object.keys(evidenceCriteria).forEach(factorId => {
+            Object.keys(masterCriteria).forEach(factorId => {
                 data.evidence[factorId] = document.getElementById('evidence-' + factorId).value;
             });
             
-            // Download as JSON
-            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `scorecard_${data.candidate || 'candidate'}_${data.date}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
+            // Save to localStorage
+            const savedScorecards = JSON.parse(localStorage.getItem('scorecards') || '[]');
+            savedScorecards.push(data);
+            localStorage.setItem('scorecards', JSON.stringify(savedScorecards));
             
             alert('Scorecard saved successfully!');
         }
         
+        // Export scorecard
+        function exportScorecard() {
+            const content = `
+Quality of Hire Talent Scorecard
+================================
+Candidate: ${document.getElementById('candidate').value}
+Position: ${document.getElementById('position').value}
+Interviewer: ${document.getElementById('interviewer').value}
+Date: ${document.getElementById('date').value}
+
+Total Score: ${document.getElementById('totalScore').textContent} / 55
+Average Score: ${document.getElementById('averageScore').textContent}
+Evidence Quality: ${document.getElementById('evidenceQualityScore').textContent}
+
+Detailed Scores:
+${Object.entries(scores).map(([factorId, score]) => {
+    const suggested = suggestedScores[factorId];
+    const evidence = document.getElementById(`evidence-${factorId}`).value;
+    const factor = masterCriteria[factorId].factor;
+    return `\n${factor}: ${score}/5${suggested && suggested !== score ? ` (Suggested: ${suggested})` : ''}
+Evidence: ${evidence || 'No evidence provided'}`;
+}).join('\n')}
+
+Overall Evidence:
+${document.getElementById('overall-evidence').value}
+            `;
+            
+            // Create blob and download
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scorecard_${document.getElementById('candidate').value || 'candidate'}_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Reset scorecard
         function resetScorecard() {
             if (confirm('Are you sure you want to reset all scores and evidence? This cannot be undone.')) {
-                // Clear scores
-                Object.keys(scores).forEach(key => delete scores[key]);
-                Object.keys(evidenceQuality).forEach(key => delete evidenceQuality[key]);
-                
-                // Clear UI
-                document.querySelectorAll('.rating-option').forEach(opt => {
-                    opt.classList.remove('selected');
-                });
-                
-                document.querySelectorAll('.factor-score').forEach(score => {
-                    score.textContent = '-';
-                    score.classList.remove('scored');
-                });
-                
-                document.querySelectorAll('.evidence-input').forEach(textarea => {
-                    textarea.value = '';
-                });
-                
-                document.querySelectorAll('.evidence-feedback').forEach(feedback => {
-                    feedback.classList.remove('show');
-                });
-                
-                // Update totals
-                updateTotals();
-                updateEvidenceQuality();
+                location.reload();
             }
         }
+        
+        // Initialize the scorecard on page load
+        buildScorecard();
     </script>
 </body>
 </html>
