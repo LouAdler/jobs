@@ -1227,6 +1227,87 @@
     </div>
     
     <script>
+        // DEMO PROTECTION - Add this at the very beginning
+        (function() {
+            // Add persistent watermark
+            const watermark = document.createElement('div');
+            watermark.innerHTML = 'DEMO VERSION - NOT FOR COMMERCIAL USE<br>© 2024 Lou Adler. Contact: info@louadlergroup.com';
+            watermark.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(220, 53, 69, 0.9);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-weight: bold;
+                font-size: 14px;
+                z-index: 10000;
+                pointer-events: none;
+                text-align: center;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            `;
+            setTimeout(() => document.body.appendChild(watermark), 100);
+            
+            // Add diagonal watermark
+            const bgWatermark = document.createElement('div');
+            bgWatermark.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg);
+                font-size: 120px;
+                color: rgba(220, 53, 69, 0.1);
+                pointer-events: none;
+                z-index: 9999;
+                font-weight: bold;
+                white-space: nowrap;
+            `;
+            bgWatermark.textContent = 'DEMO ONLY';
+            setTimeout(() => document.body.appendChild(bgWatermark), 100);
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                alert('Right-click is disabled in demo version.');
+                return false;
+            });
+            
+            // Disable text selection
+            document.addEventListener('selectstart', function(e) {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            });
+            
+            // Disable copy keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+A, Ctrl+C, Ctrl+X
+                if (e.ctrlKey && (e.keyCode === 65 || e.keyCode === 67 || e.keyCode === 88)) {
+                    e.preventDefault();
+                    alert('Copy/paste is disabled in demo version.');
+                    return false;
+                }
+                // Disable F12 (Developer Tools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable print
+            window.addEventListener('beforeprint', function(e) {
+                alert('Printing is disabled in demo version. Please contact info@louadlergroup.com for full version.');
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            });
+            
+            // Add demo limitations flag
+            window.DEMO_MODE = true;
+            window.DEMO_LIMIT = 5; // Limit to 5 factors in demo
+        })();
+        
         // Initialize with today's date
         document.getElementById('date').valueAsDate = new Date();
         
@@ -1295,6 +1376,12 @@
         };
         
         function setScore(factorId, score, element) {
+            // DEMO LIMITATION - Check if demo limit reached
+            if (window.DEMO_MODE && Object.keys(scores).length >= window.DEMO_LIMIT && !scores[factorId]) {
+                alert(`DEMO VERSION LIMITED TO ${window.DEMO_LIMIT} FACTORS\n\nTo evaluate all 11 factors, please purchase the full version.\n\nContact: info@louadlergroup.com`);
+                return;
+            }
+            
             // Clear previous selection
             const parent = element.parentElement;
             parent.querySelectorAll('.rating-option').forEach(opt => {
@@ -1515,6 +1602,11 @@
         }
         
         function saveScorecard() {
+            if (window.DEMO_MODE) {
+                alert('SAVE FEATURE DISABLED IN DEMO VERSION\n\nTo save and export scorecards, please purchase the full version.\n\nContact: info@louadlergroup.com\n\nVisit: www.louadlergroup.com');
+                return;
+            }
+            
             const data = {
                 candidate: document.getElementById('candidate').value,
                 position: document.getElementById('position').value,
