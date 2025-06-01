@@ -1,0 +1,3155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality of Hire Talent Scorecard - Advanced Evidence Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .candidate-info {
+            background: #ecf0f1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-field label {
+            font-weight: 600;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .info-field input {
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .score-display {
+            background: #34495e;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .score-display .total-score {
+            font-size: 2em;
+            font-weight: 700;
+            margin: 0 10px;
+            color: #3498db;
+        }
+        
+        .scorecard {
+            padding: 30px;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .category-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        
+        .factors {
+            padding: 20px;
+            background: #fafbfc;
+        }
+        
+        .factor {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .factor-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        
+        .factor-score {
+            font-size: 1.2em;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: #ecf0f1;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .factor-score.scored {
+            background: #3498db;
+            color: white;
+        }
+        
+        .rating-scale {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .rating-option {
+            text-align: center;
+            padding: 10px 5px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            min-height: 100px;
+            position: relative;
+        }
+        
+        .rating-option:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .rating-option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        .rating-option.suggested {
+            border-color: #95a5a6;
+            border-width: 2px;
+        }
+        
+        .rating-level {
+            font-size: 1.5em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .rating-label {
+            font-size: 0.8em;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .rating-description {
+            font-size: 0.7em;
+            line-height: 1.3;
+            padding: 0 5px;
+        }
+        
+        /* Evidence tooltip styles */
+        .evidence-tooltip {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .evidence-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: #2c3e50;
+        }
+        
+        .rating-option:hover .evidence-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: 115%;
+        }
+        
+        .evidence-tooltip h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            color: #3498db;
+        }
+        
+        .evidence-tooltip p {
+            margin: 0;
+            font-size: 0.8em;
+            line-height: 1.4;
+        }
+        
+        .evidence-section {
+            margin-top: 15px;
+        }
+        
+        .evidence-label {
+            font-weight: 600;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .evidence-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .analyze-btn, .reset-btn {
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .analyze-btn {
+            background: #3498db;
+        }
+        
+        .analyze-btn:hover {
+            background: #2980b9;
+        }
+        
+        .reset-btn {
+            background: #e74c3c;
+        }
+        
+        .reset-btn:hover {
+            background: #c0392b;
+        }
+        
+        .evidence-input {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .evidence-feedback {
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .evidence-feedback.show {
+            display: block;
+        }
+        
+        .feedback-excellent {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .feedback-good {
+            background: #cce5ff;
+            border: 1px solid #b8daff;
+            color: #004085;
+        }
+        
+        .feedback-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+        }
+        
+        .feedback-poor {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .feedback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1em;
+        }
+        
+        .match-score {
+            background: rgba(0,0,0,0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .feedback-content {
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .evidence-match-details {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .match-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+        }
+        
+        .match-indicator {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+        
+        .match-indicator.found {
+            background: #28a745;
+            color: white;
+        }
+        
+        .match-indicator.missing {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .match-indicator.partial {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .missing-evidence {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+        }
+        
+        .missing-evidence h5 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            color: #dc3545;
+        }
+        
+        .missing-evidence ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.85em;
+        }
+        
+        .missing-evidence li {
+            margin-bottom: 4px;
+        }
+        
+        .suggested-improvements {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .suggested-improvements h5 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            color: #2980b9;
+        }
+        
+        .suggested-improvements ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.85em;
+        }
+        
+        /* Confidence meter */
+        .confidence-meter {
+            margin-top: 10px;
+            height: 8px;
+            background: #e0e6ed;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .confidence-bar {
+            height: 100%;
+            background: linear-gradient(to right, #e74c3c, #f39c12, #27ae60);
+            transition: width 0.3s ease;
+        }
+        
+        .confidence-label {
+            font-size: 0.8em;
+            color: #7f8c8d;
+            margin-top: 4px;
+            display: block;
+        }
+        
+        .summary {
+            background: #f5f7fa;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .summary h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .summary-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .summary-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .recommendation {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .overall-evidence {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .overall-evidence textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+            margin-top: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-scale {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media print {
+            .evidence-tooltip {
+                display: none !important;
+            }
+            .analyze-btn, .reset-btn {
+                display: none !important;
+            }
+            .action-buttons {
+                display: none !important;
+            }
+        }
+        
+        /* Performance objectives section */
+        .performance-objectives-section {
+            background: #e8f4f8;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+        }
+        
+        /* GPT Export Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .export-option {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            background: #fafbfc;
+        }
+        
+        .export-option h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .export-option p {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .export-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e6ed;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            resize: vertical;
+            background: #f8f9fa;
+        }
+        
+        .export-btn {
+            margin-top: 10px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn-gpt { background: #3498db; }
+        .btn-gpt:hover { background: #2980b9; }
+        
+        .btn-report { background: #27ae60; }
+        .btn-report:hover { background: #229954; }
+        
+        .btn-json { background: #9b59b6; }
+        .btn-json:hover { background: #8e44ad; }
+        
+        .btn-close { background: #95a5a6; }
+        .btn-close:hover { background: #7f8c8d; }
+        
+        .export-stats {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .export-warning {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Quality of Hire Talent Scorecard</h1>
+            <p>Evidence Collection Tool - Export to Performance-based Hiring GPT for Analysis</p>
+        </div>
+        
+        <div class="candidate-info">
+            <div class="info-field">
+                <label>Candidate Name</label>
+                <input type="text" id="candidate" placeholder="Enter candidate name">
+            </div>
+            <div class="info-field">
+                <label>Position</label>
+                <input type="text" id="position" placeholder="Enter position">
+            </div>
+            <div class="info-field">
+                <label>Interviewer</label>
+                <input type="text" id="interviewer" placeholder="Enter interviewer name">
+            </div>
+            <div class="info-field">
+                <label>Date</label>
+                <input type="date" id="date">
+            </div>
+        </div>
+        
+        <div class="performance-objectives-section">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">Role-Specific Performance Objectives</h3>
+            <p style="color: #7f8c8d; margin-bottom: 15px; font-size: 0.9em;">
+                Enter the top 3-5 critical performance objectives for this role. These will be referenced throughout the evaluation.
+            </p>
+            
+            <div class="objectives-inputs">
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; color: #34495e;">Objective 1:</label>
+                    <input type="text" id="objective1" class="objective-input" 
+                           placeholder="e.g., Lead enterprise HR strategy across sites within 6-12 months"
+                           style="width: 100%; padding: 8px; border: 2px solid #bdc3c7; border-radius: 6px; margin-top: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; color: #34495e;">Objective 2:</label>
+                    <input type="text" id="objective2" class="objective-input" 
+                           placeholder="e.g., Navigate union contract negotiations within 9 months"
+                           style="width: 100%; padding: 8px; border: 2px solid #bdc3c7; border-radius: 6px; margin-top: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; color: #34495e;">Objective 3:</label>
+                    <input type="text" id="objective3" class="objective-input" 
+                           placeholder="e.g., Implement integrated talent development systems"
+                           style="width: 100%; padding: 8px; border: 2px solid #bdc3c7; border-radius: 6px; margin-top: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: 600; color: #34495e;">Objective 4 (Optional):</label>
+                    <input type="text" id="objective4" class="objective-input" 
+                           placeholder="Optional additional objective"
+                           style="width: 100%; padding: 8px; border: 2px solid #bdc3c7; border-radius: 6px; margin-top: 5px;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; color: #34495e;">Objective 5 (Optional):</label>
+                    <input type="text" id="objective5" class="objective-input" 
+                           placeholder="Optional additional objective"
+                           style="width: 100%; padding: 8px; border: 2px solid #bdc3c7; border-radius: 6px; margin-top: 5px;">
+                </div>
+            </div>
+            
+            <button onclick="analyzeObjectiveFit()" style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                Analyze Evidence Against Objectives
+            </button>
+            
+            <div id="objective-analysis" style="display: none; margin-top: 20px; background: white; padding: 15px; border-radius: 6px;">
+                <!-- Analysis results will appear here -->
+            </div>
+        </div>
+
+        <div class="score-display">
+            Total Score: <span class="total-score" id="totalScore">0</span> / 55
+            | Average: <span id="averageScore">0.0</span>
+            | Completion: <span id="completion">0%</span>
+        </div>
+        
+        <div class="scorecard" id="scorecard">
+            <!-- Dynamic content will be inserted here -->
+        </div>
+        
+        <div class="summary">
+            <h2>OVERALL FIT BASED ON SHARED EVIDENCE</h2>
+            
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <span class="summary-label">Total Score</span>
+                    <span class="summary-value" id="summaryTotal">0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Average Score</span>
+                    <span class="summary-value" id="summaryAverage">0.0</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Factors Scored</span>
+                    <span class="summary-value" id="factorsScored">0/11</span>
+                </div>
+                <div class="summary-card">
+                    <span class="summary-label">Evidence Quality</span>
+                    <span class="summary-value" id="evidenceQualityScore">-</span>
+                </div>
+            </div>
+            
+            <div class="recommendation">
+                <h3>Recommendation</h3>
+                <p id="recommendationText">Complete the scoring to see the recommendation.</p>
+            </div>
+            
+            <div class="overall-evidence">
+                <label style="font-weight: 600; color: #7f8c8d;">
+                    Provide evidence below used to rank each factor using the Performance-based Interview. 
+                    Have everyone explain their evidence to determine total score.
+                </label>
+                <textarea id="overall-evidence" placeholder="Summarize key evidence and observations from the interview..."></textarea>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn" onclick="saveScorecard()">Save Scorecard</button>
+                <button class="btn" onclick="quickGPTExport()" style="background: #10a37f;">
+                    🤖 Quick GPT Analysis
+                </button>
+                <button class="btn" onclick="exportToGPT()" style="background: #e74c3c;">
+                    📊 Detailed GPT Export
+                </button>
+                <button class="btn btn-secondary" onclick="resetScorecard()">Reset All</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Global variables
+        const scores = {};
+        const evidenceQuality = {};
+        const suggestedScores = {};
+        const totalFactors = 11;
+        let performanceObjectives = [];
+        
+        // Master criteria for evidence matching - Enhanced version
+        const masterCriteria = {
+            'primary-skills': {
+                factor: 'Primary Skills',
+                levels: {
+                    1: {
+                        description: 'Bare minimum',
+                        evidence: 'Has difficulty articulating specific technical skills or provides vague, general responses with no concrete examples.',
+                        required: ['difficulty articulating', 'vague responses', 'no examples'],
+                        indicators: ['unclear', 'general', 'basic understanding only'],
+                        patterns: {
+                            negative: ['struggles with', 'unfamiliar', 'limited knowledge', 'basic understanding only'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Has basics but needs training',
+                        evidence: 'Can describe a few technical skills but does not provide in-depth evidence of applying them in practical situations.',
+                        required: ['few skills', 'lacks depth', 'limited application'],
+                        indicators: ['some knowledge', 'theoretical understanding', 'needs support'],
+                        patterns: {
+                            negative: ['needs significant training', 'limited practical experience'],
+                            positive: ['basic proficiency', 'some experience', 'entry level'],
+                            metrics: ['1-2 years', 'few projects', 'training completed']
+                        }
+                    },
+                    3: {
+                        description: 'Covers all job needs well',
+                        evidence: 'Describes technical skills with specific examples of use in relevant job settings. Evidence supports strong competence.',
+                        required: ['specific examples', 'relevant job settings', 'strong competence'],
+                        indicators: ['applied skills', 'concrete examples', 'job-relevant experience'],
+                        patterns: {
+                            negative: [],
+                            positive: ['solid experience', 'proven track record', 'independently capable'],
+                            metrics: ['3-5 years', 'multiple projects', 'consistent delivery']
+                        }
+                    },
+                    4: {
+                        description: 'Extremely strong in all needs',
+                        evidence: 'Demonstrates deep technical expertise with evidence of applying skills to solve complex problems.',
+                        required: ['deep expertise', 'complex problems', 'consistent high performance'],
+                        indicators: ['advanced applications', 'problem-solving', 'technical leadership'],
+                        patterns: {
+                            negative: [],
+                            positive: ['expert level', 'mentors others', 'innovative solutions', 'recognized expertise'],
+                            metrics: ['5-10 years', 'led major initiatives', 'measurable improvements']
+                        }
+                    },
+                    5: {
+                        description: 'Brings far more to table',
+                        evidence: 'Displays superior technical skills with multiple examples of innovation and leadership in high-impact projects.',
+                        required: ['superior skills', 'innovation', 'leadership', 'high-impact'],
+                        indicators: ['industry recognition', 'thought leadership', 'transformational impact'],
+                        patterns: {
+                            negative: [],
+                            positive: ['industry leader', 'published author', 'speaker', 'patents', 'awards'],
+                            metrics: ['10+ years', 'enterprise impact', 'industry-wide influence']
+                        }
+                    }
+                }
+            },
+            'experience': {
+                factor: 'Experience',
+                levels: {
+                    1: {
+                        description: 'Minimum threshold',
+                        evidence: 'Provides little evidence of effective organizational skills. Struggles with task management.',
+                        required: ['little evidence', 'struggles', 'poor organization'],
+                        indicators: ['limited experience', 'basic tasks only'],
+                        patterns: {
+                            negative: ['no relevant experience', 'unrelated background'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Meets most, but not all needs',
+                        evidence: 'Describes basic organizational skills but lacks depth in planning and managing complex projects.',
+                        required: ['basic skills', 'lacks depth', 'simple projects only'],
+                        indicators: ['some experience', 'routine tasks', 'limited scope'],
+                        patterns: {
+                            negative: ['gaps in experience', 'limited scope'],
+                            positive: ['some relevant experience', 'transferable skills'],
+                            metrics: ['1-3 years', 'small projects', 'individual contributor']
+                        }
+                    },
+                    3: {
+                        description: 'Meets all experience needs',
+                        evidence: 'Provides strong examples of effective organizational skills, managing tasks and time effectively.',
+                        required: ['strong examples', 'effective management', 'medium complexity'],
+                        indicators: ['relevant experience', 'successful delivery', 'good planning'],
+                        patterns: {
+                            negative: [],
+                            positive: ['direct experience', 'proven success', 'managed complexity'],
+                            metrics: ['3-7 years', 'mid-size projects', 'team member/lead']
+                        }
+                    },
+                    4: {
+                        description: 'Broader and related experience',
+                        evidence: 'Demonstrates excellent organizational skills with evidence of managing complex projects and delivering on time.',
+                        required: ['excellent skills', 'complex projects', 'on-time delivery'],
+                        indicators: ['diverse experience', 'large scale projects', 'consistent success'],
+                        patterns: {
+                            negative: [],
+                            positive: ['broad experience', 'cross-functional', 'strategic thinking'],
+                            metrics: ['7-12 years', 'large projects', 'department/division level']
+                        }
+                    },
+                    5: {
+                        description: 'Excellent background for role',
+                        evidence: 'Displays outstanding organizational skills with proven track record of highly complex projects.',
+                        required: ['outstanding skills', 'highly complex', 'exceptional results'],
+                        indicators: ['executive level', 'transformational projects', 'industry best practices'],
+                        patterns: {
+                            negative: [],
+                            positive: ['exceptional track record', 'C-level experience', 'industry leader'],
+                            metrics: ['12+ years', 'enterprise projects', 'organizational transformation']
+                        }
+                    }
+                }
+            },
+            'achiever-pattern': {
+                factor: 'Achiever Pattern & Growth Trend',
+                levels: {
+                    1: {
+                        description: 'Not in top 50%. Spotty trend',
+                        evidence: 'Has trouble explaining work history or job transitions. Lack of depth or pattern in roles.',
+                        required: ['trouble explaining', 'no pattern', 'lack of depth'],
+                        indicators: ['job hopping', 'lateral moves only', 'no clear progression'],
+                        patterns: {
+                            negative: ['frequent job changes', 'demotions', 'performance issues'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Maybe top 50%. Flatter trend',
+                        evidence: 'Provides some detail about past jobs, but narrative is unclear or lacks progression.',
+                        required: ['some detail', 'unclear narrative', 'limited progression'],
+                        indicators: ['slow growth', 'few achievements', 'average performance'],
+                        patterns: {
+                            negative: ['stagnant career', 'limited achievements'],
+                            positive: ['steady employment', 'some growth'],
+                            metrics: ['minimal promotions', 'meets expectations']
+                        }
+                    },
+                    3: {
+                        description: 'Top 25%! Upward growth',
+                        evidence: 'Explains work history clearly with logical career progression and evidence of growth.',
+                        required: ['clear history', 'logical progression', 'evidence of growth', 'comparable work'],
+                        indicators: ['promotions', 'increased responsibility', 'skill development'],
+                        patterns: {
+                            negative: [],
+                            positive: ['consistent promotions', 'expanded roles', 'recognition'],
+                            metrics: ['promoted every 2-3 years', 'exceeds expectations', 'top performer']
+                        }
+                    },
+                    4: {
+                        description: 'Top 10-15%. Steep upward path',
+                        evidence: 'Shows deliberate and strategic career path with clear evidence of increasing responsibility.',
+                        required: ['strategic path', 'increasing responsibility', 'well-justified moves'],
+                        indicators: ['rapid advancement', 'stretch assignments', 'exceeds expectations'],
+                        patterns: {
+                            negative: [],
+                            positive: ['fast track', 'high potential', 'sponsored for leadership'],
+                            metrics: ['promoted faster than peers', 'top 10% ratings', 'special assignments']
+                        }
+                    },
+                    5: {
+                        description: 'Top 5%. Handles big stretch roles',
+                        evidence: 'Presents outstanding career trajectory marked by clear, deliberate progression.',
+                        required: ['outstanding trajectory', 'deliberate progression', 'strategic insights'],
+                        indicators: ['executive potential', 'game-changing roles', 'industry recognition'],
+                        patterns: {
+                            negative: [],
+                            positive: ['youngest to achieve', 'recruited for top roles', 'CEO/founder'],
+                            metrics: ['top 5% performer', 'multiple promotions ahead of schedule', 'industry awards']
+                        }
+                    }
+                }
+            },
+            'technical-ability': {
+                factor: 'Talent & Overall Technical Ability',
+                levels: {
+                    1: {
+                        description: 'Nothing remarkable. Needs too much training',
+                        evidence: 'Nothing remarkable. Needs too much extra training and support.',
+                        required: ['needs extensive training', 'no standout skills', 'requires support'],
+                        indicators: ['basic knowledge only', 'significant gaps'],
+                        patterns: {
+                            negative: ['requires constant supervision', 'makes frequent errors'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Can do work, but needs support',
+                        evidence: 'Can do the work, but needs added training, support or coaching.',
+                        required: ['can do work', 'needs training', 'requires coaching'],
+                        indicators: ['competent', 'some gaps', 'development needed'],
+                        patterns: {
+                            negative: ['needs regular guidance', 'limited independence'],
+                            positive: ['trainable', 'shows potential'],
+                            metrics: ['60-70% proficiency', 'learning curve expected']
+                        }
+                    },
+                    3: {
+                        description: 'Technically tops. An asset',
+                        evidence: 'Technically tops. An asset. Can learn quickly. Covers all job needs.',
+                        required: ['technically strong', 'quick learner', 'covers all needs'],
+                        indicators: ['self-sufficient', 'reliable expertise', 'adds value'],
+                        patterns: {
+                            negative: [],
+                            positive: ['go-to person', 'consistently delivers', 'self-directed'],
+                            metrics: ['fully proficient', 'minimal supervision', 'trusted expert']
+                        }
+                    },
+                    4: {
+                        description: 'Top-notch. Trains others',
+                        evidence: 'Top-notch. Trains others. Constantly improving. Brings more to the table.',
+                        required: ['trains others', 'constantly improving', 'exceeds requirements'],
+                        indicators: ['mentor', 'innovator', 'go-to expert'],
+                        patterns: {
+                            negative: [],
+                            positive: ['teaches others', 'drives innovation', 'process improvements'],
+                            metrics: ['certified trainer', 'multiple innovations', '120%+ productivity']
+                        }
+                    },
+                    5: {
+                        description: 'Brilliant. Sets standards',
+                        evidence: 'Brilliant. Sets standards. Leader in field. Sought out. Recognized.',
+                        required: ['sets standards', 'leader in field', 'recognized expert'],
+                        indicators: ['thought leader', 'industry speaker', 'published author'],
+                        patterns: {
+                            negative: [],
+                            positive: ['keynote speaker', 'published research', 'patent holder'],
+                            metrics: ['industry awards', 'cited by others', 'defines best practices']
+                        }
+                    }
+                }
+            },
+            'management-ability': {
+                factor: 'Management & Organizational Ability',
+                levels: {
+                    1: {
+                        description: 'Seems reactive. Misses deadlines',
+                        evidence: 'Candidate struggles to provide clear examples of managing or developing others.',
+                        required: ['struggles with examples', 'lacks leadership', 'no management experience'],
+                        indicators: ['reactive', 'poor planning', 'missed deadlines'],
+                        patterns: {
+                            negative: ['crisis mode', 'poor delegation', 'micromanages'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'More reactive than forward-looking',
+                        evidence: 'Provides some examples of managing others but relies on intuition more than structure.',
+                        required: ['some examples', 'intuition-based', 'basic management'],
+                        indicators: ['limited planning', 'informal approach', 'small teams only'],
+                        patterns: {
+                            negative: ['reactive management', 'limited strategic thinking'],
+                            positive: ['manages small teams', 'basic project management'],
+                            metrics: ['1-3 direct reports', 'simple projects']
+                        }
+                    },
+                    3: {
+                        description: 'Has planned & executed comparable projects',
+                        evidence: 'Demonstrates effective management with clear evidence of leading others to achieve goals.',
+                        required: ['effective management', 'achieved goals', 'developed talent'],
+                        indicators: ['structured approach', 'successful projects', 'team development'],
+                        patterns: {
+                            negative: [],
+                            positive: ['proactive planning', 'develops others', 'meets objectives'],
+                            metrics: ['5-10 direct reports', 'complex projects', 'on-time delivery']
+                        }
+                    },
+                    4: {
+                        description: 'Excellent. Plans, anticipates, succeeds',
+                        evidence: 'Shows strong leadership with consistent success in developing others and high performance.',
+                        required: ['strong leadership', 'develops others', 'high performance'],
+                        indicators: ['strategic planning', 'mentoring', 'exceeds targets'],
+                        patterns: {
+                            negative: [],
+                            positive: ['strategic thinker', 'succession planning', 'culture builder'],
+                            metrics: ['10-50 team members', 'multi-million budget', '110%+ target achievement']
+                        }
+                    },
+                    5: {
+                        description: 'Outstanding organizational results',
+                        evidence: 'Exceptional leadership with track record of building high-performing teams and future leaders.',
+                        required: ['exceptional leadership', 'high-performing teams', 'develops leaders'],
+                        indicators: ['transformational leader', 'culture builder', 'succession planning'],
+                        patterns: {
+                            negative: [],
+                            positive: ['transforms organizations', 'builds dynasties', 'executive coach'],
+                            metrics: ['100+ organization', 'develops C-suite talent', 'industry best-in-class']
+                        }
+                    }
+                }
+            },
+            'team-skills': {
+                factor: 'Team Skills (EQ) & Development, Leadership',
+                levels: {
+                    1: {
+                        description: 'Little team growth',
+                        evidence: 'Struggles to provide examples of effective teamwork. Unclear about collaboration value.',
+                        required: ['struggles with examples', 'unclear on collaboration', 'limited teamwork'],
+                        indicators: ['works alone', 'avoids collaboration', 'conflict issues'],
+                        patterns: {
+                            negative: ['lone wolf', 'creates conflict', 'poor communication'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Has some team growth',
+                        evidence: 'Provides some examples of working in teams but lacks depth or key contributions.',
+                        required: ['some examples', 'lacks depth', 'limited contribution'],
+                        indicators: ['participates', 'follows others', 'basic cooperation'],
+                        patterns: {
+                            negative: ['passive participant', 'limited influence'],
+                            positive: ['cooperates', 'contributes when asked'],
+                            metrics: ['team member', 'occasional collaboration']
+                        }
+                    },
+                    3: {
+                        description: 'Good fit. Developed strong teams',
+                        evidence: 'Clear evidence of working effectively in teams with examples of contributing to success.',
+                        required: ['effective teamwork', 'contributes to success', 'cross-functional'],
+                        indicators: ['collaborates well', 'supports others', 'positive influence'],
+                        patterns: {
+                            negative: [],
+                            positive: ['active contributor', 'builds relationships', 'trusted teammate'],
+                            metrics: ['cross-functional projects', 'peer recognition', 'team awards']
+                        }
+                    },
+                    4: {
+                        description: 'Coaches others. Recognized for team skills',
+                        evidence: 'Strong team skills with evidence of leading teams to success and fostering collaboration.',
+                        required: ['leads teams', 'fosters collaboration', 'coaches others'],
+                        indicators: ['team builder', 'conflict resolver', 'culture champion'],
+                        patterns: {
+                            negative: [],
+                            positive: ['natural leader', 'mediates conflicts', 'builds consensus'],
+                            metrics: ['leads 10+ person teams', 'improved team metrics', 'retention leader']
+                        }
+                    },
+                    5: {
+                        description: 'Impressive growth. Asked to lead',
+                        evidence: 'Superior team skills with history of leading high-performing teams in challenging environments.',
+                        required: ['superior skills', 'high-performing teams', 'challenging environments'],
+                        indicators: ['transformational', 'builds leaders', 'organizational impact'],
+                        patterns: {
+                            negative: [],
+                            positive: ['transforms culture', 'executive presence', 'inspirational leader'],
+                            metrics: ['C-suite advisor', 'culture transformation', 'top 1% engagement scores']
+                        }
+                    }
+                }
+            },
+            'problem-solving': {
+                factor: 'Thinking & Job-related Problem-solving',
+                levels: {
+                    1: {
+                        description: 'Didn\'t understand key issues',
+                        evidence: 'Struggles to articulate any clear examples of problem-solving. Vague responses.',
+                        required: ['struggles to articulate', 'vague responses', 'no clear examples'],
+                        indicators: ['confused', 'superficial analysis', 'no solutions'],
+                        patterns: {
+                            negative: ['misses root cause', 'surface-level thinking'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Understood most issues, okay solutions',
+                        evidence: 'Able to describe a few problem-solving experiences but lacks depth or analysis.',
+                        required: ['few experiences', 'lacks depth', 'basic solutions'],
+                        indicators: ['surface level', 'obvious solutions', 'limited analysis'],
+                        patterns: {
+                            negative: ['conventional thinking only', 'misses nuances'],
+                            positive: ['solves routine problems', 'follows procedures'],
+                            metrics: ['standard solutions', 'incremental improvements']
+                        }
+                    },
+                    3: {
+                        description: 'Understood all issues, strong solutions',
+                        evidence: 'Clear examples of problem-solving using logical and structured approaches.',
+                        required: ['clear examples', 'logical approach', 'structured thinking'],
+                        indicators: ['analytical', 'systematic', 'effective solutions'],
+                        patterns: {
+                            negative: [],
+                            positive: ['root cause analysis', 'data-driven', 'creative solutions'],
+                            metrics: ['solved complex problems', 'measurable improvements', 'process optimization']
+                        }
+                    },
+                    4: {
+                        description: 'Understood less obvious issues',
+                        evidence: 'Exceptional analytical thinking with evidence of solving complex problems.',
+                        required: ['exceptional thinking', 'complex problems', 'adaptable strategies'],
+                        indicators: ['innovative', 'sees patterns', 'anticipates issues'],
+                        patterns: {
+                            negative: [],
+                            positive: ['strategic thinking', 'connects dots', 'prevents problems'],
+                            metrics: ['breakthrough solutions', 'saves millions', 'patents/innovations']
+                        }
+                    },
+                    5: {
+                        description: 'Deeper insight. Multiple unique solutions',
+                        evidence: 'Superior problem-solving with track record of innovative solutions to unique problems.',
+                        required: ['superior abilities', 'innovative solutions', 'organizational impact'],
+                        indicators: ['breakthrough thinking', 'paradigm shifts', 'thought leader'],
+                        patterns: {
+                            negative: [],
+                            positive: ['reframes problems', 'industry innovations', 'teaches methodology'],
+                            metrics: ['industry-changing solutions', 'multiple patents', 'keynote speaker']
+                        }
+                    }
+                }
+            },
+            'job-fit': {
+                factor: 'Job Fit with Recent Comparable Results',
+                levels: {
+                    1: {
+                        description: 'Not comparable or not recent',
+                        evidence: 'Person hasn\'t done anything closely similar or scope and scale is complete mismatch.',
+                        required: ['nothing similar', 'complete mismatch', 'wrong scope/scale'],
+                        indicators: ['different industry', 'different role', 'no transferable skills'],
+                        patterns: {
+                            negative: ['unrelated experience', 'wrong level', 'different function'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Some comparable, but inconsistent',
+                        evidence: 'Has done some similar work but not recent, unclear, or not motivated for this work.',
+                        required: ['some similar work', 'not recent', 'unclear motivation'],
+                        indicators: ['partial match', 'dated experience', 'different context'],
+                        patterns: {
+                            negative: ['5+ years ago', 'different scale', 'limited success'],
+                            positive: ['some relevant aspects', 'transferable skills'],
+                            metrics: ['30-50% match', 'smaller scale', 'different industry']
+                        }
+                    },
+                    3: {
+                        description: 'Recent, strong and comparable',
+                        evidence: 'Specific recent evidence of self-motivation to do this work at high quality levels.',
+                        required: ['recent evidence', 'self-motivated', 'high quality', 'comparable work'],
+                        indicators: ['direct match', 'proven success', 'eager to continue'],
+                        patterns: {
+                            negative: [],
+                            positive: ['exact match', 'recent success', 'passionate about work'],
+                            metrics: ['70%+ match', 'within 2 years', 'similar scope/scale']
+                        }
+                    },
+                    4: {
+                        description: 'Outstanding results under similar conditions',
+                        evidence: 'Highly self-motivated with formal recognition for similar work at same scope and pace.',
+                        required: ['highly motivated', 'formal recognition', 'same scope/pace'],
+                        indicators: ['exceeded targets', 'awards/recognition', 'sought after'],
+                        patterns: {
+                            negative: [],
+                            positive: ['exceeded expectations', 'recognized expert', 'recruited for expertise'],
+                            metrics: ['90%+ match', 'recent awards', '120%+ goal achievement']
+                        }
+                    },
+                    5: {
+                        description: 'Full match with exceptional results',
+                        evidence: 'Excelled at this exact work with validation through recognition and assignments.',
+                        required: ['excelled', 'exact match', 'validated success', 'public recognition'],
+                        indicators: ['industry leader', 'sets benchmarks', 'trains others'],
+                        patterns: {
+                            negative: [],
+                            positive: ['best-in-class', 'writes the playbook', 'industry speaker'],
+                            metrics: ['100% match', 'industry awards', 'top 1% performer']
+                        }
+                    }
+                }
+            },
+            'managerial-fit': {
+                factor: 'Managerial Fit',
+                levels: {
+                    1: {
+                        description: 'Mismatch between styles',
+                        evidence: 'Candidate consistently struggles to align with manager\'s leadership style.',
+                        required: ['struggles to align', 'frequent misunderstandings', 'resistance'],
+                        indicators: ['conflict', 'poor communication', 'inflexible'],
+                        patterns: {
+                            negative: ['clashes with authority', 'rigid expectations', 'poor adaptability'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Limited, but has worked with similar',
+                        evidence: 'Generally able to follow leadership but lacks flexibility.',
+                        required: ['follows leadership', 'lacks flexibility', 'limited adaptation'],
+                        indicators: ['needs direction', 'one style only', 'some friction'],
+                        patterns: {
+                            negative: ['struggles with ambiguity', 'needs constant direction'],
+                            positive: ['works with clear direction', 'follows structure'],
+                            metrics: ['works with 1-2 styles', 'needs adjustment period']
+                        }
+                    },
+                    3: {
+                        description: 'Successfully worked with similar managers',
+                        evidence: 'Solid ability to work well under manager\'s leadership and adapt to changes.',
+                        required: ['works well', 'adapts to changes', 'takes direction'],
+                        indicators: ['flexible', 'good communication', 'positive relationship'],
+                        patterns: {
+                            negative: [],
+                            positive: ['adapts to style', 'proactive communication', 'builds trust'],
+                            metrics: ['multiple manager types', 'quick adaptation', 'positive reviews']
+                        }
+                    },
+                    4: {
+                        description: 'Easily adapts to variety of styles',
+                        evidence: 'Aligns well and anticipates changes driven by external factors.',
+                        required: ['aligns well', 'anticipates changes', 'flexible approach'],
+                        indicators: ['highly adaptable', 'reads situations', 'proactive'],
+                        patterns: {
+                            negative: [],
+                            positive: ['manages up', 'anticipates needs', 'adds value'],
+                            metrics: ['all management styles', 'trusted advisor', 'improves processes']
+                        }
+                    },
+                    5: {
+                        description: 'Super fit. Coaches upwards',
+                        evidence: 'Thrives under any managerial style with seamless adjustments.',
+                        required: ['thrives anywhere', 'seamless adjustment', 'adds value upward'],
+                        indicators: ['coaches up', 'enhances leadership', 'partnership'],
+                        patterns: {
+                            negative: [],
+                            positive: ['executive coach', 'thought partner', 'influences strategy'],
+                            metrics: ['C-suite trusted', 'reverse mentoring', 'shapes leadership']
+                        }
+                    }
+                }
+            },
+            'culture-environment': {
+                factor: 'Culture & Environment',
+                levels: {
+                    1: {
+                        description: 'Complete mismatch',
+                        evidence: 'Displays minimal understanding or alignment with company culture.',
+                        required: ['minimal understanding', 'no alignment', 'conflicting values'],
+                        indicators: ['wrong fit', 'clashes', 'uncomfortable'],
+                        patterns: {
+                            negative: ['opposes values', 'cultural misfit', 'creates tension'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Reasonable match',
+                        evidence: 'Shows some alignment with company culture but lacks depth.',
+                        required: ['some alignment', 'lacks depth', 'surface understanding'],
+                        indicators: ['partial fit', 'learning curve', 'some concerns'],
+                        patterns: {
+                            negative: ['slow to adapt', 'some resistance'],
+                            positive: ['willing to learn', 'some common ground'],
+                            metrics: ['50% culture fit', 'adjustment needed']
+                        }
+                    },
+                    3: {
+                        description: 'Close match',
+                        evidence: 'Strong alignment with clear examples of fitting similar cultural environments.',
+                        required: ['strong alignment', 'similar environments', 'clear examples'],
+                        indicators: ['good fit', 'shares values', 'comfortable'],
+                        patterns: {
+                            negative: [],
+                            positive: ['embraces culture', 'contributes positively', 'natural fit'],
+                            metrics: ['70%+ fit', 'quick integration', 'positive feedback']
+                        }
+                    },
+                    4: {
+                        description: 'Excellent match, made similar transfers',
+                        evidence: 'Outstanding cultural alignment with examples of thriving and contributing.',
+                        required: ['outstanding alignment', 'thrives', 'contributes to culture'],
+                        indicators: ['enhances culture', 'role model', 'ambassador'],
+                        patterns: {
+                            negative: [],
+                            positive: ['culture champion', 'drives values', 'attracts talent'],
+                            metrics: ['90%+ fit', 'culture awards', 'retention impact']
+                        }
+                    },
+                    5: {
+                        description: 'Thrives in this type of environment',
+                        evidence: 'Superb alignment, consistently embodying values that drive success.',
+                        required: ['superb alignment', 'embodies values', 'drives success'],
+                        indicators: ['culture builder', 'change agent', 'inspirational'],
+                        patterns: {
+                            negative: [],
+                            positive: ['defines culture', 'transformation agent', 'legendary fit'],
+                            metrics: ['100% alignment', 'culture leader', 'lasting impact']
+                        }
+                    }
+                }
+            },
+            'motivation': {
+                factor: 'Motivation',
+                levels: {
+                    1: {
+                        description: 'Little evidence of motivation',
+                        evidence: 'Person hasn\'t done anything similar or scope/scale is complete mismatch.',
+                        required: ['nothing similar', 'wrong scope', 'no interest shown'],
+                        indicators: ['disengaged', 'going through motions', 'no enthusiasm'],
+                        patterns: {
+                            negative: ['lacks interest', 'just a job', 'no passion'],
+                            positive: [],
+                            metrics: []
+                        }
+                    },
+                    2: {
+                        description: 'Will do core work but needs pushing',
+                        evidence: 'Has done some similar work but not recent or person isn\'t motivated.',
+                        required: ['some similar work', 'needs pushing', 'limited interest'],
+                        indicators: ['does minimum', 'external motivation', 'inconsistent effort'],
+                        patterns: {
+                            negative: ['needs reminders', 'external motivation only'],
+                            positive: ['completes tasks', 'responds to incentives'],
+                            metrics: ['meets minimum', 'occasional initiative']
+                        }
+                    },
+                    3: {
+                        description: 'Self-motivated with normal supervision',
+                        evidence: 'Recent evidence of self-motivation to do this work at high quality.',
+                        required: ['self-motivated', 'high quality', 'takes initiative'],
+                        indicators: ['reliable', 'meets expectations', 'positive attitude'],
+                        patterns: {
+                            negative: [],
+                            positive: ['self-starter', 'seeks feedback', 'continuous improvement'],
+                            metrics: ['consistently meets goals', 'volunteers for projects', 'positive energy']
+                        }
+                    },
+                    4: {
+                        description: 'Takes initiative to do more, faster, better',
+                        evidence: 'Highly self-motivated with formal recognition for this type of work.',
+                        required: ['highly motivated', 'formal recognition', 'exceeds expectations'],
+                        indicators: ['goes extra mile', 'continuous improvement', 'drives results'],
+                        patterns: {
+                            negative: [],
+                            positive: ['exceeds targets', 'innovates', 'inspires others'],
+                            metrics: ['120%+ achievement', 'multiple recognitions', 'promotes excellence']
+                        }
+                    },
+                    5: {
+                        description: 'Totally committed. Constantly gets better',
+                        evidence: 'Excelled at this work with validation through recognition and assignments.',
+                        required: ['total commitment', 'validated excellence', 'constant improvement'],
+                        indicators: ['passionate', 'inspirational', 'unstoppable drive'],
+                        patterns: {
+                            negative: [],
+                            positive: ['lives the mission', 'breakthrough performer', 'creates movements'],
+                            metrics: ['top 1% performer', 'game-changing results', 'legacy builder']
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Enhanced evidence analysis function
+        function analyzeAgainstMasterCriteria(evidence, factorId) {
+            const factorData = masterCriteria[factorId];
+            const evidenceLower = evidence.toLowerCase();
+            const analysis = {
+                suggestedLevel: 1,
+                matchDetails: {},
+                quality: 'poor',
+                confidence: 0,
+                biasDetected: [],
+                strengths: [],
+                gaps: [],
+                metrics: extractMetrics(evidence),
+                timeframes: extractTimeframes(evidence),
+                achievements: extractAchievements(evidence),
+                skills: extractSkills(evidence),
+                projectSuccess: detectProjectSuccess(evidence)
+            };
+            
+            // Check for bias indicators
+            const biasTerms = [
+                'feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 'cultural fit',
+                'young', 'old', 'energetic', 'fresh', 'seasoned', 'overqualified',
+                'aggressive', 'pushy', 'quiet', 'loud', 'likeable', 'friendly'
+            ];
+            
+            biasTerms.forEach(term => {
+                if (evidenceLower.includes(term)) {
+                    analysis.biasDetected.push(term);
+                }
+            });
+            
+            // SMART SCORING: Evaluate actual achievements, not just keywords
+            let suggestedLevel = determineLevelByAchievements(evidence, factorId, analysis);
+            
+            // Override keyword-based analysis with achievement-based scoring
+            if (suggestedLevel > 0) {
+                analysis.suggestedLevel = suggestedLevel;
+                analysis.confidence = 0.8 + (analysis.metrics.length > 0 ? 0.1 : 0) + (analysis.projectSuccess ? 0.1 : 0);
+                analysis.quality = analysis.confidence >= 0.8 ? 'excellent' : 'good';
+            } else {
+                // Fall back to pattern matching if no clear achievements
+                let bestMatch = { level: 1, score: 0, confidence: 0 };
+                
+                for (let level = 5; level >= 1; level--) {
+                    const levelData = factorData.levels[level];
+                    const matchResult = evaluateLevelMatch(evidence, levelData, level);
+                    
+                    analysis.matchDetails[level] = matchResult;
+                    
+                    // Calculate confidence score
+                    const confidence = calculateConfidence(matchResult, analysis);
+                    
+                    if (confidence > bestMatch.confidence) {
+                        bestMatch = { level, score: matchResult.score, confidence };
+                    }
+                }
+                
+                // Set suggested level based on best match with confidence threshold
+                if (bestMatch.confidence >= 0.7) {
+                    analysis.suggestedLevel = bestMatch.level;
+                } else if (bestMatch.confidence >= 0.5) {
+                    analysis.suggestedLevel = Math.max(1, bestMatch.level - 1);
+                } else {
+                    analysis.suggestedLevel = 1;
+                }
+                
+                analysis.confidence = bestMatch.confidence;
+                
+                // Determine quality
+                if (bestMatch.confidence >= 0.8 && analysis.biasDetected.length === 0 && analysis.metrics.length > 0) {
+                    analysis.quality = 'excellent';
+                } else if (bestMatch.confidence >= 0.6 && analysis.biasDetected.length <= 1) {
+                    analysis.quality = 'good';
+                } else if (bestMatch.confidence >= 0.4) {
+                    analysis.quality = 'fair';
+                } else {
+                    analysis.quality = 'poor';
+                }
+            }
+            
+            // Extract strengths and gaps
+            const suggestedMatch = analysis.matchDetails[analysis.suggestedLevel] || {
+                matchedElements: analysis.strengths,
+                missingElements: []
+            };
+            analysis.strengths = suggestedMatch.matchedElements || analysis.strengths;
+            analysis.gaps = suggestedMatch.missingElements || [];
+            
+            return analysis;
+        }
+        
+        // New function to determine level based on actual achievements
+        function determineLevelByAchievements(evidence, factorId, analysis) {
+            const evidenceLower = evidence.toLowerCase();
+            
+            // Key indicators of achievement levels
+            const indicators = {
+                leadership: ['led', 'managed', 'directed', 'headed', 'oversaw', 'supervised', 'coordinated'],
+                completion: ['completed', 'delivered', 'finished', 'accomplished', 'achieved', 'succeeded'],
+                scope: ['project', 'program', 'initiative', 'implementation', 'deployment', 'rollout'],
+                success: ['on time', 'on budget', 'successful', 'ahead of schedule', 'under budget', 'exceeded'],
+                skills: analysis.skills.length
+            };
+            
+            // Count achievement indicators
+            let score = 0;
+            
+            // Led/managed a project = strong indicator
+            if (indicators.leadership.some(word => evidenceLower.includes(word))) {
+                score += 2;
+                analysis.strengths.push('Leadership demonstrated');
+            }
+            
+            // Completed/delivered = positive indicator
+            if (indicators.completion.some(word => evidenceLower.includes(word))) {
+                score += 2;
+                analysis.strengths.push('Successful completion');
+            }
+            
+            // Project/program scope = complexity indicator
+            if (indicators.scope.some(word => evidenceLower.includes(word))) {
+                score += 1;
+                analysis.strengths.push('Project-level work');
+            }
+            
+            // On time/budget = excellence indicator
+            if (indicators.success.some(phrase => evidenceLower.includes(phrase))) {
+                score += 2;
+                analysis.strengths.push('Met or exceeded targets');
+            }
+            
+            // Multiple technical skills = competence indicator
+            if (analysis.skills.length >= 3) {
+                score += 1;
+                analysis.strengths.push(`Multiple technical skills (${analysis.skills.length})`);
+            }
+            
+            // Determine level based on achievement score
+            if (score >= 7) return 4; // Great - led successful projects with multiple skills
+            if (score >= 5) return 3; // Strong - solid project delivery
+            if (score >= 3) return 2; // Adequate - some experience
+            if (score >= 1) return 2; // Adequate - basic evidence
+            
+            return 0; // Let pattern matching take over
+        }
+        
+        // Extract technical skills mentioned
+        function extractSkills(evidence) {
+            const skills = [];
+            
+            // Common technical skills patterns
+            const skillPatterns = [
+                // Programming languages
+                /\b(python|java|javascript|c\+\+|c#|ruby|php|swift|kotlin|scala|go|rust|r\b)/gi,
+                // Databases
+                /\b(sql|mysql|postgresql|oracle|mongodb|redis|elasticsearch|cassandra)/gi,
+                // Cloud/Tools
+                /\b(aws|azure|gcp|docker|kubernetes|jenkins|git|terraform|ansible)/gi,
+                // Data/Analytics
+                /\b(tableau|power\s*bi|looker|qlik|sas|spss|excel|visier)/gi,
+                // Frameworks
+                /\b(react|angular|vue|django|flask|spring|node\.?js|\.net)/gi,
+                // Other tech
+                /\b(machine learning|ml|ai|data science|analytics|etl|api|rest|microservices)/gi
+            ];
+            
+            skillPatterns.forEach(pattern => {
+                const matches = evidence.match(pattern);
+                if (matches) {
+                    matches.forEach(skill => {
+                        const normalized = skill.trim().toLowerCase();
+                        if (!skills.includes(normalized)) {
+                            skills.push(normalized);
+                        }
+                    });
+                }
+            });
+            
+            return skills;
+        }
+        
+        // Detect project success indicators
+        function detectProjectSuccess(evidence) {
+            const successPatterns = [
+                /complet\w+.*on\s+(time|schedule)/i,
+                /deliver\w+.*on\s+(time|schedule)/i,
+                /on\s+budget/i,
+                /under\s+budget/i,
+                /ahead\s+of\s+schedule/i,
+                /successful\w*\s+(launch|delivery|completion|implementation)/i,
+                /met\s+all\s+(requirements|objectives|goals)/i,
+                /exceeded\s+expectations/i
+            ];
+            
+            return successPatterns.some(pattern => pattern.test(evidence));
+        }
+        
+        // Evaluate how well evidence matches a specific level
+        function evaluateLevelMatch(evidence, levelData, level) {
+            const evidenceLower = evidence.toLowerCase();
+            const result = {
+                score: 0,
+                matchedElements: [],
+                missingElements: [],
+                patternMatches: {
+                    positive: 0,
+                    negative: 0,
+                    metrics: 0
+                }
+            };
+            
+            // Check patterns if available
+            if (levelData.patterns) {
+                // Check negative patterns (penalize if found)
+                if (levelData.patterns.negative) {
+                    levelData.patterns.negative.forEach(pattern => {
+                        if (findSmartPattern(pattern, evidenceLower)) {
+                            result.patternMatches.negative++;
+                        }
+                    });
+                }
+                
+                // Check positive patterns
+                if (levelData.patterns.positive) {
+                    levelData.patterns.positive.forEach(pattern => {
+                        if (findSmartPattern(pattern, evidenceLower)) {
+                            result.patternMatches.positive++;
+                            result.matchedElements.push(pattern);
+                        }
+                    });
+                }
+                
+                // Check metric patterns
+                if (levelData.patterns.metrics) {
+                    levelData.patterns.metrics.forEach(pattern => {
+                        if (findMetricPattern(pattern, evidence)) {
+                            result.patternMatches.metrics++;
+                            result.matchedElements.push(pattern);
+                        }
+                    });
+                }
+            }
+            
+            // Check required elements
+            levelData.required.forEach(req => {
+                if (findSmartPattern(req, evidenceLower)) {
+                    result.matchedElements.push(req);
+                } else {
+                    result.missingElements.push(req);
+                }
+            });
+            
+            // Calculate score
+            const requiredScore = result.matchedElements.length / levelData.required.length;
+            const patternScore = levelData.patterns ? 
+                (result.patternMatches.positive + result.patternMatches.metrics) / 
+                (levelData.patterns.positive.length + levelData.patterns.metrics.length || 1) : 0;
+            
+            // Penalize for negative patterns
+            const negativePenalty = levelData.patterns && levelData.patterns.negative ? 
+                result.patternMatches.negative * 0.2 : 0;
+            
+            result.score = Math.max(0, (requiredScore * 0.6 + patternScore * 0.4) - negativePenalty);
+            
+            return result;
+        }
+        
+        // Smart pattern matching that understands context
+        function findSmartPattern(pattern, text) {
+            // Handle multi-word patterns
+            const words = pattern.toLowerCase().split(/\s+/);
+            
+            // For phrases, check if words appear near each other
+            if (words.length > 1) {
+                // Create a regex that allows some words between pattern words
+                const regexPattern = words.join('\\s+(?:\\w+\\s+){0,3}');
+                const regex = new RegExp(regexPattern, 'i');
+                return regex.test(text);
+            }
+            
+            // For single words, ensure it's not part of a negative context
+            const negativeContexts = ['no', 'not', 'lacks', 'without', 'limited', 'poor'];
+            const wordIndex = text.indexOf(words[0]);
+            
+            if (wordIndex === -1) return false;
+            
+            // Check if word appears after negative context
+            const precedingText = text.substring(Math.max(0, wordIndex - 50), wordIndex);
+            const hasNegativeContext = negativeContexts.some(neg => 
+                precedingText.includes(neg)
+            );
+            
+            return !hasNegativeContext;
+        }
+        
+        // Find metric patterns in evidence
+        function findMetricPattern(pattern, text) {
+            const metricPatterns = {
+                'years': /(\d+)\+?\s*years?/i,
+                'months': /(\d+)\s*months?/i,
+                'direct reports': /(\d+)\s*direct\s*reports?/i,
+                'team members': /(\d+)\s*team\s*members?/i,
+                'budget': /\$?(\d+)[kKmMbB]/i,
+                'percentage': /(\d+)%/,
+                'people': /(\d+)\s*people/i,
+                'employees': /(\d+)\s*employees/i
+            };
+            
+            // Check if pattern matches any metric pattern
+            for (const [key, regex] of Object.entries(metricPatterns)) {
+                if (pattern.includes(key) && regex.test(text)) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        // Calculate confidence based on evidence quality
+        function calculateConfidence(matchResult, analysis) {
+            let confidence = matchResult.score;
+            
+            // Boost confidence for specific metrics
+            if (analysis.metrics.length > 0) {
+                confidence += 0.1;
+            }
+            
+            // Boost for recent timeframes
+            if (analysis.timeframes.some(tf => tf.includes('recent') || tf.includes('current'))) {
+                confidence += 0.05;
+            }
+            
+            // Reduce confidence for bias
+            confidence -= analysis.biasDetected.length * 0.05;
+            
+            // Reduce confidence for vague language
+            const vagueTerms = ['some', 'various', 'several', 'many', 'often'];
+            const vagueCount = vagueTerms.filter(term => 
+                analysis.achievements.join(' ').toLowerCase().includes(term)
+            ).length;
+            confidence -= vagueCount * 0.02;
+            
+            return Math.max(0, Math.min(1, confidence));
+        }
+        
+        // Extract metrics from evidence
+        function extractMetrics(evidence) {
+            const metrics = [];
+            const patterns = [
+                /(\d+(?:\.\d+)?)\s*%\s*([a-zA-Z\s]+)/g,
+                /\$\s*(\d+(?:\.\d+)?)\s*([kKmMbB])?/g,
+                /(\d+(?:,\d{3})*)\s*(employees?|people|users?|customers?)/gi,
+                /(\d+)\s*(years?|months?|days?)\s*(of experience|tenure|ago)/gi,
+                /increased\s+(?:by\s+)?(\d+(?:\.\d+)?)\s*%/gi,
+                /reduced\s+(?:by\s+)?(\d+(?:\.\d+)?)\s*%/gi,
+                /saved\s+\$?\s*(\d+(?:\.\d+)?)\s*([kKmMbB])?/gi
+            ];
+            
+            patterns.forEach(pattern => {
+                const matches = evidence.matchAll(pattern);
+                for (const match of matches) {
+                    metrics.push({
+                        value: match[1],
+                        unit: match[2] || '',
+                        context: match[0]
+                    });
+                }
+            });
+            
+            return metrics;
+        }
+        
+        // Extract timeframes from evidence
+        function extractTimeframes(evidence) {
+            const timeframes = [];
+            const patterns = [
+                /(\d{4})\s*-\s*(\d{4})/g,
+                /(19|20)\d{2}/g,
+                /(Q[1-4])\s*(\d{4})/gi,
+                /(recently|currently|present|now|ongoing)/gi,
+                /within\s+the\s+(last|past)\s+(\d+)\s*(years?|months?)/gi,
+                /(last|past)\s+(\d+)\s*(years?|months?)/gi
+            ];
+            
+            patterns.forEach(pattern => {
+                const matches = evidence.matchAll(pattern);
+                for (const match of matches) {
+                    timeframes.push(match[0]);
+                }
+            });
+            
+            return timeframes;
+        }
+        
+        // Extract achievements from evidence
+        function extractAchievements(evidence) {
+            const achievements = [];
+            const achievementIndicators = [
+                'achieved', 'accomplished', 'delivered', 'completed', 'won',
+                'earned', 'received', 'recognized', 'promoted', 'led',
+                'improved', 'increased', 'reduced', 'saved', 'generated',
+                'launched', 'implemented', 'transformed', 'built', 'created'
+            ];
+            
+            // Split into sentences
+            const sentences = evidence.split(/[.!?]+/);
+            
+            sentences.forEach(sentence => {
+                const sentenceLower = sentence.toLowerCase();
+                if (achievementIndicators.some(indicator => sentenceLower.includes(indicator))) {
+                    achievements.push(sentence.trim());
+                }
+            });
+            
+            return achievements;
+        }
+        
+        // Display detailed feedback based on analysis
+        function displayDetailedFeedback(factorId, analysis) {
+            const feedbackDiv = document.getElementById('feedback-' + factorId);
+            const factorData = masterCriteria[factorId];
+            const suggestedLevel = analysis.suggestedLevel;
+            const matchData = analysis.matchDetails[suggestedLevel] || {};
+            
+            let feedbackClass = 'feedback-poor';
+            if (analysis.quality === 'excellent') feedbackClass = 'feedback-excellent';
+            else if (analysis.quality === 'good') feedbackClass = 'feedback-good';
+            else if (analysis.quality === 'fair') feedbackClass = 'feedback-warning';
+            
+            let html = `
+                <div class="feedback-header">
+                    <div class="feedback-title">Evidence Analysis - ${factorData.factor}</div>
+                    <div class="match-score">${Math.round(analysis.confidence * 100)}% Confidence</div>
+                </div>
+                <div class="feedback-content">
+                    <p><strong>Evidence Quality Assessment</strong></p>
+                    
+                    <div class="confidence-meter">
+                        <div class="confidence-bar" style="width: ${analysis.confidence * 100}%"></div>
+                    </div>
+                    <span class="confidence-label">Analysis Confidence: ${analysis.confidence >= 0.8 ? 'High' : analysis.confidence >= 0.5 ? 'Medium' : 'Low'}</span>
+            `;
+            
+            // Show detected skills if any
+            if (analysis.skills && analysis.skills.length > 0) {
+                html += `
+                    <div class="evidence-match-details">
+                        <h5 style="color: #3498db; margin-bottom: 8px;">💻 Technical Skills Detected:</h5>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                `;
+                analysis.skills.forEach(skill => {
+                    html += `<span style="background: #3498db; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em;">${skill.toUpperCase()}</span>`;
+                });
+                html += `</div></div>`;
+            }
+            
+            // Show project success indicator
+            if (analysis.projectSuccess) {
+                html += `
+                    <div class="evidence-match-details">
+                        <h5 style="color: #27ae60; margin-bottom: 8px;">✓ Project Success Indicators Found</h5>
+                        <p style="color: #27ae60; font-size: 0.9em;">Evidence indicates successful project delivery (on time/budget)</p>
+                    </div>
+                `;
+            }
+            
+            // Show achievement-based strengths
+            if (analysis.strengths && analysis.strengths.length > 0) {
+                html += `
+                    <div class="evidence-match-details">
+                        <h5 style="color: #28a745; margin-bottom: 8px;">✓ Key Achievements:</h5>
+                `;
+                analysis.strengths.forEach(item => {
+                    html += `<div class="match-item">
+                        <span class="match-indicator found">✓</span>
+                        <span>${item}</span>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Show metrics found
+            if (analysis.metrics.length > 0) {
+                html += `
+                    <div class="evidence-match-details">
+                        <h5 style="color: #3498db; margin-bottom: 8px;">📊 Metrics Detected:</h5>
+                `;
+                analysis.metrics.forEach(metric => {
+                    html += `<div class="match-item">
+                        <span class="match-indicator found">📊</span>
+                        <span>${metric.context}</span>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Show missing criteria only if we have matchData
+            if (matchData.missingElements && matchData.missingElements.length > 0) {
+                html += `
+                    <div class="missing-evidence">
+                        <h5>To Achieve Level ${Math.min(suggestedLevel + 1, 5)}:</h5>
+                        <ul>
+                            ${matchData.missingElements.slice(0, 3).map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Show bias warnings
+            if (analysis.biasDetected.length > 0) {
+                html += `
+                    <div class="missing-evidence">
+                        <h5>⚠️ Potential Bias Detected:</h5>
+                        <ul>
+                            <li>Subjective terms found: ${analysis.biasDetected.join(', ')}</li>
+                            <li>Consider adding more objective, measurable evidence</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Show improvement suggestions for next level
+            if (suggestedLevel < 5) {
+                const nextLevel = suggestedLevel + 1;
+                const nextLevelData = factorData.levels[nextLevel];
+                
+                // Provide specific guidance based on what's already there
+                html += `
+                    <div class="suggested-improvements">
+                        <h5>To Achieve Level ${nextLevel} (${nextLevelData.description}):</h5>
+                        <ul>
+                `;
+                
+                if (factorId === 'primary-skills' && suggestedLevel === 3) {
+                    html += `
+                        <li>Add evidence of training or mentoring others in these skills</li>
+                        <li>Show how you've solved complex problems using these technologies</li>
+                        <li>Include any innovations or process improvements you've made</li>
+                    `;
+                } else if (factorId === 'primary-skills' && suggestedLevel === 4) {
+                    html += `
+                        <li>Demonstrate thought leadership (presentations, articles, patents)</li>
+                        <li>Show industry-wide impact or recognition</li>
+                        <li>Include evidence of setting technical standards or best practices</li>
+                    `;
+                } else {
+                    nextLevelData.required.slice(0, 3).forEach(req => {
+                        html += `<li>Add evidence of: ${req}</li>`;
+                    });
+                }
+                
+                html += `
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            html += `</div>`;
+            
+            feedbackDiv.className = `evidence-feedback show ${feedbackClass}`;
+            feedbackDiv.innerHTML = html;
+        }
+        
+        // Update suggested score visual indicator
+        function updateSuggestedScore(factorId, suggestedLevel) {
+            // Clear previous suggestions
+            const ratingScale = document.getElementById(`rating-scale-${factorId}`);
+            ratingScale.querySelectorAll('.rating-option').forEach(option => {
+                option.classList.remove('suggested');
+            });
+            
+            // Add suggestion to appropriate level
+            const suggestedOption = document.getElementById(`rating-${factorId}-${suggestedLevel}`);
+            if (suggestedOption) {
+                suggestedOption.classList.add('suggested');
+            }
+            
+            // Store suggested score
+            suggestedScores[factorId] = suggestedLevel;
+        }
+        
+        // Set score function
+        function setScore(factorId, score, element) {
+            // Clear previous selection
+            const factor = element.closest('.factor');
+            factor.querySelectorAll('.rating-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Set new selection
+            element.classList.add('selected');
+            scores[factorId] = score;
+            
+            // Update display
+            const scoreDisplay = document.getElementById('score-' + factorId);
+            scoreDisplay.textContent = score;
+            scoreDisplay.classList.add('scored');
+            
+            // Check if score matches suggestion
+            if (suggestedScores[factorId] && suggestedScores[factorId] !== score) {
+                const evidence = document.getElementById('evidence-' + factorId).value;
+                if (evidence.length > 50) {
+                    // Re-analyze to show why there might be a mismatch
+                    setTimeout(() => analyzeEvidence(factorId), 100);
+                }
+            }
+            
+            // Update totals
+            updateTotals();
+        }
+        
+        // Simplified evidence quality analysis (no scoring suggestions)
+        function analyzeEvidence(factorId) {
+            const evidence = document.getElementById('evidence-' + factorId).value;
+            const factorData = masterCriteria[factorId];
+            
+            if (!evidence || evidence.trim().length < 20) {
+                displayFeedback(factorId, {
+                    quality: 'insufficient',
+                    message: 'Please provide more detailed evidence to enable analysis.',
+                    missing: ['Specific examples', 'Concrete details', 'Measurable outcomes']
+                });
+                return;
+            }
+            
+            // Analyze evidence quality only
+            const analysis = evaluateEvidenceQuality(evidence, factorId);
+            
+            // Display quality feedback
+            displayQualityFeedback(factorId, analysis);
+            
+            // Store evidence quality
+            evidenceQuality[factorId] = analysis.quality;
+            
+            // Update overall evidence quality
+            updateEvidenceQuality();
+        }
+        
+        // Evaluate evidence quality without suggesting scores
+        function evaluateEvidenceQuality(evidence, factorId) {
+            const analysis = {
+                quality: 'poor',
+                hasSpecifics: false,
+                hasMetrics: false,
+                hasTimeframes: false,
+                hasOutcomes: false,
+                biasDetected: [],
+                strengths: [],
+                improvements: [],
+                metrics: extractMetrics(evidence),
+                timeframes: extractTimeframes(evidence),
+                skills: extractSkills(evidence),
+                achievements: extractAchievements(evidence)
+            };
+            
+            // Check for specific examples
+            analysis.hasSpecifics = evidence.length > 100 && 
+                                   (analysis.achievements.length > 0 || 
+                                    /\b(led|managed|created|built|designed|implemented)\b/i.test(evidence));
+            
+            // Check for metrics
+            analysis.hasMetrics = analysis.metrics.length > 0;
+            
+            // Check for timeframes
+            analysis.hasTimeframes = analysis.timeframes.length > 0;
+            
+            // Check for outcomes
+            analysis.hasOutcomes = /\b(result|outcome|impact|improved|increased|reduced|saved|achieved)\b/i.test(evidence);
+            
+            // Check for bias
+            const biasTerms = [
+                'feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 'cultural fit',
+                'young', 'old', 'energetic', 'fresh', 'seasoned', 'overqualified'
+            ];
+            
+            biasTerms.forEach(term => {
+                if (evidence.toLowerCase().includes(term)) {
+                    analysis.biasDetected.push(term);
+                }
+            });
+            
+            // Determine overall quality
+            const qualityScore = 
+                (analysis.hasSpecifics ? 25 : 0) +
+                (analysis.hasMetrics ? 25 : 0) +
+                (analysis.hasTimeframes ? 25 : 0) +
+                (analysis.hasOutcomes ? 25 : 0) -
+                (analysis.biasDetected.length * 10);
+            
+            if (qualityScore >= 75) {
+                analysis.quality = 'excellent';
+            } else if (qualityScore >= 50) {
+                analysis.quality = 'good';
+            } else if (qualityScore >= 25) {
+                analysis.quality = 'fair';
+            } else {
+                analysis.quality = 'poor';
+            }
+            
+            // Build strengths list
+            if (analysis.hasSpecifics) analysis.strengths.push('Contains specific examples');
+            if (analysis.hasMetrics) analysis.strengths.push('Includes measurable data');
+            if (analysis.hasTimeframes) analysis.strengths.push('Provides timeframes');
+            if (analysis.hasOutcomes) analysis.strengths.push('Shows outcomes/impact');
+            if (analysis.skills.length > 0) analysis.strengths.push(`Lists ${analysis.skills.length} technical skills`);
+            
+            // Build improvements list
+            if (!analysis.hasSpecifics) analysis.improvements.push('Add specific examples of work performed');
+            if (!analysis.hasMetrics) analysis.improvements.push('Include numbers, percentages, or quantities');
+            if (!analysis.hasTimeframes) analysis.improvements.push('Specify when this work was done');
+            if (!analysis.hasOutcomes) analysis.improvements.push('Describe the impact or results achieved');
+            if (analysis.biasDetected.length > 0) analysis.improvements.push('Replace subjective terms with objective facts');
+            
+            return analysis;
+        }
+        
+        // Display quality feedback without score suggestions
+        function displayQualityFeedback(factorId, analysis) {
+            const feedbackDiv = document.getElementById('feedback-' + factorId);
+            const factorData = masterCriteria[factorId];
+            
+            let feedbackClass = 'feedback-poor';
+            if (analysis.quality === 'excellent') feedbackClass = 'feedback-excellent';
+            else if (analysis.quality === 'good') feedbackClass = 'feedback-good';
+            else if (analysis.quality === 'fair') feedbackClass = 'feedback-warning';
+            
+            let html = `
+                <div class="feedback-header">
+                    <div class="feedback-title">Evidence Quality - ${factorData.factor}</div>
+                    <div class="match-score">${analysis.quality.charAt(0).toUpperCase() + analysis.quality.slice(1)} Quality</div>
+                </div>
+                <div class="feedback-content">
+                    <p><strong>Evidence Quality Assessment</strong></p>
+                    
+                    <div class="evidence-quality-checklist" style="margin: 15px 0;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="quality-item">
+                                ${analysis.hasSpecifics ? '✅' : '❌'} Specific Examples
+                            </div>
+                            <div class="quality-item">
+                                ${analysis.hasMetrics ? '✅' : '❌'} Measurable Data
+                            </div>
+                            <div class="quality-item">
+                                ${analysis.hasTimeframes ? '✅' : '❌'} Timeframes
+                            </div>
+                            <div class="quality-item">
+                                ${analysis.hasOutcomes ? '✅' : '❌'} Outcomes/Impact
+                            </div>
+                        </div>
+                    </div>
+            `;
+            
+            // Show detected elements
+            if (analysis.skills.length > 0) {
+                html += `
+                    <div class="evidence-match-details">
+                        <h5 style="color: #3498db; margin-bottom: 8px;">💻 Skills Detected:</h5>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                `;
+                analysis.skills.forEach(skill => {
+                    html += `<span style="background: #3498db; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em;">${skill.toUpperCase()}</span>`;
+                });
+                html += `</div></div>`;
+            }
+            
+            if (analysis.metrics.length > 0) {
+                html += `
+                    <div class="evidence-match-details">
+                        <h5 style="color: #27ae60; margin-bottom: 8px;">📊 Metrics Found:</h5>
+                `;
+                analysis.metrics.slice(0, 3).forEach(metric => {
+                    html += `<div class="match-item">
+                        <span class="match-indicator found">📊</span>
+                        <span>${metric.context}</span>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            // Show improvements needed
+            if (analysis.improvements.length > 0) {
+                html += `
+                    <div class="suggested-improvements">
+                        <h5>To Improve Evidence Quality:</h5>
+                        <ul>
+                            ${analysis.improvements.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Show bias warnings
+            if (analysis.biasDetected.length > 0) {
+                html += `
+                    <div class="missing-evidence">
+                        <h5>⚠️ Potential Bias Detected:</h5>
+                        <ul>
+                            <li>Subjective terms found: ${analysis.biasDetected.join(', ')}</li>
+                            <li>Replace with objective, verifiable facts</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Add note about GPT analysis
+            html += `
+                <div style="margin-top: 15px; padding: 10px; background: #e8f4f8; border-radius: 6px; border-left: 4px solid #3498db;">
+                    <p style="margin: 0; font-size: 0.9em; color: #2c3e50;">
+                        <strong>📤 Ready for GPT Analysis</strong><br>
+                        Once all evidence is collected, export to the Performance-based Hiring GPT for detailed scoring recommendations and competency analysis.
+                    </p>
+                </div>
+            `;
+            
+            html += `</div>`;
+            
+            feedbackDiv.className = `evidence-feedback show ${feedbackClass}`;
+            feedbackDiv.innerHTML = html;
+        }
+        
+        // Reset individual factor evidence and score
+        function resetFactorEvidence(factorId) {
+            if (confirm('Reset this factor\'s score and evidence? This will clear your current rating and evidence.')) {
+                // Clear the score
+                delete scores[factorId];
+                delete suggestedScores[factorId];
+                delete evidenceQuality[factorId];
+                
+                // Clear visual selection
+                const factor = document.querySelector(`[data-factor-id="${factorId}"]`);
+                factor.querySelectorAll('.rating-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.classList.remove('suggested');
+                });
+                
+                // Reset score display
+                const scoreDisplay = document.getElementById('score-' + factorId);
+                scoreDisplay.textContent = '-';
+                scoreDisplay.classList.remove('scored');
+                
+                // Clear evidence and feedback
+                document.getElementById('evidence-' + factorId).value = '';
+                const feedbackDiv = document.getElementById('feedback-' + factorId);
+                feedbackDiv.classList.remove('show');
+                feedbackDiv.innerHTML = '';
+                
+                // Update totals
+                updateTotals();
+                updateEvidenceQuality();
+                
+                // Show success message
+                const evidenceSection = factor.querySelector('.evidence-section');
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = `
+                    background: #d4edda;
+                    color: #155724;
+                    padding: 10px;
+                    border-radius: 6px;
+                    margin-top: 10px;
+                    text-align: center;
+                `;
+                successMsg.textContent = 'Factor reset successfully. Add new evidence and re-score.';
+                evidenceSection.appendChild(successMsg);
+                
+                // Remove success message after 3 seconds
+                setTimeout(() => successMsg.remove(), 3000);
+            }
+        }
+        
+        // Display simple feedback (for insufficient evidence)
+        function displayFeedback(factorId, data) {
+            const feedbackDiv = document.getElementById('feedback-' + factorId);
+            
+            let feedbackClass = 'feedback-poor';
+            if (data.quality === 'insufficient') {
+                feedbackClass = 'feedback-warning';
+            }
+            
+            let html = `
+                <div class="feedback-header">
+                    <div class="feedback-title">${data.message}</div>
+                </div>
+                <div class="feedback-content">
+                    <div class="missing-evidence">
+                        <h5>Please provide:</h5>
+                        <ul>
+                            ${data.missing.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            feedbackDiv.className = `evidence-feedback show ${feedbackClass}`;
+            feedbackDiv.innerHTML = html;
+        }
+        
+        // Update evidence quality score
+        function updateEvidenceQuality() {
+            const qualityScores = Object.values(evidenceQuality);
+            if (qualityScores.length === 0) {
+                document.getElementById('evidenceQualityScore').textContent = '-';
+                return;
+            }
+            
+            const qualityMap = { 'excellent': 4, 'good': 3, 'fair': 2, 'poor': 1, 'insufficient': 0 };
+            const totalScore = qualityScores.reduce((sum, q) => sum + (qualityMap[q] || 0), 0);
+            const averageScore = totalScore / qualityScores.length;
+            
+            let overallQuality = 'Poor';
+            if (averageScore >= 3.5) overallQuality = 'Excellent';
+            else if (averageScore >= 2.5) overallQuality = 'Good';
+            else if (averageScore >= 1.5) overallQuality = 'Fair';
+            
+            document.getElementById('evidenceQualityScore').textContent = overallQuality;
+        }
+        
+        // Update totals
+        function updateTotals() {
+            const scoredCount = Object.keys(scores).length;
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            const averageScore = scoredCount > 0 ? (totalScore / scoredCount).toFixed(1) : '0.0';
+            const completionRate = Math.round((scoredCount / totalFactors) * 100);
+            
+            // Update displays
+            document.getElementById('totalScore').textContent = totalScore;
+            document.getElementById('summaryTotal').textContent = totalScore;
+            document.getElementById('summaryAverage').textContent = averageScore;
+            document.getElementById('averageScore').textContent = averageScore;
+            document.getElementById('factorsScored').textContent = scoredCount + '/' + totalFactors;
+            document.getElementById('completion').textContent = completionRate + '%';
+            
+            // Update recommendation
+            if (completionRate === 100) {
+                const avg = parseFloat(averageScore);
+                let recommendation = '';
+                
+                if (avg >= 4.5) {
+                    recommendation = '<strong>STRONG HIRE:</strong> This candidate demonstrates exceptional qualifications across all dimensions. They are in the top tier of talent and should be pursued aggressively.';
+                } else if (avg >= 3.5) {
+                    recommendation = '<strong>HIRE:</strong> This is a solid candidate who meets or exceeds requirements in most areas. They show strong potential for success in this role.';
+                } else if (avg >= 2.5) {
+                    recommendation = '<strong>CONDITIONAL HIRE:</strong> This candidate meets basic requirements but has some gaps. Consider additional interviews or assessments in weak areas.';
+                } else if (avg >= 2.0) {
+                    recommendation = '<strong>RECONSIDER:</strong> Significant concerns exist about this candidate\'s fit for the role. Only proceed if there are compelling reasons.';
+                } else {
+                    recommendation = '<strong>NO HIRE:</strong> This candidate does not meet the minimum requirements for success in this role.';
+                }
+                
+                // Add evidence quality consideration
+                const evidenceQualityText = document.getElementById('evidenceQualityScore').textContent;
+                if (evidenceQualityText === 'Poor' || evidenceQualityText === 'Fair') {
+                    recommendation += '<br><br><strong>⚠️ Note:</strong> Evidence quality is ' + evidenceQualityText.toLowerCase() + 
+                                    '. Consider gathering more specific, objective evidence before making a final decision.';
+                }
+                
+                document.getElementById('recommendationText').innerHTML = recommendation;
+            } else {
+                document.getElementById('recommendationText').textContent = `Complete all ${totalFactors} factors to generate a full recommendation. Currently ${completionRate}% complete.`;
+            }
+        }
+        
+        // Build scorecard dynamically
+        function buildScorecard() {
+            const scorecardDiv = document.getElementById('scorecard');
+            let html = '';
+            
+            const categories = {
+                'BASIC COMPETENCIES': ['primary-skills', 'experience', 'achiever-pattern'],
+                'ESSENTIAL CORE COMPETENCES (In Comparison to the KPOs/OKRs for the Role)': ['technical-ability', 'management-ability', 'team-skills', 'problem-solving'],
+                'SITUATIONAL FIT FACTORS – WEIGHT THESE FACTORS HIGHER': ['job-fit', 'managerial-fit', 'culture-environment', 'motivation']
+            };
+            
+            Object.entries(categories).forEach(([categoryName, factorIds]) => {
+                html += `
+                    <div class="category">
+                        <div class="category-header">${categoryName}</div>
+                        <div class="factors">
+                `;
+                
+                factorIds.forEach(factorId => {
+                    const factor = masterCriteria[factorId];
+                    html += createFactorHTML(factorId, factor);
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            scorecardDiv.innerHTML = html;
+        }
+        
+        // Create factor HTML with evidence tooltips
+        function createFactorHTML(factorId, factorData) {
+            const ratingLabels = ['Minimal', 'Adequate', 'Strong', 'Great', 'Superb'];
+            
+            return `
+                <div class="factor" data-factor-id="${factorId}">
+                    <div class="factor-header">
+                        <span class="factor-name">${factorData.factor}</span>
+                        <span class="factor-score" id="score-${factorId}">-</span>
+                    </div>
+                    <div class="rating-scale" id="rating-scale-${factorId}">
+                        ${[1, 2, 3, 4, 5].map(level => `
+                            <div class="rating-option" id="rating-${factorId}-${level}" onclick="setScore('${factorId}', ${level}, this)">
+                                <span class="rating-level">${level}</span>
+                                <span class="rating-label">${ratingLabels[level - 1]}</span>
+                                <span class="rating-description">${factorData.levels[level].description}</span>
+                                <div class="evidence-tooltip">
+                                    <h4>Level ${level} Evidence:</h4>
+                                    <p>${factorData.levels[level].evidence}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="evidence-section">
+                        <label class="evidence-label">
+                            Evidence & Notes:
+                            <div class="evidence-buttons">
+                                <button class="analyze-btn" onclick="analyzeEvidence('${factorId}')">
+                                    Analyze Evidence
+                                </button>
+                                <button class="reset-btn" onclick="resetFactorEvidence('${factorId}')">
+                                    Reset
+                                </button>
+                            </div>
+                        </label>
+                        <textarea class="evidence-input" 
+                                  id="evidence-${factorId}" 
+                                  placeholder="Document specific evidence for ${factorData.factor.toLowerCase()}..."
+                                  onkeyup="onEvidenceChange('${factorId}')"></textarea>
+                        <div class="evidence-feedback" id="feedback-${factorId}"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Enhanced evidence change handler
+        function onEvidenceChange(factorId) {
+            // Auto-save evidence to localStorage
+            const evidence = document.getElementById('evidence-' + factorId).value;
+            const savedEvidence = JSON.parse(localStorage.getItem('tempEvidence') || '{}');
+            savedEvidence[factorId] = evidence;
+            localStorage.setItem('tempEvidence', JSON.stringify(savedEvidence));
+        }
+        
+        // Performance objectives functions
+        function updatePerformanceObjectives() {
+            performanceObjectives = [];
+            for (let i = 1; i <= 5; i++) {
+                const obj = document.getElementById(`objective${i}`).value.trim();
+                if (obj) {
+                    performanceObjectives.push(obj);
+                }
+            }
+            
+            // Update evidence placeholders to reference objectives
+            if (performanceObjectives.length > 0) {
+                updateEvidencePlaceholders();
+            }
+        }
+        
+        function updateEvidencePlaceholders() {
+            // Update job-fit evidence placeholder
+            const jobFitTextarea = document.getElementById('evidence-job-fit');
+            if (jobFitTextarea) {
+                jobFitTextarea.placeholder = `Document specific examples related to:\n${performanceObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}`;
+            }
+            
+            // Update motivation evidence placeholder
+            const motivationTextarea = document.getElementById('evidence-motivation');
+            if (motivationTextarea) {
+                motivationTextarea.placeholder = `Document enthusiasm and capability for:\n${performanceObjectives.slice(0, 3).join('\n')}`;
+            }
+        }
+        
+        function analyzeObjectiveFit() {
+            if (performanceObjectives.length === 0) {
+                alert('Please enter at least one performance objective first.');
+                return;
+            }
+            
+            const analysisDiv = document.getElementById('objective-analysis');
+            analysisDiv.style.display = 'block';
+            
+            let html = '<h4 style="color: #2c3e50; margin-bottom: 15px;">Performance Objectives Alignment Analysis</h4>';
+            
+            // Analyze each objective
+            performanceObjectives.forEach((objective, index) => {
+                const keywords = extractKeywords(objective);
+                const matches = findEvidenceMatches(keywords);
+                
+                html += `
+                    <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 6px;">
+                        <h5 style="color: #3498db; margin-bottom: 8px;">Objective ${index + 1}: ${objective}</h5>
+                        <div style="margin-left: 20px;">
+                `;
+                
+                if (matches.length > 0) {
+                    html += `<p style="color: #27ae60; margin-bottom: 5px;">✓ Evidence found in:</p><ul style="margin: 0; padding-left: 20px;">`;
+                    matches.forEach(match => {
+                        html += `<li style="color: #555; font-size: 0.9em;">${match}</li>`;
+                    });
+                    html += '</ul>';
+                } else {
+                    html += `<p style="color: #e74c3c;">✗ No direct evidence found for this objective</p>`;
+                    html += `<p style="color: #7f8c8d; font-size: 0.85em; margin-top: 5px;">Consider adding evidence in Job Fit or relevant skill areas</p>`;
+                }
+                
+                html += '</div></div>';
+            });
+            
+            // Overall recommendation
+            const overallScore = calculateObjectiveAlignment();
+            html += `
+                <div style="margin-top: 20px; padding: 15px; background: ${overallScore >= 60 ? '#d4edda' : '#f8d7da'}; border-radius: 6px;">
+                    <h5 style="color: ${overallScore >= 60 ? '#155724' : '#721c24'}; margin-bottom: 8px;">
+                        Overall Alignment: ${overallScore}%
+                    </h5>
+                    <p style="color: ${overallScore >= 60 ? '#155724' : '#721c24'}; margin: 0;">
+                        ${overallScore >= 80 ? 'Strong alignment with performance objectives' :
+                          overallScore >= 60 ? 'Moderate alignment - some gaps to address' :
+                          'Limited alignment - significant evidence gaps'}
+                    </p>
+                </div>
+            `;
+            
+            analysisDiv.innerHTML = html;
+        }
+        
+        function extractKeywords(objective) {
+            // Extract meaningful keywords from objective
+            const stopWords = ['the', 'and', 'or', 'in', 'of', 'to', 'for', 'with', 'within', 'across'];
+            return objective.toLowerCase()
+                .split(/\s+/)
+                .filter(word => word.length > 3 && !stopWords.includes(word));
+        }
+        
+        function findEvidenceMatches(keywords) {
+            const matches = [];
+            
+            // Check all evidence fields
+            Object.keys(masterCriteria).forEach(factorId => {
+                const evidence = document.getElementById(`evidence-${factorId}`)?.value || '';
+                if (evidence) {
+                    const evidenceLower = evidence.toLowerCase();
+                    const hasMatch = keywords.some(keyword => evidenceLower.includes(keyword));
+                    
+                    if (hasMatch) {
+                        matches.push(masterCriteria[factorId].factor);
+                    }
+                }
+            });
+            
+            return matches;
+        }
+        
+        function calculateObjectiveAlignment() {
+            if (performanceObjectives.length === 0) return 0;
+            
+            let alignedCount = 0;
+            performanceObjectives.forEach(objective => {
+                const keywords = extractKeywords(objective);
+                const matches = findEvidenceMatches(keywords);
+                if (matches.length > 0) alignedCount++;
+            });
+            
+            return Math.round((alignedCount / performanceObjectives.length) * 100);
+        }
+        
+        // Save scorecard
+        function saveScorecard() {
+            updatePerformanceObjectives();
+            
+            const data = {
+                candidate: document.getElementById('candidate').value,
+                position: document.getElementById('position').value,
+                interviewer: document.getElementById('interviewer').value,
+                date: document.getElementById('date').value,
+                performanceObjectives: performanceObjectives,
+                scores: scores,
+                suggestedScores: suggestedScores,
+                evidence: {},
+                evidenceQuality: evidenceQuality,
+                overallEvidence: document.getElementById('overall-evidence').value,
+                totalScore: document.getElementById('totalScore').textContent,
+                averageScore: document.getElementById('averageScore').textContent,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Collect evidence
+            Object.keys(masterCriteria).forEach(factorId => {
+                data.evidence[factorId] = document.getElementById('evidence-' + factorId).value;
+            });
+            
+            // Save to localStorage
+            const savedScorecards = JSON.parse(localStorage.getItem('scorecards') || '[]');
+            savedScorecards.push(data);
+            localStorage.setItem('scorecards', JSON.stringify(savedScorecards));
+            
+            alert('Scorecard saved successfully!');
+        }
+        
+        // Export scorecard
+        function exportScorecard() {
+            updatePerformanceObjectives();
+            
+            const content = `
+Quality of Hire Talent Scorecard
+================================
+Candidate: ${document.getElementById('candidate').value}
+Position: ${document.getElementById('position').value}
+Interviewer: ${document.getElementById('interviewer').value}
+Date: ${document.getElementById('date').value}
+
+Performance Objectives:
+${performanceObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
+
+Total Score: ${document.getElementById('totalScore').textContent} / 55
+Average Score: ${document.getElementById('averageScore').textContent}
+Evidence Quality: ${document.getElementById('evidenceQualityScore').textContent}
+
+Detailed Scores:
+${Object.entries(scores).map(([factorId, score]) => {
+    const suggested = suggestedScores[factorId];
+    const evidence = document.getElementById(`evidence-${factorId}`).value;
+    const factor = masterCriteria[factorId].factor;
+    return `\n${factor}: ${score}/5${suggested && suggested !== score ? ` (AI Suggested: ${suggested})` : ''}
+Evidence: ${evidence || 'No evidence provided'}`;
+}).join('\n')}
+
+Overall Evidence:
+${document.getElementById('overall-evidence').value}
+            `;
+            
+            // Create blob and download
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scorecard_${document.getElementById('candidate').value || 'candidate'}_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('Scorecard exported successfully!');
+        }
+        
+        // Reset scorecard
+        function resetScorecard() {
+            if (confirm('Are you sure you want to reset all scores and evidence? This cannot be undone.')) {
+                localStorage.removeItem('tempEvidence');
+                location.reload();
+            }
+        }
+        
+        // GPT Export functionality
+        function exportToGPT() {
+            const completionRate = Math.round((Object.keys(scores).length / totalFactors) * 100);
+            
+            if (completionRate < 50) {
+                if (!confirm('Scorecard is less than 50% complete. The GPT analysis will be limited. Export anyway?')) {
+                    return;
+                }
+            }
+            
+            const exportData = exportForGPTAnalysis();
+            showExportModal(exportData);
+        }
+        
+        function exportForGPTAnalysis() {
+            updatePerformanceObjectives();
+            
+            const scorecardData = {
+                candidateInfo: {
+                    name: document.getElementById('candidate').value || 'Unnamed Candidate',
+                    position: document.getElementById('position').value || 'Position Not Specified',
+                    interviewer: document.getElementById('interviewer').value || 'Interviewer Not Specified',
+                    date: document.getElementById('date').value || new Date().toISOString().split('T')[0],
+                    timestamp: new Date().toISOString()
+                },
+                performanceObjectives: performanceObjectives || [],
+                scores: {
+                    individual: scores,
+                    suggested: suggestedScores,
+                    total: document.getElementById('totalScore').textContent,
+                    average: parseFloat(document.getElementById('averageScore').textContent) || 0,
+                    completion: Math.round((Object.keys(scores).length / totalFactors) * 100)
+                },
+                evidenceAnalysis: {
+                    quality: evidenceQuality,
+                    overallQuality: document.getElementById('evidenceQualityScore').textContent || 'Not Assessed',
+                    biasDetected: getBiasAnalysis()
+                },
+                detailedEvidence: getStructuredEvidence(),
+                categoryBreakdown: getCategoryBreakdown(),
+                recommendation: getRecommendationData(),
+                overallEvidence: document.getElementById('overall-evidence').value || ''
+            };
+            
+            return {
+                json: JSON.stringify(scorecardData, null, 2),
+                structured: createStructuredExport(scorecardData),
+                gptPrompt: createGPTPrompt(scorecardData)
+            };
+        }
+        
+        function getStructuredEvidence() {
+            const evidence = {};
+            Object.keys(masterCriteria).forEach(factorId => {
+                const factorData = masterCriteria[factorId];
+                const evidenceText = document.getElementById(`evidence-${factorId}`).value || '';
+                
+                evidence[factorId] = {
+                    factor: factorData.factor,
+                    score: scores[factorId] || null,
+                    suggestedScore: suggestedScores[factorId] || null,
+                    evidence: evidenceText,
+                    evidenceQuality: evidenceQuality[factorId] || 'not analyzed',
+                    scoreMismatch: (scores[factorId] && suggestedScores[factorId]) ? 
+                                 Math.abs(scores[factorId] - suggestedScores[factorId]) : 0
+                };
+            });
+            return evidence;
+        }
+        
+        function getCategoryBreakdown() {
+            const categories = {
+                'Basic Competencies': ['primary-skills', 'experience', 'achiever-pattern'],
+                'Core Competences': ['technical-ability', 'management-ability', 'team-skills', 'problem-solving'],
+                'Situational Fit': ['job-fit', 'managerial-fit', 'culture-environment', 'motivation']
+            };
+            
+            const breakdown = {};
+            Object.entries(categories).forEach(([categoryName, factorIds]) => {
+                const categoryScores = factorIds
+                    .filter(id => scores[id])
+                    .map(id => scores[id]);
+                
+                breakdown[categoryName] = {
+                    average: categoryScores.length > 0 ? 
+                        (categoryScores.reduce((a, b) => a + b, 0) / categoryScores.length).toFixed(1) : '0.0',
+                    total: categoryScores.reduce((a, b) => a + b, 0),
+                    completion: Math.round((categoryScores.length / factorIds.length) * 100),
+                    factors: factorIds.map(id => ({
+                        id,
+                        name: masterCriteria[id].factor,
+                        score: scores[id] || null
+                    }))
+                };
+            });
+            
+            return breakdown;
+        }
+        
+        function getBiasAnalysis() {
+            const biasReport = {};
+            Object.keys(masterCriteria).forEach(factorId => {
+                const evidence = document.getElementById(`evidence-${factorId}`).value || '';
+                if (evidence) {
+                    const biasTerms = [
+                        'feel', 'think', 'seems', 'probably', 'maybe', 'nice', 'good guy', 
+                        'cultural fit', 'young', 'old', 'energetic', 'fresh', 'seasoned',
+                        'overqualified', 'aggressive', 'pushy', 'quiet', 'loud', 'likeable'
+                    ];
+                    
+                    const detectedBias = biasTerms.filter(term => 
+                        evidence.toLowerCase().includes(term.toLowerCase())
+                    );
+                    
+                    if (detectedBias.length > 0) {
+                        biasReport[factorId] = detectedBias;
+                    }
+                }
+            });
+            return biasReport;
+        }
+        
+        function getRecommendationData() {
+            const avg = parseFloat(document.getElementById('averageScore').textContent) || 0;
+            const completion = Math.round((Object.keys(scores).length / totalFactors) * 100);
+            
+            let level = 'incomplete';
+            if (completion >= 90) {
+                if (avg >= 4.5) level = 'strong_hire';
+                else if (avg >= 3.5) level = 'hire';
+                else if (avg >= 2.5) level = 'conditional';
+                else if (avg >= 2.0) level = 'reconsider';
+                else level = 'no_hire';
+            }
+            
+            return {
+                level,
+                average: avg,
+                completion,
+                text: document.getElementById('recommendationText').textContent || 'Complete scoring for recommendation'
+            };
+        }
+        
+        function createStructuredExport(data) {
+            return `PERFORMANCE-BASED HIRING SCORECARD ANALYSIS
+=====================================================
+
+CANDIDATE: ${data.candidateInfo.name}
+POSITION: ${data.candidateInfo.position}
+DATE: ${data.candidateInfo.date}
+INTERVIEWER: ${data.candidateInfo.interviewer}
+
+PERFORMANCE OBJECTIVES:
+${data.performanceObjectives.length > 0 ? 
+    data.performanceObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n') : 
+    'No performance objectives specified'}
+
+OVERALL SCORES:
+- Total Score: ${data.scores.total}/55
+- Average Score: ${data.scores.average}/5.0
+- Completion: ${data.scores.completion}%
+- Evidence Quality: ${data.evidenceAnalysis.overallQuality}
+
+CATEGORY BREAKDOWN:
+${Object.entries(data.categoryBreakdown).map(([cat, details]) => 
+    `${cat}: ${details.average}/5.0 (${details.completion}% complete)`
+).join('\n')}
+
+DETAILED FACTOR ANALYSIS:
+${Object.entries(data.detailedEvidence).map(([factorId, details]) => `
+${details.factor.toUpperCase()}:
+- Score: ${details.score || 'Not scored'}/5
+- AI Suggested: ${details.suggestedScore || 'Not analyzed'}/5
+- Evidence Quality: ${details.evidenceQuality}
+- Evidence: ${details.evidence || 'No evidence provided'}
+`).join('\n')}
+
+BIAS ANALYSIS:
+${Object.keys(data.evidenceAnalysis.biasDetected).length > 0 ? 
+    Object.entries(data.evidenceAnalysis.biasDetected).map(([factor, terms]) => 
+        `${masterCriteria[factor].factor}: ${terms.join(', ')}`
+    ).join('\n') : 
+    'No significant bias indicators detected'}
+
+RECOMMENDATION: ${data.recommendation.text}`;
+        }
+        
+        function createGPTPrompt(data) {
+            // Create a clean, structured format that's easy to paste
+            return `PERFORMANCE-BASED HIRING SCORECARD
+=====================================
+
+CANDIDATE: ${data.candidateInfo.name}
+POSITION: ${data.candidateInfo.position}
+DATE: ${data.candidateInfo.date}
+
+PERFORMANCE OBJECTIVES:
+${data.performanceObjectives.length > 0 ? 
+    data.performanceObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n') : 
+    'None specified'}
+
+EVIDENCE COLLECTED:
+${Object.entries(data.detailedEvidence).map(([factorId, details]) => `
+${details.factor.toUpperCase()}
+Current Score: ${details.score || 'Not scored'}/5
+Evidence Quality: ${details.evidenceQuality || 'Not assessed'}
+Evidence: ${details.evidence || 'No evidence provided'}
+---`).join('\n')}
+
+ANALYSIS REQUEST:
+Please analyze this Performance-based Hiring scorecard and provide:
+
+1. Recommended score for each factor (1-5) based on evidence
+2. Confidence level in each recommendation
+3. Key strengths identified in the evidence
+4. Critical gaps or concerns
+5. Overall hiring recommendation
+6. Specific follow-up questions for final interview
+
+Focus on whether this candidate can achieve the stated performance objectives.`;
+        }
+        
+        function showExportModal(exportData) {
+            const existingModal = document.querySelector('.modal-overlay');
+            if (existingModal) existingModal.remove();
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            
+            const completionRate = Math.round((Object.keys(scores).length / totalFactors) * 100);
+            
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h2 style="margin-bottom: 20px; color: #2c3e50; text-align: center;">
+                        Export to Performance-based Hiring GPT
+                    </h2>
+                    
+                    <div class="export-stats">
+                        <strong>Export Status:</strong><br>
+                        ✓ Completion: ${completionRate}% (${Object.keys(scores).length}/${totalFactors} factors)<br>
+                        ✓ Performance Objectives: ${performanceObjectives ? performanceObjectives.length : 0} defined<br>
+                        ✓ Evidence Quality: ${document.getElementById('evidenceQualityScore').textContent}
+                    </div>
+                    
+                    ${completionRate < 70 ? `
+                        <div class="export-warning">
+                            <strong>⚠️ Notice:</strong> Scorecard is ${completionRate}% complete. 
+                            For best GPT analysis, consider completing more factors before export.
+                        </div>
+                    ` : ''}
+                    
+                    <div class="export-option">
+                        <h3>📋 Copy GPT Prompt</h3>
+                        <p>Ready-to-use prompt for your Performance-based Hiring GPT:</p>
+                        <textarea readonly class="export-textarea" style="height: 120px;" id="gpt-prompt-text">${exportData.gptPrompt}</textarea>
+                        <button class="export-btn btn-gpt" onclick="copyToClipboard(document.getElementById('gpt-prompt-text').value); showCopySuccess('GPT prompt copied!')">
+                            📋 Copy GPT Prompt
+                        </button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <h3>📊 Copy Structured Report</h3>
+                        <p>Formatted scorecard data for documentation:</p>
+                        <textarea readonly class="export-textarea" style="height: 100px;" id="structured-text">${exportData.structured}</textarea>
+                        <button class="export-btn btn-report" onclick="copyToClipboard(document.getElementById('structured-text').value); showCopySuccess('Report copied!')">
+                            📊 Copy Report
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="export-btn btn-close" onclick="this.closest('.modal-overlay').remove()">
+                            ✕ Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+        
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+        
+        function showCopySuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed; top: 20px; right: 20px; background: #27ae60; color: white;
+                padding: 15px 20px; border-radius: 6px; z-index: 10001; font-weight: 600;
+            `;
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+        }
+        
+        // Quick GPT Export - streamlined version
+        function quickGPTExport() {
+            updatePerformanceObjectives();
+            
+            const hasEvidence = Object.keys(masterCriteria).some(factorId => 
+                document.getElementById(`evidence-${factorId}`).value.trim().length > 0
+            );
+            
+            if (!hasEvidence) {
+                alert('Please add evidence for at least one factor before exporting to GPT.');
+                return;
+            }
+            
+            const data = exportForGPTAnalysis();
+            
+            // Create a simple modal for quick copy
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px;">
+                    <h2 style="margin-bottom: 20px; color: #10a37f; text-align: center;">
+                        🤖 Quick GPT Analysis
+                    </h2>
+                    
+                    <p style="margin-bottom: 15px; color: #666;">
+                        Copy this text and paste it into ChatGPT or your Performance-based Hiring GPT:
+                    </p>
+                    
+                    <textarea readonly class="export-textarea" style="height: 300px; font-family: monospace;" id="quick-gpt-text">${data.gptPrompt}</textarea>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="export-btn" style="background: #10a37f; flex: 1;" onclick="copyToClipboard(document.getElementById('quick-gpt-text').value); this.textContent = '✓ Copied!'; setTimeout(() => this.textContent = '📋 Copy to Clipboard', 2000)">
+                            📋 Copy to Clipboard
+                        </button>
+                        <button class="export-btn btn-close" style="flex: 0.3;" onclick="this.closest('.modal-overlay').remove()">
+                            Close
+                        </button>
+                    </div>
+                    
+                    <p style="margin-top: 15px; font-size: 0.85em; color: #666; text-align: center;">
+                        💡 Tip: For best results, use your specialized Performance-based Hiring GPT
+                    </p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Auto-select the text for easy copying
+            const textarea = document.getElementById('quick-gpt-text');
+            textarea.select();
+        }
+        
+        // Initialize the scorecard on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            buildScorecard();
+            
+            // Load any temporarily saved evidence
+            const savedEvidence = JSON.parse(localStorage.getItem('tempEvidence') || '{}');
+            Object.entries(savedEvidence).forEach(([factorId, evidence]) => {
+                const textarea = document.getElementById('evidence-' + factorId);
+                if (textarea && evidence) {
+                    textarea.value = evidence;
+                    // Trigger initial analysis if evidence exists
+                    if (evidence.length > 50) {
+                        const analysis = analyzeAgainstMasterCriteria(evidence, factorId);
+                        updateSuggestedScore(factorId, analysis.suggestedLevel);
+                    }
+                }
+            });
+            
+            // Add event listeners to objectives
+            document.querySelectorAll('.objective-input').forEach(input => {
+                input.addEventListener('blur', function() {
+                    updatePerformanceObjectives();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
