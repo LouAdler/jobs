@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance-based Hiring Decision Tool</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .candidate-info {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .candidate-info h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-field label {
+            font-weight: 600;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        
+        .info-field input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        .info-field input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .evaluation-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .evaluation-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .factor-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .factor-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .factor-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .factor-score {
+            font-size: 1.2em;
+            font-weight: 700;
+            padding: 5px 15px;
+            border-radius: 20px;
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .factor-description {
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .evidence-needed {
+            background: #e8f4f8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            border-left: 4px solid #3498db;
+        }
+        
+        .rating-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .rating-btn {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .rating-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        
+        .rating-btn.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .rating-btn.need-info {
+            background: #f39c12;
+            color: white;
+            border-color: #f39c12;
+        }
+        
+        .rating-description {
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            border-left: 4px solid #3498db;
+        }
+        
+        .notes-area {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 0.95em;
+            resize: vertical;
+            min-height: 80px;
+            margin-top: 10px;
+        }
+        
+        .results-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .results-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .score-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .score-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .score-card h3 {
+            color: #7f8c8d;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+        
+        .score-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .recommendation {
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .recommendation.strong-hire {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .recommendation.hire {
+            background: #cfe2ff;
+            border: 2px solid #0d6efd;
+            color: #084298;
+        }
+        
+        .recommendation.maybe {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+        
+        .recommendation.no-hire {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+        
+        .report-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .report-section.show {
+            display: block;
+        }
+        
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .report-content {
+            line-height: 1.8;
+        }
+        
+        .report-content h3 {
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .report-content ul {
+            margin-left: 20px;
+        }
+        
+        .report-content li {
+            margin-bottom: 10px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .action-buttons {
+                display: none;
+            }
+            
+            .rating-options {
+                display: none;
+            }
+            
+            .notes-area {
+                display: none;
+            }
+            
+            .factor-card {
+                page-break-inside: avoid;
+            }
+        }
+        
+        .progress-indicator {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db 0%, #2ecc71 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Performance-based Hiring Decision Tool</h1>
+        <p>Systematic evaluation based on evidence of comparable accomplishments</p>
+    </header>
+    
+    <div class="container">
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+            </div>
+            <div class="progress-text" id="progressText">0 of 16 factors evaluated</div>
+        </div>
+        
+        <!-- Candidate Information -->
+        <div class="candidate-info">
+            <h2>Candidate Information</h2>
+            <div class="info-grid">
+                <div class="info-field">
+                    <label>Candidate Name</label>
+                    <input type="text" id="candidateName" placeholder="Enter candidate name">
+                </div>
+                <div class="info-field">
+                    <label>Position</label>
+                    <input type="text" id="position" placeholder="Enter position">
+                </div>
+                <div class="info-field">
+                    <label>Interview Date</label>
+                    <input type="date" id="interviewDate">
+                </div>
+                <div class="info-field">
+                    <label>Interviewer(s)</label>
+                    <input type="text" id="interviewer" placeholder="Enter interviewer name(s)">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Evaluation Section -->
+        <div class="evaluation-section">
+            <h2>Factor Evaluation</h2>
+            <div id="factorsContainer"></div>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-section">
+            <h2>Evaluation Summary</h2>
+            <div class="score-summary">
+                <div class="score-card">
+                    <h3>Overall Score</h3>
+                    <div class="score-value" id="overallScore">-</div>
+                </div>
+                <div class="score-card">
+                    <h3>Factors Evaluated</h3>
+                    <div class="score-value" id="factorsEvaluated">0/16</div>
+                </div>
+                <div class="score-card">
+                    <h3>Strengths (4.0+)</h3>
+                    <div class="score-value" id="strengthsCount">0</div>
+                </div>
+                <div class="score-card">
+                    <h3>Concerns (<2.5)</h3>
+                    <div class="score-value" id="concernsCount">0</div>
+                </div>
+            </div>
+            
+            <div id="recommendationBox"></div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="generateReport()">Generate Full Report</button>
+                <button class="btn btn-secondary" onclick="saveEvaluation()">Save Evaluation</button>
+                <button class="btn btn-success" onclick="window.print()">Print Report</button>
+            </div>
+        </div>
+        
+        <!-- Report Section -->
+        <div class="report-section" id="reportSection">
+            <div class="report-header">
+                <h2>Candidate Evaluation Report</h2>
+                <p id="reportDate"></p>
+            </div>
+            <div class="report-content" id="reportContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Scorecard data
+        const scorecardData = [
+            {
+                factor: "Work History Review",
+                description: "Assess job fit on a scope and scale basis looking for evidence of the Achiever Pattern. Ask about job changes.",
+                evidenceNeeded: "Fit makes sense on a scope and scale basis. Job changes reveal career mindset. Achiever pattern indicates person is in top half of peer group.",
+                levels: {
+                    "1.0": "Has trouble explaining work history or job transitions. Evidence of a lack of depth or pattern in roles, with little explanation of decisions.",
+                    "2.0": "Provides some detail about past jobs, but the narrative is unclear or lacks depth in terms of progression and rationale for moves.",
+                    "2.5": "Work history shows basic consistency but lacks depth in strategic career progression. Candidate meets basic job requirements, with some growth and reasonable transitions, though without strong strategic direction.",
+                    "3.0": "Explains work history clearly with logical career progression. Provides evidence of growth, skill development, and logical transitions between roles. Due to ability and motivation the person has been assigned projects doing comparable work.",
+                    "4.0": "Shows a deliberate and strategic career path with clear evidence of increasing responsibility and skill development. Job transitions are well-justified and supported.",
+                    "5.0": "Presents an outstanding career trajectory marked by clear, deliberate progression. Moves are highly strategic, and the candidate provides deep insights into decision-making.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Technical Skills",
+                description: "Technical knowledge and hands-on experience required for the job.",
+                evidenceNeeded: "Need actual evidence of working on comparable projects handling similar problems and tech challenges.",
+                levels: {
+                    "1.0": "Has difficulty articulating specific technical skills or provides vague, general responses with no concrete examples of expertise.",
+                    "2.0": "Can describe a few technical skills but does not provide in-depth evidence of applying them in practical situations.",
+                    "2.5": "Technical skills are sufficient to perform the job but lack depth or specialization. Candidate demonstrates general proficiency in the necessary technical areas but does not stand out as an expert.",
+                    "3.0": "Describes technical skills with specific examples of use in relevant job settings. Evidence supports strong competence in key technical areas.",
+                    "4.0": "Demonstrates deep technical expertise with evidence of applying skills to solve complex problems. Consistently performs at a high level in technical tasks.",
+                    "5.0": "Displays superior technical skills with multiple examples of innovation and leadership in applying these skills to high-impact projects.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Team Skills",
+                description: "Cross functional collaboration and teamwork abilities.",
+                evidenceNeeded: "Have person describe teams they've worked on and ask how and why they got assigned to team.",
+                levels: {
+                    "1.0": "Struggles to provide examples of effective teamwork. Seems unclear about the value of collaboration and cross-functional work.",
+                    "2.0": "Provides some examples of working in teams but lacks depth or fails to highlight key contributions to the team's success.",
+                    "2.5": "Candidate collaborates well in teams but lacks strong leadership or initiative. Works well with others but is not seen as a key driver of team success.",
+                    "3.0": "Provides clear evidence of working effectively in teams, with examples of contributing to team success and collaborating across functions.",
+                    "4.0": "Demonstrates strong team skills with evidence of leading teams to success. Consistently fosters collaboration and cross-functional cooperation.",
+                    "5.0": "Exhibits superior team skills with a history of leading high-performing teams and fostering collaboration in challenging environments.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Organizational Skills",
+                description: "Capability to organize tasks and manage time effectively.",
+                evidenceNeeded: "Get examples of planning comparable projects and evaluate reliability, timeliness, and success",
+                levels: {
+                    "1.0": "Provides little evidence of effective organizational skills. Struggles with task management and prioritization.",
+                    "2.0": "Describes basic organizational skills but lacks depth in planning and managing complex projects or tasks.",
+                    "2.5": "Demonstrates the ability to manage tasks and time at a basic level. Candidate meets deadlines and organizes work adequately but without significant complexity or innovation.",
+                    "3.0": "Provides strong examples of effective organizational skills, managing tasks, and time effectively in medium-complexity projects.",
+                    "4.0": "Demonstrates excellent organizational skills with evidence of managing complex projects, multitasking effectively, and delivering on time.",
+                    "5.0": "Displays outstanding organizational skills with a proven track record of handling highly complex projects, prioritizing effectively, and consistently delivering exceptional results.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Management and Development",
+                description: "Use for project managers and hiring managers.",
+                evidenceNeeded: "Evaluate quality of teams built on scope and scale basis. Understand quality and level of people hired and managed. Consider complexity of projects.",
+                levels: {
+                    "1.0": "Candidate struggles to provide clear examples of managing or developing others. Lacks evidence of leadership ability or direct involvement in people management. Little to no experience with coaching or team development.",
+                    "2.0": "Candidate provides some examples of managing others but relies on intuition more than structured leadership techniques. Shows basic people management abilities but lacks a clear track record of development or team leadership.",
+                    "2.5": "Candidate manages others effectively at a basic level, providing support but lacking a strong track record of people development or leadership. Meets the minimum expectations for managing a team.",
+                    "3.0": "Candidate demonstrates effective management of individuals and teams with clear evidence of leading others to achieve set goals. Provides examples of developing talent within the team and improving team performance.",
+                    "4.0": "Candidate shows strong leadership and management skills with consistent success in developing others and leading teams to high performance. Demonstrates an ability to mentor and grow talent within the organization.",
+                    "5.0": "Candidate exhibits exceptional leadership and management capabilities. Has a track record of building high-performing teams and developing future leaders. Demonstrates a strong ability to inspire, coach, and elevate others consistently to top-tier performance.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Problem-solving Skills",
+                description: "Analytical thinking and ability to solve problems.",
+                evidenceNeeded: "Get specific examples of the biggest problems the person has worked on and fully understand role.",
+                levels: {
+                    "1.0": "Struggles to articulate any clear examples of problem-solving. Responses are vague and lack specifics, indicating minimal analytical thinking.",
+                    "2.0": "Able to describe a few problem-solving experiences but lacks depth or analysis. Relies more on intuition rather than structured approaches.",
+                    "2.5": "Soft skills are adequate for the job, with reasonable communication and interpersonal abilities. The candidate is capable of building relationships but does not excel in influencing or inspiring others.",
+                    "3.0": "Provides clear examples of problem-solving using logical and structured approaches. Demonstrates ability to think analytically in solving medium complexity issues.",
+                    "4.0": "Demonstrates exceptional analytical thinking with evidence of solving complex problems in high-pressure environments. Shows ability to adapt strategies effectively.",
+                    "5.0": "Consistently exhibits superior problem-solving abilities with a track record of innovative solutions to highly complex and unique problems. Provides multiple examples where their approach was key to organizational success.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Soft Skills",
+                description: "Communication, empathy, and interpersonal skills.",
+                evidenceNeeded: "Get examples of person convincing executives, handling conflict and coaching or mentoring.",
+                levels: {
+                    "1.0": "Shows poor communication or interpersonal skills. Struggles to connect with others or demonstrate empathy.",
+                    "2.0": "Displays some soft skills but lacks consistency in communication, empathy, or relationship-building.",
+                    "2.5": "Meets the basic job requirements and demonstrates an understanding of the role. The candidate aligns with the core responsibilities but lacks evidence of exceptional performance or fit.",
+                    "3.0": "Demonstrates strong communication and interpersonal skills with evidence of building relationships and fostering collaboration.",
+                    "4.0": "Exhibits exceptional soft skills, consistently demonstrating empathy, emotional intelligence, and strong relationship-building abilities.",
+                    "5.0": "Displays outstanding soft skills with a proven track record of influencing, inspiring, and building deep connections across the organization.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Job Fit",
+                description: "Person's intrinsic motivation is in alignment with the core responsibilities of the role.",
+                evidenceNeeded: "Clear evidence the person is intrinsically motivated to do the work described in the performance-based job description.",
+                levels: {
+                    "1.0": "Person hasn't done anything closely similar to the work that needs to be done or scope and scale is a complete mismatch.",
+                    "2.0": "The person has done some work similar to what's required but it hasn't been to recent, or the information is unclear, or the person isn't motivated to do this type of work.",
+                    "2.5": "The person has done comparable work at reasonable levels of quality but the evidence doesn't support the person is motivated to do this type of work without constant direction.",
+                    "3.0": "There is speciifc recent evidence that person is self- motivated to do this work at high levels of quality without direction. Evidence is based on multiple examples of taking the initiative doing comparable work and showing a high degree of responsibility and satisfaction by doing it.",
+                    "4.0": "There is specific recent evidence the person is highly self-motivated to do this work on a scope, scale and pace standpoint. In addition, the person has received formal recognition for doing so. He/she has been assigned tasks that map to this type of work.",
+                    "5.0": "Not only is there specific recent evidence the person has excelled at doing this work but there is supporting information to validate this. This includes formal recognition. Being assigned this type of work or being hired to do it. Also consider public recognition as part of this recognition.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Pace",
+                description: "Adaptability to the pace and pressure of the job.",
+                evidenceNeeded: "Ask about the pace and intensity for each accomplishment question.",
+                levels: {
+                    "1.0": "Struggles to adapt to fast-paced environments. Lacks evidence of thriving under pressure or managing workload effectively.",
+                    "2.0": "Displays some ability to adapt to pace but lacks consistent performance in high-pressure situations.",
+                    "2.5": "Experience lines up reasonably well to the pace of the organization but no evidence the person has the ability to adapt to different situations if required.",
+                    "3.0": "Demonstrates a strong ability to manage pace and workload effectively, thriving in fast-paced environments. Able to adapt to normal swings in pace.",
+                    "4.0": "Exhibits outstanding ability to adapt to pace and pressure, consistently performing at a high level in demanding environments.",
+                    "5.0": "Displays superior ability to handle fast-paced environments and high-pressure situations with exceptional results, thriving in such settings.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Culture",
+                description: "Cultural alignment with the organization's values and work environment.",
+                evidenceNeeded: "Get examples of work environments where person thrived and struggled. Map to your culture.",
+                levels: {
+                    "1.0": "Shows significant misalignment with company culture and values. Past experiences suggest difficulty adapting to the organization's environment.",
+                    "2.0": "Some cultural alignment but several areas of concern. Limited evidence of thriving in similar environments.",
+                    "2.5": "Basic cultural fit with some alignment to company values. Can likely adapt but may not fully embrace all aspects of the culture.",
+                    "3.0": "Good cultural alignment with clear examples of thriving in similar environments. Values align well with organization.",
+                    "4.0": "Strong cultural fit with evidence of excelling in very similar environments. Will likely enhance and strengthen company culture.",
+                    "5.0": "Exceptional cultural alignment. Past experiences show perfect match with company values and environment. Will be a cultural ambassador.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Manager",
+                description: "Working relationship compatibility with the hiring manager.",
+                evidenceNeeded: "Understand best and worst manager relationships. Map to hiring manager's style.",
+                levels: {
+                    "1.0": "Significant style mismatch with hiring manager. Past conflicts with similar management styles.",
+                    "2.0": "Some compatibility concerns. Limited evidence of success with similar management styles.",
+                    "2.5": "Basic compatibility likely. Can work with manager's style but may need adjustment period.",
+                    "3.0": "Good compatibility with hiring manager's style. Examples of success with similar managers.",
+                    "4.0": "Strong alignment with manager's style. History of excelling under similar leadership.",
+                    "5.0": "Perfect match with manager's style. Will form highly productive partnership.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Results Oriented",
+                description: "Evaluation if the candidate has a track record of delivering measurable results.",
+                evidenceNeeded: "Ask about specific results achieved with metrics or quantifiable impacts.",
+                levels: {
+                    "1.0": "Cannot provide specific examples of results achieved. Focuses on activities rather than outcomes.",
+                    "2.0": "Provides some results but lacks quantification or clear impact measurement.",
+                    "2.5": "Shows basic results orientation with some measurable achievements but not consistently.",
+                    "3.0": "Clear track record of achieving results with specific metrics and business impact.",
+                    "4.0": "Exceptional results orientation with consistent over-achievement and significant business impact.",
+                    "5.0": "Outstanding track record of game-changing results that transformed organizations or markets.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Situational Motivation",
+                description: "Personal circumstances and career timing that affect job interest.",
+                evidenceNeeded: "Understand current situation, career goals, and why this opportunity matters now.",
+                levels: {
+                    "1.0": "Poor timing or circumstances. Major obstacles to accepting offer or being engaged.",
+                    "2.0": "Some motivational concerns. Unclear if timing is right or if opportunity aligns with goals.",
+                    "2.5": "Adequate motivation but not compelling. Job is acceptable but not exciting to candidate.",
+                    "3.0": "Good situational fit. Clear reasons why this opportunity makes sense now.",
+                    "4.0": "Strong motivation. Compelling personal and professional reasons to join.",
+                    "5.0": "Perfect timing and circumstances. This is clearly the ideal next step for candidate.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Potential",
+                description: "Demonstrates the ability to handle more complex technical and management roles.",
+                evidenceNeeded: "Look for learning agility, ambition, and evidence of rapid growth in past roles.",
+                levels: {
+                    "1.0": "Limited growth potential. Struggles with new challenges or increased complexity.",
+                    "2.0": "Some potential but unclear trajectory. Limited evidence of handling increased complexity.",
+                    "2.5": "Average potential for growth. Can handle some increased responsibility over time.",
+                    "3.0": "Good potential with evidence of learning agility and handling increasing complexity.",
+                    "4.0": "High potential candidate. Clear trajectory of rapid growth and ability to scale.",
+                    "5.0": "Exceptional potential. Will likely outgrow role quickly and move to executive positions.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Recruitability",
+                description: "This factor assesses the likelihood the candidate will accept a reasonable offer based primarily on the career growth opportunity the role represents.",
+                evidenceNeeded: "Understand competing offers, compensation expectations, and decision criteria.",
+                levels: {
+                    "1.0": "Very difficult to recruit. Unrealistic expectations or strong competing offers.",
+                    "2.0": "Challenging to recruit. Several obstacles to acceptance.",
+                    "2.5": "Moderate recruitability. Will require significant effort to close.",
+                    "3.0": "Good recruitability. Reasonable expectations and genuine interest.",
+                    "4.0": "Highly recruitable. Strong interest and alignment on terms.",
+                    "5.0": "Will definitely accept reasonable offer. This is their top choice.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            },
+            {
+                factor: "Concerns",
+                description: "Identify the potential hurdles to closing the offer.",
+                evidenceNeeded: "Surface any red flags, gaps, or obstacles to successful hiring and onboarding.",
+                levels: {
+                    "1.0": "Major concerns that are likely deal-breakers. Significant red flags present.",
+                    "2.0": "Several meaningful concerns that need addressing. Some risk to successful hire.",
+                    "2.5": "Moderate concerns present but manageable with effort.",
+                    "3.0": "Minor concerns only. Nothing that would prevent successful hire.",
+                    "4.0": "Very few concerns. All easily addressable.",
+                    "5.0": "No concerns whatsoever. Ideal candidate in all respects.",
+                    "needMoreInfo": "There was not sufficient information from the interview to determine this factor."
+                }
+            }
+        ];
+        
+        // State management
+        let evaluationData = {};
+        
+        // Initialize the tool
+        function initializeTool() {
+            const container = document.getElementById('factorsContainer');
+            container.innerHTML = '';
+            
+            scorecardData.forEach((factor, index) => {
+                const factorCard = createFactorCard(factor, index);
+                container.appendChild(factorCard);
+            });
+            
+            // Set today's date
+            document.getElementById('interviewDate').value = new Date().toISOString().split('T')[0];
+            
+            updateProgress();
+        }
+        
+        // Create factor card HTML
+        function createFactorCard(factor, index) {
+            const card = document.createElement('div');
+            card.className = 'factor-card';
+            card.id = `factor-${index}`;
+            
+            card.innerHTML = `
+                <div class="factor-header">
+                    <div class="factor-title">${factor.factor}</div>
+                    <div class="factor-score" id="score-${index}">-</div>
+                </div>
+                <div class="factor-description">${factor.description}</div>
+                <div class="evidence-needed">
+                    <strong>Evidence Needed:</strong> ${factor.evidenceNeeded}
+                </div>
+                <div class="rating-options">
+                    <button class="rating-btn" onclick="setRating(${index}, '1.0')">1.0</button>
+                    <button class="rating-btn" onclick="setRating(${index}, '2.0')">2.0</button>
+                    <button class="rating-btn" onclick="setRating(${index}, '2.5')">2.5</button>
+                    <button class="rating-btn" onclick="setRating(${index}, '3.0')">3.0</button>
+                    <button class="rating-btn" onclick="setRating(${index}, '4.0')">4.0</button>
+                    <button class="rating-btn" onclick="setRating(${index}, '5.0')">5.0</button>
+                    <button class="rating-btn need-info" onclick="setRating(${index}, 'needMoreInfo')">Need Info</button>
+                </div>
+                <div class="rating-description" id="description-${index}" style="display: none;"></div>
+                <textarea class="notes-area" id="notes-${index}" placeholder="Enter interview notes and specific evidence for this factor..."></textarea>
+            `;
+            
+            return card;
+        }
+        
+        // Set rating for a factor
+        function setRating(factorIndex, rating) {
+            const factor = scorecardData[factorIndex];
+            evaluationData[factorIndex] = {
+                factor: factor.factor,
+                rating: rating,
+                notes: document.getElementById(`notes-${factorIndex}`).value
+            };
+            
+            // Update UI
+            const buttons = document.querySelectorAll(`#factor-${factorIndex} .rating-btn`);
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            const selectedBtn = Array.from(buttons).find(btn => 
+                (rating === 'needMoreInfo' && btn.classList.contains('need-info')) ||
+                (btn.textContent === rating)
+            );
+            if (selectedBtn) selectedBtn.classList.add('selected');
+            
+            // Update score display
+            const scoreDisplay = document.getElementById(`score-${factorIndex}`);
+            if (rating === 'needMoreInfo') {
+                scoreDisplay.textContent = '?';
+                scoreDisplay.style.background = '#f39c12';
+                scoreDisplay.style.color = 'white';
+            } else {
+                scoreDisplay.textContent = rating;
+                const numRating = parseFloat(rating);
+                if (numRating >= 4.0) {
+                    scoreDisplay.style.background = '#27ae60';
+                    scoreDisplay.style.color = 'white';
+                } else if (numRating >= 3.0) {
+                    scoreDisplay.style.background = '#3498db';
+                    scoreDisplay.style.color = 'white';
+                } else if (numRating >= 2.5) {
+                    scoreDisplay.style.background = '#f39c12';
+                    scoreDisplay.style.color = 'white';
+                } else {
+                    scoreDisplay.style.background = '#e74c3c';
+                    scoreDisplay.style.color = 'white';
+                }
+            }
+            
+            // Show rating description
+            const descriptionDiv = document.getElementById(`description-${factorIndex}`);
+            descriptionDiv.textContent = factor.levels[rating];
+            descriptionDiv.style.display = 'block';
+            
+            updateSummary();
+            updateProgress();
+        }
+        
+        // Update progress indicator
+        function updateProgress() {
+            const totalFactors = scorecardData.length;
+            const evaluatedFactors = Object.keys(evaluationData).length;
+            const percentage = Math.round((evaluatedFactors / totalFactors) * 100);
+            
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = percentage + '%';
+            progressText.textContent = `${evaluatedFactors} of ${totalFactors} factors evaluated`;
+        }
+        
+        // Update summary statistics
+        function updateSummary() {
+            const scores = Object.values(evaluationData)
+                .filter(e => e.rating !== 'needMoreInfo')
+                .map(e => parseFloat(e.rating));
+            
+            if (scores.length > 0) {
+                const average = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2);
+                document.getElementById('overallScore').textContent = average;
+                
+                // Update recommendation
+                updateRecommendation(average);
+            } else {
+                document.getElementById('overallScore').textContent = '-';
+            }
+            
+            // Update counts
+            const evaluated = Object.keys(evaluationData).length;
+            document.getElementById('factorsEvaluated').textContent = `${evaluated}/16`;
+            
+            const strengths = scores.filter(s => s >= 4.0).length;
+            document.getElementById('strengthsCount').textContent = strengths;
+            
+            const concerns = scores.filter(s => s < 2.5).length;
+            document.getElementById('concernsCount').textContent = concerns;
+        }
+        
+        // Update recommendation based on score
+        function updateRecommendation(averageScore) {
+            const recBox = document.getElementById('recommendationBox');
+            recBox.className = 'recommendation';
+            
+            if (averageScore >= 4.0) {
+                recBox.className += ' strong-hire';
+                recBox.innerHTML = '<strong>STRONG HIRE:</strong> This candidate demonstrates exceptional capabilities and should receive an offer immediately.';
+            } else if (averageScore >= 3.0) {
+                recBox.className += ' hire';
+                recBox.innerHTML = '<strong>HIRE:</strong> This candidate meets or exceeds requirements and should move forward in the process.';
+            } else if (averageScore >= 2.5) {
+                recBox.className += ' maybe';
+                recBox.innerHTML = '<strong>MAYBE:</strong> This candidate has potential but requires further evaluation or discussion before making a decision.';
+            } else {
+                recBox.className += ' no-hire';
+                recBox.innerHTML = '<strong>NO HIRE:</strong> This candidate does not meet the minimum requirements for the position.';
+            }
+        }
+        
+        // Generate comprehensive report
+        function generateReport() {
+            const reportSection = document.getElementById('reportSection');
+            const reportContent = document.getElementById('reportContent');
+            const reportDate = document.getElementById('reportDate');
+            
+            // Get candidate info
+            const candidateName = document.getElementById('candidateName').value || 'Unknown Candidate';
+            const position = document.getElementById('position').value || 'Unknown Position';
+            const interviewDate = document.getElementById('interviewDate').value;
+            const interviewer = document.getElementById('interviewer').value || 'Unknown Interviewer';
+            
+            // Set report date
+            reportDate.textContent = `Generated on ${new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            })}`;
+            
+            // Build report content
+            let reportHTML = `
+                <h3>Candidate Information</h3>
+                <ul>
+                    <li><strong>Name:</strong> ${candidateName}</li>
+                    <li><strong>Position:</strong> ${position}</li>
+                    <li><strong>Interview Date:</strong> ${interviewDate}</li>
+                    <li><strong>Interviewer(s):</strong> ${interviewer}</li>
+                </ul>
+            `;
+            
+            // Add summary
+            const scores = Object.values(evaluationData)
+                .filter(e => e.rating !== 'needMoreInfo')
+                .map(e => parseFloat(e.rating));
+            
+            if (scores.length > 0) {
+                const average = (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2);
+                const strengths = Object.values(evaluationData).filter(e => parseFloat(e.rating) >= 4.0);
+                const concerns = Object.values(evaluationData).filter(e => parseFloat(e.rating) < 2.5);
+                const needsInfo = Object.values(evaluationData).filter(e => e.rating === 'needMoreInfo');
+                
+                reportHTML += `
+                    <h3>Overall Assessment</h3>
+                    <p><strong>Average Score:</strong> ${average}/5.0</p>
+                    <p><strong>Factors Evaluated:</strong> ${Object.keys(evaluationData).length}/16</p>
+                `;
+                
+                if (strengths.length > 0) {
+                    reportHTML += `
+                        <h3>Key Strengths (${strengths.length})</h3>
+                        <ul>
+                    `;
+                    strengths.forEach(s => {
+                        reportHTML += `<li><strong>${s.factor} (${s.rating}):</strong> ${s.notes || 'No notes provided'}</li>`;
+                    });
+                    reportHTML += '</ul>';
+                }
+                
+                if (concerns.length > 0) {
+                    reportHTML += `
+                        <h3>Areas of Concern (${concerns.length})</h3>
+                        <ul>
+                    `;
+                    concerns.forEach(c => {
+                        reportHTML += `<li><strong>${c.factor} (${c.rating}):</strong> ${c.notes || 'No notes provided'}</li>`;
+                    });
+                    reportHTML += '</ul>';
+                }
+                
+                if (needsInfo.length > 0) {
+                    reportHTML += `
+                        <h3>Requires Additional Information (${needsInfo.length})</h3>
+                        <ul>
+                    `;
+                    needsInfo.forEach(n => {
+                        reportHTML += `<li><strong>${n.factor}:</strong> ${n.notes || 'No notes provided'}</li>`;
+                    });
+                    reportHTML += '</ul>';
+                }
+                
+                // Add detailed evaluation
+                reportHTML += '<h3>Detailed Factor Evaluation</h3>';
+                Object.values(evaluationData).forEach(eval => {
+                    if (eval.rating !== 'needMoreInfo') {
+                        reportHTML += `
+                            <h4>${eval.factor} - Score: ${eval.rating}</h4>
+                            <p><strong>Rating Description:</strong> ${scorecardData.find(f => f.factor === eval.factor).levels[eval.rating]}</p>
+                            <p><strong>Interview Notes:</strong> ${eval.notes || 'No specific notes provided'}</p>
+                        `;
+                    }
+                });
+                
+                // Add recommendation
+                reportHTML += '<h3>Final Recommendation</h3>';
+                if (average >= 4.0) {
+                    reportHTML += '<p><strong>STRONG HIRE:</strong> This candidate demonstrates exceptional capabilities across multiple factors. They show clear evidence of being in the top 10-15% of candidates for this role. Immediate offer recommended to secure this talent.</p>';
+                } else if (average >= 3.0) {
+                    reportHTML += '<p><strong>HIRE:</strong> This candidate meets or exceeds the requirements for the position. They demonstrate solid competencies and good cultural fit. Recommend moving forward with an offer after addressing any minor concerns.</p>';
+                } else if (average >= 2.5) {
+                    reportHTML += '<p><strong>MAYBE/FURTHER EVALUATION:</strong> This candidate shows potential but has some gaps that need addressing. Consider additional interviews focusing on areas of concern or compare carefully with other candidates.</p>';
+                } else {
+                    reportHTML += '<p><strong>NO HIRE:</strong> This candidate does not meet the minimum requirements for success in this role. Multiple critical factors fall below acceptable levels. Recommend passing on this candidate.</p>';
+                }
+                
+                // Add next steps
+                reportHTML += '<h3>Recommended Next Steps</h3><ul>';
+                if (average >= 3.0) {
+                    reportHTML += '<li>Schedule reference checks focusing on areas needing validation</li>';
+                    reportHTML += '<li>Prepare competitive offer based on market data and candidate expectations</li>';
+                    if (concerns.length > 0) {
+                        reportHTML += '<li>Address specific concerns through targeted follow-up or onboarding plan</li>';
+                    }
+                } else if (average >= 2.5) {
+                    reportHTML += '<li>Conduct additional interviews focusing on weak areas</li>';
+                    reportHTML += '<li>Compare thoroughly with other candidates in pipeline</li>';
+                    reportHTML += '<li>Consider if development plan could address gaps</li>';
+                } else {
+                    reportHTML += '<li>Provide respectful decline to candidate</li>';
+                    reportHTML += '<li>Document lessons learned for refining job requirements</li>';
+                    reportHTML += '<li>Continue sourcing for better-matched candidates</li>';
+                }
+                reportHTML += '</ul>';
+            }
+            
+            reportContent.innerHTML = reportHTML;
+            reportSection.classList.add('show');
+            reportSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Save evaluation data
+        function saveEvaluation() {
+            const candidateName = document.getElementById('candidateName').value || 'Unknown';
+            const position = document.getElementById('position').value || 'Unknown';
+            const date = new Date().toISOString().split('T')[0];
+            
+            const fullData = {
+                candidateInfo: {
+                    name: candidateName,
+                    position: position,
+                    interviewDate: document.getElementById('interviewDate').value,
+                    interviewer: document.getElementById('interviewer').value
+                },
+                evaluations: evaluationData,
+                savedDate: new Date().toISOString()
+            };
+            
+            // Create downloadable JSON file
+            const dataStr = JSON.stringify(fullData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${candidateName.replace(/\s+/g, '_')}_${position.replace(/\s+/g, '_')}_${date}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('Evaluation saved successfully!');
+        }
+        
+        // Auto-save notes
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('notes-area')) {
+                const factorIndex = parseInt(e.target.id.split('-')[1]);
+                if (evaluationData[factorIndex]) {
+                    evaluationData[factorIndex].notes = e.target.value;
+                }
+            }
+        });
+        
+        // Initialize on load
+        window.onload = initializeTool;
+    </script>
+</body>
+</html>
