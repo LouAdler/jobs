@@ -771,6 +771,54 @@ Or just paste your notes:
     </div>
     
     <script>
+        <script>
+// SIMPLE DEMO WATERMARK
+(function() {
+    // Add persistent watermark in corner
+    const watermark = document.createElement('div');
+    watermark.innerHTML = 'DEMO VERSION<br>© 2024 Lou Adler<br>info@performancebasedhiring.com';
+    watermark.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 13px;
+        z-index: 10000;
+        pointer-events: none;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        line-height: 1.4;
+    `;
+    document.body.appendChild(watermark);
+    
+    // Add diagonal watermark
+    const bgWatermark = document.createElement('div');
+    bgWatermark.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 120px;
+        color: rgba(220, 53, 69, 0.08);
+        pointer-events: none;
+        z-index: 9999;
+        font-weight: bold;
+        white-space: nowrap;
+    `;
+    bgWatermark.textContent = 'DEMO VERSION';
+    document.body.appendChild(bgWatermark);
+})();
+
+        // Initialize
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Global variables
+        const scores = {};
+        // ... rest of the existing code continues here
         // Scorecard data
         const scorecardData = [
             {
