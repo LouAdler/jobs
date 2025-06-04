@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality of Hire Scorecard - Editor Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .editor-controls {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .control-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+        }
+        
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .editor-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .preview-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #2a5298;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .factor-editor {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .factor-editor:hover {
+            border-color: #2a5298;
+        }
+        
+        .factor-editor.active {
+            border-color: #28a745;
+            background: #e8f5e9;
+        }
+        
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .factor-name {
+            font-weight: 600;
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        .factor-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        
+        .question-field {
+            margin-bottom: 15px;
+        }
+        
+        .question-field label {
+            display: block;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .question-field textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .question-field textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .weight-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .weight-field input {
+            width: 80px;
+            padding: 5px 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        
+        .preview-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .preview-factor {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .preview-factor-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .preview-question {
+            background: #e8f4f8;
+            border-left: 4px solid #2a5298;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .preview-question .main {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .preview-question .follow-up {
+            font-size: 0.9em;
+            color: #666;
+            margin-left: 20px;
+        }
+        
+        .templates-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .template-card {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .template-card:hover {
+            border-color: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .template-card h3 {
+            color: #2a5298;
+            margin-bottom: 5px;
+        }
+        
+        .template-card p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .action-buttons {
+            position: sticky;
+            bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-close:hover {
+            color: #000;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-section {
+                order: -1;
+                max-height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .control-row {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Quality of Hire Scorecard Editor</h1>
+            <p>Customize interview questions and create role-specific scorecards</p>
+        </div>
+        
+        <div class="editor-controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="scorecardName">Scorecard Name</label>
+                    <input type="text" id="scorecardName" placeholder="e.g., Senior Software Engineer" value="Quality of Hire Talent Scorecard">
+                </div>
+                <div class="control-group">
+                    <label for="roleType">Role Type</label>
+                    <select id="roleType" onchange="loadTemplate(this.value)">
+                        <option value="default">Default Template</option>
+                        <option value="technical">Technical Role</option>
+                        <option value="sales">Sales Role</option>
+                        <option value="executive">Executive Role</option>
+                        <option value="customer-service">Customer Service Role</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-row">
+                <button class="btn btn-primary" onclick="addNewFactor()">➕ Add Factor</button>
+                <button class="btn btn-secondary" onclick="resetToDefault()">🔄 Reset to Default</button>
+                <button class="btn btn-warning" onclick="saveAsTemplate()">💾 Save as Template</button>
+                <button class="btn btn-success" onclick="importQuestions()">📥 Import JSON</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="editor-section">
+                <h2 class="section-title">Edit Questions</h2>
+                <div id="factorsList">
+                    <!-- Factors will be populated here -->
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <h2 class="section-title">Live Preview</h2>
+                <div id="previewContent" class="preview-content">
+                    <!-- Preview will be shown here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="generateScorecard()">🚀 Generate Scorecard (New Tab)</button>
+            <button class="btn btn-warning" onclick="viewScorecard()">👀 View Scorecard Now</button>
+            <button class="btn btn-success" onclick="exportQuestions()">📤 Export Questions (JSON)</button>
+            <button class="btn btn-secondary" onclick="downloadScorecard()">💾 Download Scorecard File</button>
+        </div>
+        
+        <!-- Modal for previewing/exporting the scorecard -->
+        <div id="previewModal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h2>Scorecard HTML Code Preview</h2>
+                <p style="margin-bottom: 15px;">Copy this code to create your scorecard file:</p>
+                <div id="modalBody"></div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Default questions structure
+        let scorecardData = {
+            name: "Quality of Hire Talent Scorecard",
+            factors: [
+                {
+                    id: "primarySkills",
+                    name: "Primary Skills",
+                    weight: 1,
+                    mainQuestion: "Walk me through your most significant accomplishment using [core skill/technology] in the past 2 years. What was the situation, what did you do, and what were the results?",
+                    followUp: "What specific technical challenges did you face? How did you overcome them? What would you do differently today?"
+                },
+                {
+                    id: "experience",
+                    name: "Experience",
+                    weight: 1,
+                    mainQuestion: "Tell me about a time when your past experience was crucial in solving a problem similar to what you'd face in this role. How did you apply those lessons?",
+                    followUp: "What aspects of your background are most relevant to our challenges? What experiences are you missing that concern you?"
+                },
+                {
+                    id: "achieverPattern",
+                    name: "Achiever Pattern & Growth Trend",
+                    weight: 1,
+                    mainQuestion: "Walk me through your career progression. For each role, what were you hired to do, what did you accomplish, and why did you leave?",
+                    followUp: "What recognition or rankings did you receive? How did your performance compare to peers? What drove each transition?"
+                },
+                {
+                    id: "technicalAbility",
+                    name: "Talent & Overall Technical Ability",
+                    weight: 1,
+                    mainQuestion: "Describe the most complex technical problem you've solved in the last year. Walk me through your approach, the obstacles you faced, and the outcome.",
+                    followUp: "What technical skills were critical? How do you stay current? What would you teach our team?"
+                },
+                {
+                    id: "managementAbility",
+                    name: "Management & Organizational Ability",
+                    weight: 1,
+                    mainQuestion: "Tell me about a complex project you managed from start to finish. How did you plan it, organize resources, handle obstacles, and ensure delivery?",
+                    followUp: "What was the budget/timeline? How did you handle scope changes? What project management methods do you prefer and why?"
+                },
+                {
+                    id: "teamSkills",
+                    name: "Team Skills (EQ) & Development, Leadership",
+                    weight: 1,
+                    mainQuestion: "Give me an example of how you built or turned around a team. What was the situation, what did you do, and what were the results?",
+                    followUp: "How do you handle conflict? Tell me about someone you've mentored - where are they now? How do you motivate different personality types?"
+                },
+                {
+                    id: "problemSolving",
+                    name: "Thinking & Job-related Problem-solving",
+                    weight: 1,
+                    mainQuestion: "Here's a challenge we're facing: [describe relevant problem]. How would you approach this? What additional information would you need?",
+                    followUp: "What assumptions are you making? What are the risks of your approach? How would you measure success?"
+                },
+                {
+                    id: "jobFit",
+                    name: "Job Fit with Recent Comparable Results",
+                    weight: 1.5,
+                    mainQuestion: "This role requires [specific outcome/deliverable]. Tell me about a time you achieved something similar. What was the context, your approach, and the results?",
+                    followUp: "How was that situation similar/different to ours? What resources did you have? What would you need here to achieve similar results?"
+                },
+                {
+                    id: "managerialFit",
+                    name: "Managerial Fit",
+                    weight: 1.5,
+                    mainQuestion: "Describe your ideal manager and work environment. What management style brings out your best work? Give me examples.",
+                    followUp: "Tell me about the best and worst managers you've had. How do you prefer to receive feedback and direction?"
+                },
+                {
+                    id: "culture",
+                    name: "Culture & Environment",
+                    weight: 1.5,
+                    mainQuestion: "Describe the work culture where you've been most successful and happiest. What specific aspects enabled you to thrive?",
+                    followUp: "What type of environment drains your energy? How do you handle cultural transitions? What values are non-negotiable for you?"
+                },
+                {
+                    id: "motivation",
+                    name: "Motivation",
+                    weight: 1.5,
+                    mainQuestion: "What specifically excites you about this role and our company? How does it align with your career goals for the next 3-5 years?",
+                    followUp: "What would have to happen in the first year for you to feel this was the right decision? What concerns do you have?"
+                }
+            ]
+        };
+        
+        // Templates for different role types
+        const templates = {
+            technical: {
+                primarySkills: {
+                    mainQuestion: "Walk me through the most complex code you've written in the past year. What made it challenging and how did you ensure it was maintainable?",
+                    followUp: "How did you test it? What design patterns did you use? How would you refactor it today?"
+                },
+                technicalAbility: {
+                    mainQuestion: "Describe a time when you had to debug a critical production issue. Walk me through your diagnostic process and resolution.",
+                    followUp: "What tools did you use? How did you prevent it from happening again? What did you learn?"
+                }
+            },
+            sales: {
+                primarySkills: {
+                    mainQuestion: "Tell me about your most significant sales win in the past year. Walk me through the entire sales cycle from prospecting to close.",
+                    followUp: "What objections did you face? How did you build the business case? What made the difference?"
+                },
+                achieverPattern: {
+                    mainQuestion: "Walk me through your sales performance over the past 3 years. What were your quotas, attainment, and ranking?",
+                    followUp: "What drove your success? How did you recover from missed quarters? What's your sales methodology?"
+                }
+            },
+            executive: {
+                primarySkills: {
+                    mainQuestion: "Describe a strategic initiative you led that transformed a business unit or company. What was your vision and how did you execute it?",
+                    followUp: "How did you get buy-in? What resistance did you face? What were the measurable outcomes?"
+                },
+                managementAbility: {
+                    mainQuestion: "Tell me about building and scaling a high-performing organization. How did you assess talent, develop leaders, and create culture?",
+                    followUp: "What was your leadership philosophy? How did you handle underperformers? What legacy did you leave?"
+                }
+            },
+            "customer-service": {
+                primarySkills: {
+                    mainQuestion: "Describe a time when you turned an extremely dissatisfied customer into a loyal advocate. What was the situation and how did you handle it?",
+                    followUp: "What did you learn? How did you prevent similar issues? What feedback did the customer provide?"
+                },
+                teamSkills: {
+                    mainQuestion: "Tell me about a time when you had to collaborate with other departments to solve a customer issue. How did you manage the process?",
+                    followUp: "What challenges did you face? How did you ensure follow-through? What was the outcome?"
+                }
+            }
+        };
+        
+        // Initialize the editor
+        function initializeEditor() {
+            renderFactors();
+            updatePreview();
+        }
+        
+        // Render factors in the editor
+        function renderFactors() {
+            const factorsList = document.getElementById('factorsList');
+            factorsList.innerHTML = '';
+            
+            scorecardData.factors.forEach((factor, index) => {
+                const factorDiv = document.createElement('div');
+                factorDiv.className = 'factor-editor';
+                factorDiv.innerHTML = `
+                    <div class="factor-header">
+                        <div class="factor-name">${factor.name}</div>
+                        <div class="factor-controls">
+                            <button class="icon-btn" onclick="moveFactor(${index}, -1)" ${index === 0 ? 'disabled' : ''}>⬆️</button>
+                            <button class="icon-btn" onclick="moveFactor(${index}, 1)" ${index === scorecardData.factors.length - 1 ? 'disabled' : ''}>⬇️</button>
+                            <button class="icon-btn" onclick="deleteFactor(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="question-field">
+                        <label>Main Question</label>
+                        <textarea onchange="updateQuestion(${index}, 'mainQuestion', this.value)" oninput="updatePreview()">${factor.mainQuestion}</textarea>
+                    </div>
+                    <div class="question-field">
+                        <label>Follow-up Question</label>
+                        <textarea onchange="updateQuestion(${index}, 'followUp', this.value)" oninput="updatePreview()">${factor.followUp}</textarea>
+                    </div>
+                    <div class="weight-field">
+                        <label>Weight:</label>
+                        <input type="number" value="${factor.weight}" min="0.5" max="3" step="0.5" onchange="updateWeight(${index}, this.value)">
+                        <span>(Default: 1.0, Situational Fit: 1.5)</span>
+                    </div>
+                `;
+                factorsList.appendChild(factorDiv);
+            });
+        }
+        
+        // Update preview
+        function updatePreview() {
+            const previewContent = document.getElementById('previewContent');
+            previewContent.innerHTML = '';
+            
+            scorecardData.factors.forEach(factor => {
+                const factorDiv = document.createElement('div');
+                factorDiv.className = 'preview-factor';
+                factorDiv.innerHTML = `
+                    <div class="preview-factor-name">${factor.name} (Weight: ${factor.weight}x)</div>
+                    <div class="preview-question">
+                        <div class="main">📋 ${factor.mainQuestion}</div>
+                        <div class="follow-up"><strong>Follow-up:</strong> ${factor.followUp}</div>
+                    </div>
+                `;
+                previewContent.appendChild(factorDiv);
+            });
+        }
+        
+        // Update question
+        function updateQuestion(index, field, value) {
+            scorecardData.factors[index][field] = value;
+            updatePreview();
+        }
+        
+        // Update weight
+        function updateWeight(index, value) {
+            scorecardData.factors[index].weight = parseFloat(value);
+            updatePreview();
+        }
+        
+        // Move factor up or down
+        function moveFactor(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < scorecardData.factors.length) {
+                const temp = scorecardData.factors[index];
+                scorecardData.factors[index] = scorecardData.factors[newIndex];
+                scorecardData.factors[newIndex] = temp;
+                renderFactors();
+                updatePreview();
+            }
+        }
+        
+        // Delete factor
+        function deleteFactor(index) {
+            if (confirm('Are you sure you want to delete this factor?')) {
+                scorecardData.factors.splice(index, 1);
+                renderFactors();
+                updatePreview();
+            }
+        }
+        
+        // Add new factor
+        function addNewFactor() {
+            const newFactor = {
+                id: `factor_${Date.now()}`,
+                name: prompt('Enter factor name:') || 'New Factor',
+                weight: 1,
+                mainQuestion: "Enter your main interview question here...",
+                followUp: "Enter your follow-up question here..."
+            };
+            scorecardData.factors.push(newFactor);
+            renderFactors();
+            updatePreview();
+        }
+        
+        // Load template
+        function loadTemplate(templateType) {
+            if (templateType === 'default') {
+                resetToDefault();
+                return;
+            }
+            
+            if (templateType === 'custom') {
+                // Keep current questions
+                return;
+            }
+            
+            if (templates[templateType]) {
+                const template = templates[templateType];
+                scorecardData.factors.forEach(factor => {
+                    if (template[factor.id]) {
+                        factor.mainQuestion = template[factor.id].mainQuestion || factor.mainQuestion;
+                        factor.followUp = template[factor.id].followUp || factor.followUp;
+                    }
+                });
+                renderFactors();
+                updatePreview();
+            }
+        }
+        
+        // Reset to default
+        function resetToDefault() {
+            if (confirm('This will reset all questions to default. Continue?')) {
+                location.reload();
+            }
+        }
+        
+        // Export questions as JSON
+        function exportQuestions() {
+            const dataStr = JSON.stringify(scorecardData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `scorecard-questions-${scorecardData.name.replace(/\s+/g, '-').toLowerCase()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Import questions from JSON
+        function importQuestions() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        if (imported.factors && Array.isArray(imported.factors)) {
+                            scorecardData = imported;
+                            document.getElementById('scorecardName').value = scorecardData.name || 'Imported Scorecard';
+                            renderFactors();
+                            updatePreview();
+                            alert('Questions imported successfully!');
+                        } else {
+                            alert('Invalid file format');
+                        }
+                    } catch (error) {
+                        alert('Error importing file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+        
+        // Generate the full scorecard HTML
+        function generateScorecardHTML() {
+            const name = document.getElementById('scorecardName').value;
+            
+            // This would include the full HTML template with the customized questions
+            // For brevity, I'll show the structure
+            let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${name}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+    <style>
+        /* Include all the styles from the original scorecard */
+        ${getScorecardStyles()}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>${name}</h1>
+            <p>Performance-based Interview Assessment Tool with Evidence Guidance</p>
+        </div>
+        
+        <div class="score-display">
+            <h3>Average Score</h3>
+            <div class="score-value" id="totalScore">0.0 / 5.0</div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-grid">
+                <div class="info-field">
+                    <label for="candidate">Candidate Name</label>
+                    <input type="text" id="candidate" placeholder="Enter candidate name">
+                </div>
+                <div class="info-field">
+                    <label for="position">Position</label>
+                    <input type="text" id="position" placeholder="Enter position">
+                </div>
+                <div class="info-field">
+                    <label for="interviewer">Interviewer</label>
+                    <input type="text" id="interviewer" placeholder="Enter interviewer name">
+                </div>
+                <div class="info-field">
+                    <label for="date">Date</label>
+                    <input type="date" id="date">
+                </div>
+            </div>
+        </div>
+        
+        ${generateFactorSections()}
+        
+        <div class="overall-evidence">
+            <h2 class="section-title">OVERALL FIT BASED ON SHARED EVIDENCE</h2>
+            <textarea id="overallEvidence" placeholder="Provide specific evidence to justify any very low rankings, less than 2, or extremely high rankings, above 3."></textarea>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="calculateScore()">Calculate Score</button>
+            <button class="btn btn-secondary" onclick="exportToPDF()">Export as PDF</button>
+            <button class="btn btn-success" onclick="exportToJSON()">Export as JSON</button>
+        </div>
+        
+        <div class="footer">
+            <p>Based on Lou Adler's <em>Hire With Your Head</em> and <em>The Essential Guide for Hiring & Getting Hired</em></p>
+            <p>The Adler Group, Inc. • Irvine, CA • <a href="https://www.winwinhiring.com" target="_blank">www.winwinhiring.com</a> • <a href="mailto:info@performancebasedhiring.com">info@performancebasedhiring.com</a></p>
+            <p>©2025. All Rights Reserved. The Adler Group, Inc.</p>
+        </div>
+    </div>
+    
+    <script>
+        ${getScorecardScript()}
+    <\/script>
+</body>
+</html>`;
+            
+            return html;
+        }
+        
+        // Generate factor sections HTML
+        function generateFactorSections() {
+            let sectionsHTML = '';
+            const sections = [
+                { title: 'BASIC COMPETENCIES', factors: ['primarySkills', 'experience', 'achieverPattern'] },
+                { title: 'ESSENTIAL CORE COMPETENCES', factors: ['technicalAbility', 'managementAbility', 'teamSkills', 'problemSolving'] },
+                { title: 'SITUATIONAL FIT FACTORS – WEIGHT THESE FACTORS HIGHER', factors: ['jobFit', 'managerialFit', 'culture', 'motivation'] }
+            ];
+            
+            sections.forEach(section => {
+                sectionsHTML += `
+        <div class="scorecard-section">
+            <h2 class="section-title">${section.title}</h2>`;
+                
+                scorecardData.factors.forEach(factor => {
+                    if (section.factors.includes(factor.id) || (!section.factors.includes(factor.id) && section === sections[sections.length - 1])) {
+                        sectionsHTML += generateFactorHTML(factor);
+                    }
+                });
+                
+                sectionsHTML += `
+        </div>`;
+            });
+            
+            return sectionsHTML;
+        }
+        
+        // Generate individual factor HTML
+        function generateFactorHTML(factor) {
+            return `
+            <div class="factor-row" data-factor="${factor.id}">
+                <div class="factor-name">${factor.name}</div>
+                <div class="interview-question">
+                    <span class="question-icon">📋</span>
+                    <div class="main-question">
+                        "${factor.mainQuestion}"
+                    </div>
+                    <div class="follow-up">
+                        <strong>Follow-up:</strong> "${factor.followUp}"
+                    </div>
+                    <span class="toggle-follow-up" onclick="toggleFollowUp(this)">Show follow-up ▼</span>
+                </div>
+                <div class="rating-options">
+                    ${generateRatingOptions(factor.id)}
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for ${factor.name}..." data-factor="${factor.id}"></textarea>
+                </div>
+            </div>`;
+        }
+        
+        // Generate rating options (simplified for this example)
+        function generateRatingOptions(factorId) {
+            const levels = [
+                { level: 1, desc: "Minimal" },
+                { level: 2, desc: "Adequate" },
+                { level: 3, desc: "Strong" },
+                { level: 4, desc: "Great" },
+                { level: 5, desc: "Superb" }
+            ];
+            
+            return levels.map(level => `
+                    <label class="rating-option">
+                        <input type="radio" name="${factorId}" value="${level.level}">
+                        <span class="level">Level ${level.level}</span>
+                        <span class="description">${level.desc}</span>
+                        <div class="evidence-tooltip">
+                            <h4>Evidence for Level ${level.level}</h4>
+                            <ul>
+                                <li>Evidence guidance would go here</li>
+                            </ul>
+                        </div>
+                    </label>`).join('');
+        }
+        
+        // Get scorecard styles
+        function getScorecardStyles() {
+            // Return the complete CSS from the original scorecard
+            return `
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .info-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-field label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .info-field input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .info-field input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .scorecard-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #2a5298;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .factor-row {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .factor-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .factor-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .interview-question {
+            background: #e8f4f8;
+            border-left: 4px solid #2a5298;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 0 5px 5px 0;
+            font-size: 0.95em;
+            color: #2c3e50;
+            line-height: 1.5;
+            position: relative;
+        }
+        
+        .interview-question .question-icon {
+            color: #2a5298;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .interview-question .main-question {
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .interview-question .follow-up {
+            font-size: 0.9em;
+            color: #555;
+            margin-left: 20px;
+            display: none;
+            margin-top: 8px;
+        }
+        
+        .interview-question.show-follow-up .follow-up {
+            display: block;
+        }
+        
+        .interview-question .toggle-follow-up {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+            cursor: pointer;
+            color: #2a5298;
+            font-size: 0.85em;
+            user-select: none;
+        }
+        
+        .interview-question .toggle-follow-up:hover {
+            text-decoration: underline;
+        }
+        
+        .rating-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .rating-option {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .rating-option:hover {
+            background: #f0f4f8;
+            border-color: #2a5298;
+            z-index: 10;
+        }
+        
+        .rating-option.selected {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+        
+        .rating-option input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-option .level {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .rating-option .description {
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+        
+        .evidence-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 10px;
+            padding: 15px;
+            background: #333;
+            color: white;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 1000;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .evidence-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: #333;
+        }
+        
+        .rating-option:hover .evidence-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .evidence-tooltip h4 {
+            color: #4CAF50;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+        
+        .evidence-tooltip ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .evidence-tooltip li {
+            margin-bottom: 5px;
+        }
+        
+        .evidence-tooltip .warning {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .evidence-tooltip .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        .comment-section {
+            margin-top: 15px;
+        }
+        
+        .comment-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 80px;
+        }
+        
+        .comment-section textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .overall-evidence {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .overall-evidence textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 200px;
+            z-index: 100;
+        }
+        
+        .score-display h3 {
+            color: #2a5298;
+            margin-bottom: 10px;
+        }
+        
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px 20px;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .footer a {
+            color: #2a5298;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer em {
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-display {
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .evidence-tooltip {
+                width: 280px;
+                font-size: 0.85em;
+            }
+        }
+        
+        @media print {
+            .action-buttons {
+                display: none;
+            }
+            
+            .score-display {
+                position: static;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            .evidence-tooltip {
+                display: none;
+            }
+            
+            .toggle-follow-up {
+                display: none;
+            }
+            
+            .interview-question .follow-up {
+                display: block !important;
+            }
+        }`;
+        }
+        
+        // Get scorecard script
+        function getScorecardScript() {
+            const factorWeights = {};
+            scorecardData.factors.forEach(factor => {
+                factorWeights[factor.id] = factor.weight;
+            });
+            
+            return `
+        // Basic protection against code viewing
+        (function() {
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection
+            document.addEventListener('selectstart', function(e) {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            });
+            
+            // Block keyboard shortcuts for viewing source
+            document.addEventListener('keydown', function(e) {
+                // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.key === 'u') ||
+                    (e.ctrlKey && e.key === 's') ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) ||
+                    (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) ||
+                    (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'i'))) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Show warning message
+                    showProtectionWarning();
+                    return false;
+                }
+            });
+            
+            // Disable drag and drop of elements
+            document.addEventListener('dragstart', function(e) {
+                if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+            });
+            
+            // Warning message function
+            function showProtectionWarning() {
+                const existing = document.getElementById('protection-warning');
+                if (existing) return;
+                
+                const warning = document.createElement('div');
+                warning.id = 'protection-warning';
+                warning.style.cssText = \`
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #dc3545;
+                    color: white;
+                    padding: 20px 40px;
+                    border-radius: 10px;
+                    font-size: 18px;
+                    z-index: 10000;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    animation: shake 0.5s;
+                \`;
+                warning.textContent = 'This scorecard is protected. Viewing source is disabled.';
+                document.body.appendChild(warning);
+                
+                setTimeout(() => warning.remove(), 3000);
+            }
+            
+            // Add CSS animation for warning shake
+            if (!document.getElementById('protection-styles')) {
+                const style = document.createElement('style');
+                style.id = 'protection-styles';
+                style.textContent = \`
+                    @keyframes shake {
+                        0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+                        10%, 30%, 50%, 70%, 90% { transform: translate(-50%, -50%) rotate(-2deg); }
+                        20%, 40%, 60%, 80% { transform: translate(-50%, -50%) rotate(2deg); }
+                    }
+                    
+                    /* Also disable print media to prevent printing */
+                    @media print {
+                        body { display: none !important; }
+                    }
+                \`;
+                document.head.appendChild(style);
+            }
+            
+            // Console warning message
+            console.clear();
+            console.log('%cSTOP!', 'color: red; font-size: 50px; font-weight: bold;');
+            console.log('%cThis is a browser feature intended for developers. Content here is protected by copyright.', 'color: red; font-size: 16px;');
+            
+            // Detect developer tools (basic check)
+            let devtools = {open: false, orientation: null};
+            const threshold = 160;
+            setInterval(function() {
+                if (window.outerHeight - window.innerHeight > threshold || 
+                    window.outerWidth - window.innerWidth > threshold) {
+                    if (!devtools.open) {
+                        devtools.open = true;
+                        console.clear();
+                        console.log('%cDeveloper tools detected. This content is protected.', 'color: red; font-size: 20px;');
+                    }
+                } else {
+                    devtools.open = false;
+                }
+            }, 500);
+        })();
+        
+        // Toggle follow-up questions
+        function toggleFollowUp(element) {
+            const questionDiv = element.closest('.interview-question');
+            questionDiv.classList.toggle('show-follow-up');
+            element.textContent = questionDiv.classList.contains('show-follow-up') ? 'Hide follow-up ▲' : 'Show follow-up ▼';
+        }
+        
+        // Set today's date
+        document.getElementById('date').value = new Date().toISOString().substr(0, 10);
+        
+        // Factor weights
+        const factorWeights = ${JSON.stringify(factorWeights, null, 4)};
+        
+        // Add event listeners to rating options
+        document.querySelectorAll('.rating-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                const factorName = radio.name;
+                
+                // Remove selected class from all options in this factor
+                document.querySelectorAll(\`input[name="\${factorName}"]\`).forEach(r => {
+                    r.closest('.rating-option').classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                radio.checked = true;
+                
+                // Auto-calculate score
+                calculateScore();
+            });
+        });
+        
+        function calculateScore() {
+            let totalWeightedScore = 0;
+            let totalWeight = 0;
+            let factorsRated = 0;
+            
+            Object.keys(factorWeights).forEach(factor => {
+                const selectedRating = document.querySelector(\`input[name="\${factor}"]:checked\`);
+                if (selectedRating) {
+                    const value = parseInt(selectedRating.value);
+                    const weight = factorWeights[factor];
+                    totalWeightedScore += value * weight;
+                    totalWeight += weight;
+                    factorsRated++;
+                }
+            });
+            
+            // Calculate average score
+            const averageScore = totalWeight > 0 ? (totalWeightedScore / totalWeight) : 0;
+            
+            document.getElementById('totalScore').textContent = \`\${averageScore.toFixed(1)} / 5.0\`;
+            
+            // Change color based on score
+            const scoreElement = document.getElementById('totalScore');
+            
+            if (averageScore >= 4.0) {
+                scoreElement.style.color = '#28a745';
+            } else if (averageScore >= 3.0) {
+                scoreElement.style.color = '#ffc107';
+            } else {
+                scoreElement.style.color = '#dc3545';
+            }
+        }
+        
+        function getFormData() {
+            const data = {
+                metadata: {
+                    candidate: document.getElementById('candidate').value,
+                    position: document.getElementById('position').value,
+                    interviewer: document.getElementById('interviewer').value,
+                    date: document.getElementById('date').value,
+                    timestamp: new Date().toISOString()
+                },
+                ratings: {},
+                comments: {},
+                overallEvidence: document.getElementById('overallEvidence').value,
+                averageScore: document.getElementById('totalScore').textContent
+            };
+            
+            // Collect ratings and comments
+            Object.keys(factorWeights).forEach(factor => {
+                const selectedRating = document.querySelector(\`input[name="\${factor}"]:checked\`);
+                if (selectedRating) {
+                    data.ratings[factor] = {
+                        value: parseInt(selectedRating.value),
+                        weight: factorWeights[factor],
+                        weightedScore: parseInt(selectedRating.value) * factorWeights[factor]
+                    };
+                }
+                
+                const comment = document.querySelector(\`textarea[data-factor="\${factor}"]\`);
+                if (comment && comment.value) {
+                    data.comments[factor] = comment.value;
+                }
+            });
+            
+            return data;
+        }
+        
+        function exportToJSON() {
+            const data = getFormData();
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = \`talent-scorecard-\${data.metadata.candidate || 'unnamed'}-\${new Date().toISOString().substr(0, 10)}.json\`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportToPDF() {
+            // Re-enable print temporarily for PDF export
+            const printStyle = document.createElement('style');
+            printStyle.textContent = '@media print { body { display: block !important; } }';
+            document.head.appendChild(printStyle);
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const data = getFormData();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('${scorecardData.name}', 105, 20, { align: 'center' });
+            
+            // Metadata
+            doc.setFontSize(12);
+            let y = 40;
+            doc.text(\`Candidate: \${data.metadata.candidate}\`, 20, y);
+            doc.text(\`Position: \${data.metadata.position}\`, 120, y);
+            y += 10;
+            doc.text(\`Interviewer: \${data.metadata.interviewer}\`, 20, y);
+            doc.text(\`Date: \${data.metadata.date}\`, 120, y);
+            y += 10;
+            doc.text(\`Average Score: \${data.averageScore}\`, 20, y);
+            
+            // Continue with PDF generation...
+            
+            // Save the PDF
+            doc.save(\`talent-scorecard-\${data.metadata.candidate || 'unnamed'}-\${new Date().toISOString().substr(0, 10)}.pdf\`);
+            
+            // Remove temporary print style
+            printStyle.remove();
+        }`;
+        }
+        
+        // View scorecard in current window
+        function viewScorecard() {
+            const html = generateScorecardHTML();
+            
+            // Save current state to sessionStorage so we can come back
+            sessionStorage.setItem('editorState', JSON.stringify(scorecardData));
+            sessionStorage.setItem('scorecardName', document.getElementById('scorecardName').value);
+            
+            // Add a back button to the generated HTML
+            const htmlWithBackButton = html.replace(
+                '<div class="action-buttons">',
+                `<div class="action-buttons">
+                    <button class="btn btn-warning" onclick="window.history.back()">← Back to Editor</button>`
+            );
+            
+            // Replace current page content
+            document.open();
+            document.write(htmlWithBackButton);
+            document.close();
+        }
+        
+        // Preview scorecard
+        function previewScorecard() {
+            const modal = document.getElementById('previewModal');
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = '<pre style="overflow: auto; max-height: 60vh;"><code>' + escapeHtml(generateScorecardHTML()) + '</code></pre>';
+            modal.style.display = 'block';
+        }
+        
+        // Generate scorecard
+        function generateScorecard() {
+            const html = generateScorecardHTML();
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+        
+        // Download scorecard
+        function downloadScorecard() {
+            const name = document.getElementById('scorecardName').value.replace(/\s+/g, '-').toLowerCase();
+            const html = generateScorecardHTML();
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name}-scorecard.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard() {
+            const html = generateScorecardHTML();
+            navigator.clipboard.writeText(html).then(() => {
+                alert('HTML code copied to clipboard!');
+            });
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('previewModal').style.display = 'none';
+        }
+        
+        // Escape HTML for preview
+        function escapeHtml(html) {
+            const div = document.createElement('div');
+            div.textContent = html;
+            return div.innerHTML;
+        }
+        
+        // Save as template
+        function saveAsTemplate() {
+            const templateName = prompt('Enter template name:');
+            if (templateName) {
+                const templates = JSON.parse(localStorage.getItem('scorecardTemplates') || '{}');
+                templates[templateName] = scorecardData;
+                localStorage.setItem('scorecardTemplates', JSON.stringify(templates));
+                alert('Template saved successfully!');
+            }
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            // Check if we have saved state (coming back from viewing scorecard)
+            const savedState = sessionStorage.getItem('editorState');
+            if (savedState) {
+                scorecardData = JSON.parse(savedState);
+                const savedName = sessionStorage.getItem('scorecardName');
+                if (savedName) {
+                    document.getElementById('scorecardName').value = savedName;
+                }
+                // Clear the saved state
+                sessionStorage.removeItem('editorState');
+                sessionStorage.removeItem('scorecardName');
+            }
+            
+            initializeEditor();
+        };
+    </script>
+</body>
+</html>
