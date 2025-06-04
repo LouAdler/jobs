@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality of Hire Talent Scorecard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .info-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-field label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .info-field input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .info-field input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .scorecard-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #2a5298;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .factor-row {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .factor-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .factor-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .rating-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .rating-option {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .rating-option:hover {
+            background: #f0f4f8;
+            border-color: #2a5298;
+        }
+        
+        .rating-option.selected {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+        
+        .rating-option input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-option .level {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .rating-option .description {
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+        
+        .comment-section {
+            margin-top: 15px;
+        }
+        
+        .comment-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            min-height: 80px;
+        }
+        
+        .comment-section textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+        
+        .overall-evidence {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .overall-evidence textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            min-width: 200px;
+            z-index: 1000;
+        }
+        
+        .score-display h3 {
+            color: #2a5298;
+            margin-bottom: 10px;
+        }
+        
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px 20px;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .footer a {
+            color: #2a5298;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer em {
+            font-style: italic;
+        }
+        
+        .tooltip {
+            display: none;
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        
+        @media (max-width: 768px) {
+            .rating-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .score-display {
+                position: static;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media print {
+            .action-buttons {
+                display: none;
+            }
+            
+            .score-display {
+                position: static;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Quality of Hire Talent Scorecard</h1>
+            <p>Performance-based Interview Assessment Tool</p>
+        </div>
+        
+        <div class="score-display">
+            <h3>Average Score</h3>
+            <div class="score-value" id="totalScore">0.0 / 5.0</div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-grid">
+                <div class="info-field">
+                    <label for="candidate">Candidate Name</label>
+                    <input type="text" id="candidate" placeholder="Enter candidate name">
+                </div>
+                <div class="info-field">
+                    <label for="position">Position</label>
+                    <input type="text" id="position" placeholder="Enter position">
+                </div>
+                <div class="info-field">
+                    <label for="interviewer">Interviewer</label>
+                    <input type="text" id="interviewer" placeholder="Enter interviewer name">
+                </div>
+                <div class="info-field">
+                    <label for="date">Date</label>
+                    <input type="date" id="date">
+                </div>
+            </div>
+        </div>
+        
+        <div class="scorecard-section">
+            <h2 class="section-title">BASIC COMPETENCIES</h2>
+            
+            <div class="factor-row" data-factor="primarySkills">
+                <div class="factor-name">Primary Skills</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="primarySkills" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Bare minimum. Has the basics but needs training.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="primarySkills" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Has the basics but needs training.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="primarySkills" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Covers all direct job needs well.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="primarySkills" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Extremely strong in all job needs.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="primarySkills" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Broad. Brings far more to the table.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Primary Skills..." data-factor="primarySkills"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="experience">
+                <div class="factor-name">Experience</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="experience" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Minimum threshold.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="experience" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Meets most, but not all needs.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="experience" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Meets all experience needs.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="experience" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Broader and related experience.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="experience" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Excellent background for role.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Experience..." data-factor="experience"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="achieverPattern">
+                <div class="factor-name">Achiever Pattern & Growth Trend</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="achieverPattern" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">No evidence the person is in the top 50%. Spotty trend.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="achieverPattern" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Some, but not sure if person is in top 50%. Flatter trend.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="achieverPattern" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Evidence clearly indicates person is in top 25%! Upward growth.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="achieverPattern" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Evidence clearly indicates person is in top 10-15%. Steep upward path.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="achieverPattern" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Evidence clearly indicates person is in top 5%. Handles big stretch roles.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Achiever Pattern..." data-factor="achieverPattern"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scorecard-section">
+            <h2 class="section-title">ESSENTIAL CORE COMPETENCES</h2>
+            
+            <div class="factor-row" data-factor="technicalAbility">
+                <div class="factor-name">Talent & Overall Technical Ability</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="technicalAbility" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Nothing remarkable. Needs too much extra training and support.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="technicalAbility" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Can do the work, but needs added training, support or coaching.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="technicalAbility" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Technically tops. An asset. Can learn quickly. Covers all job needs.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="technicalAbility" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Top-notch. Trains others. Constantly improving. Brings more to the table.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="technicalAbility" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Brilliant. Sets standards. Leader in field. Sought out. Recognized.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Technical Ability..." data-factor="technicalAbility"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="managementAbility">
+                <div class="factor-name">Management & Organizational Ability</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="managementAbility" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Seems reactive. Misses most deadlines or projects aren't comparable.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managementAbility" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Projects are comparable but seems more reactive than forward-looking.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managementAbility" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Has planned, organized and executed comparable projects.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managementAbility" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Excellent. Plans, anticipates, communicates, and succeeds.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managementAbility" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Outstanding organizational results with comparable projects and teams.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Management Ability..." data-factor="managementAbility"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="teamSkills">
+                <div class="factor-name">Team Skills (EQ) & Development, Leadership</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="teamSkills" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Hasn't worked on comparable teams or little team growth.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="teamSkills" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Has worked on comparable teams and has some team growth.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="teamSkills" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Good fit on comparable teams. Has developed strong comparable teams.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="teamSkills" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Clear positive team track. Coaches others. Recognized for strong team skills.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="teamSkills" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Impressive x-func team growth. Asked to lead. Persuades, motivates, coaches.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Team Skills..." data-factor="teamSkills"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="problemSolving">
+                <div class="factor-name">Thinking & Job-related Problem-solving</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="problemSolving" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Didn't understand any key issues or develop any solutions.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="problemSolving" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Understood most job related issues, developed okay solutions.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="problemSolving" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Clearly understood all key issues and developed strong solutions.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="problemSolving" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Understood all key & less obvious issues. Reaches out for best solutions.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="problemSolving" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Provides deeper level of insight. Offers multiple unique solutions.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Problem-solving..." data-factor="problemSolving"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scorecard-section">
+            <h2 class="section-title">SITUATIONAL FIT FACTORS – WEIGHT THESE FACTORS HIGHER</h2>
+            
+            <div class="factor-row" data-factor="jobFit">
+                <div class="factor-name">Job Fit with Recent Comparable Results</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="jobFit" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Accomplishments are not directly comparable or not recent.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="jobFit" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Some comparable accomplishments, but inconsistent or not recent.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="jobFit" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Major and subtask accomplishments are recent, strong and comparable.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="jobFit" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Achieved outstanding results under similar conditions.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="jobFit" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Full job match with exceptional results – scope, pace, team, resources.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Job Fit..." data-factor="jobFit"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="managerialFit">
+                <div class="factor-name">Managerial Fit</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="managerialFit" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Mismatch between candidate's & manager's style.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managerialFit" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Limited, but has worked with similar managers.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managerialFit" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Successfully worked with similar managers.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managerialFit" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Person easily adapts to a variety of manager styles.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="managerialFit" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Super fit. Coaches upwards. Both are flexible.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Managerial Fit..." data-factor="managerialFit"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="culture">
+                <div class="factor-name">Culture & Environment</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="culture" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Complete mismatch on culture & environment.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="culture" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Reasonable match on culture and environment.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="culture" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Close match on culture and environment.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="culture" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Excellent match and has made similar transfers.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="culture" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Thrives in this type of environment, culture.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Culture & Environment..." data-factor="culture"></textarea>
+                </div>
+            </div>
+            
+            <div class="factor-row" data-factor="motivation">
+                <div class="factor-name">Motivation</div>
+                <div class="rating-options">
+                    <label class="rating-option">
+                        <input type="radio" name="motivation" value="1">
+                        <span class="level">Level 1</span>
+                        <span class="description">Little evidence of motivation to do this type of work.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="motivation" value="2">
+                        <span class="level">Level 2</span>
+                        <span class="description">Will do the core work but needs extra pushing.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="motivation" value="3">
+                        <span class="level">Level 3</span>
+                        <span class="description">Self-motivated to do work with normal supervision.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="motivation" value="4">
+                        <span class="level">Level 4</span>
+                        <span class="description">Takes initiative to learn and do more, faster and better.</span>
+                    </label>
+                    <label class="rating-option">
+                        <input type="radio" name="motivation" value="5">
+                        <span class="level">Level 5</span>
+                        <span class="description">Totally committed to get it done. Constantly gets better.</span>
+                    </label>
+                </div>
+                <div class="comment-section">
+                    <textarea placeholder="Add evidence and comments for Motivation..." data-factor="motivation"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="overall-evidence">
+            <h2 class="section-title">OVERALL FIT BASED ON SHARED EVIDENCE</h2>
+            <textarea id="overallEvidence" placeholder="Provide specific evidence to justify any very low rankings, less than 2, or extremely high rankings, above 3."></textarea>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="calculateScore()">Calculate Score</button>
+            <button class="btn btn-secondary" onclick="exportToPDF()">Export as PDF</button>
+            <button class="btn btn-success" onclick="exportToJSON()">Export as JSON</button>
+        </div>
+        
+        <div class="footer">
+            <p>Based on Lou Adler's <em>Hire With Your Head</em> and <em>The Essential Guide for Hiring & Getting Hired</em></p>
+            <p>The Adler Group, Inc. • Irvine, CA • <a href="https://www.winwinhiring.com" target="_blank">www.winwinhiring.com</a> • <a href="mailto:info@performancebasedhiring.com">info@performancebasedhiring.com</a></p>
+            <p>©2025. All Rights Reserved. The Adler Group, Inc.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Set today's date
+        document.getElementById('date').value = new Date().toISOString().substr(0, 10);
+        
+        // Factor weights for situational fit factors
+        const factorWeights = {
+            primarySkills: 1,
+            experience: 1,
+            achieverPattern: 1,
+            technicalAbility: 1,
+            managementAbility: 1,
+            teamSkills: 1,
+            problemSolving: 1,
+            jobFit: 1.5,
+            managerialFit: 1.5,
+            culture: 1.5,
+            motivation: 1.5
+        };
+        
+        // Add event listeners to rating options
+        document.querySelectorAll('.rating-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const radio = this.querySelector('input[type="radio"]');
+                const factorName = radio.name;
+                
+                // Remove selected class from all options in this factor
+                document.querySelectorAll(`input[name="${factorName}"]`).forEach(r => {
+                    r.closest('.rating-option').classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                radio.checked = true;
+                
+                // Auto-calculate score
+                calculateScore();
+            });
+        });
+        
+        function calculateScore() {
+            let totalWeightedScore = 0;
+            let totalWeight = 0;
+            let factorsRated = 0;
+            
+            Object.keys(factorWeights).forEach(factor => {
+                const selectedRating = document.querySelector(`input[name="${factor}"]:checked`);
+                if (selectedRating) {
+                    const value = parseInt(selectedRating.value);
+                    const weight = factorWeights[factor];
+                    totalWeightedScore += value * weight;
+                    totalWeight += weight;
+                    factorsRated++;
+                }
+            });
+            
+            // Calculate average score
+            const averageScore = totalWeight > 0 ? (totalWeightedScore / totalWeight) : 0;
+            
+            document.getElementById('totalScore').textContent = `${averageScore.toFixed(1)} / 5.0`;
+            
+            // Change color based on score
+            const scoreElement = document.getElementById('totalScore');
+            
+            if (averageScore >= 4.0) {
+                scoreElement.style.color = '#28a745';
+            } else if (averageScore >= 3.0) {
+                scoreElement.style.color = '#ffc107';
+            } else {
+                scoreElement.style.color = '#dc3545';
+            }
+        }
+        
+        function getFormData() {
+            const data = {
+                metadata: {
+                    candidate: document.getElementById('candidate').value,
+                    position: document.getElementById('position').value,
+                    interviewer: document.getElementById('interviewer').value,
+                    date: document.getElementById('date').value,
+                    timestamp: new Date().toISOString()
+                },
+                ratings: {},
+                comments: {},
+                overallEvidence: document.getElementById('overallEvidence').value,
+                totalScore: document.getElementById('totalScore').textContent
+            };
+            
+            // Collect ratings and comments
+            Object.keys(factorWeights).forEach(factor => {
+                const selectedRating = document.querySelector(`input[name="${factor}"]:checked`);
+                if (selectedRating) {
+                    data.ratings[factor] = {
+                        value: parseInt(selectedRating.value),
+                        weight: factorWeights[factor],
+                        weightedScore: parseInt(selectedRating.value) * factorWeights[factor]
+                    };
+                }
+                
+                const comment = document.querySelector(`textarea[data-factor="${factor}"]`);
+                if (comment && comment.value) {
+                    data.comments[factor] = comment.value;
+                }
+            });
+            
+            return data;
+        }
+        
+        function exportToJSON() {
+            const data = getFormData();
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `talent-scorecard-${data.metadata.candidate || 'unnamed'}-${new Date().toISOString().substr(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const data = getFormData();
+            
+            // Title
+            doc.setFontSize(20);
+            doc.text('Quality of Hire Talent Scorecard', 105, 20, { align: 'center' });
+            
+            // Metadata
+            doc.setFontSize(12);
+            let y = 40;
+            doc.text(`Candidate: ${data.metadata.candidate}`, 20, y);
+            doc.text(`Position: ${data.metadata.position}`, 120, y);
+            y += 10;
+            doc.text(`Interviewer: ${data.metadata.interviewer}`, 20, y);
+            doc.text(`Date: ${data.metadata.date}`, 120, y);
+            y += 10;
+            doc.text(`Total Score: ${data.totalScore}`, 20, y);
+            
+            // Ratings
+            y += 20;
+            doc.setFontSize(14);
+            doc.text('Factor Ratings:', 20, y);
+            y += 10;
+            
+            doc.setFontSize(10);
+            const factorNames = {
+                primarySkills: 'Primary Skills',
+                experience: 'Experience',
+                achieverPattern: 'Achiever Pattern & Growth Trend',
+                technicalAbility: 'Talent & Overall Technical Ability',
+                managementAbility: 'Management & Organizational Ability',
+                teamSkills: 'Team Skills (EQ) & Development',
+                problemSolving: 'Thinking & Problem-solving',
+                jobFit: 'Job Fit with Recent Results',
+                managerialFit: 'Managerial Fit',
+                culture: 'Culture & Environment',
+                motivation: 'Motivation'
+            };
+            
+            Object.entries(data.ratings).forEach(([factor, rating]) => {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(`${factorNames[factor]}: Level ${rating.value} (Score: ${rating.weightedScore})`, 20, y);
+                y += 8;
+                
+                if (data.comments[factor]) {
+                    const lines = doc.splitTextToSize(`Comments: ${data.comments[factor]}`, 170);
+                    lines.forEach(line => {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(line, 25, y);
+                        y += 6;
+                    });
+                    y += 5;
+                }
+            });
+            
+            // Overall Evidence
+            if (data.overallEvidence) {
+                if (y > 220) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.setFontSize(14);
+                doc.text('Overall Evidence:', 20, y);
+                y += 10;
+                doc.setFontSize(10);
+                const evidenceLines = doc.splitTextToSize(data.overallEvidence, 170);
+                evidenceLines.forEach(line => {
+                    if (y > 270) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.text(line, 20, y);
+                    y += 6;
+                });
+            }
+            
+            // Save the PDF
+            doc.save(`talent-scorecard-${data.metadata.candidate || 'unnamed'}-${new Date().toISOString().substr(0, 10)}.pdf`);
+        }
+    </script>
+</body>
+</html>
