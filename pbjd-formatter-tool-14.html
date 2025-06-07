@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBJD Document Formatter - Hiring Team Review</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: white;
+            padding: 15px 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid #3498db;
+        }
+        
+        .header h1 {
+            color: #3498db;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            color: #7f8c8d;
+            margin: 0;
+        }
+        
+        .format-options {
+            background: white;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .format-options h3 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option-item:hover {
+            background: #e8f4f8;
+        }
+        
+        .option-item input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .option-item label {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .main-content {
+            margin-bottom: 30px;
+        }
+        
+        .input-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .preview-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8f4f8;
+        }
+        
+        .panel-header h2 {
+            color: #3498db;
+            font-size: 1.8em;
+        }
+        
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .document-preview {
+            background: white;
+            padding: 40px 100px;
+            min-height: 600px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 800px;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #000;
+        }
+        
+        /* Document styles for preview */
+        .doc-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .doc-header h1 {
+            font-size: 28px;
+            color: #003366;
+            margin: 0 0 10px 0;
+            font-weight: bold;
+        }
+        
+        .doc-header .company {
+            font-size: 20px;
+            color: #666;
+            margin: 0;
+            font-weight: normal;
+        }
+        
+        .doc-section {
+            margin-bottom: 25px;
+        }
+        
+        .doc-section h2 {
+            font-size: 18px;
+            color: #003366;
+            margin-bottom: 12px;
+            border-left: 4px solid #3498db;
+            padding-left: 12px;
+            text-transform: uppercase;
+        }
+        
+        .doc-section h3 {
+            font-size: 16px;
+            color: #3498db;
+            margin-bottom: 8px;
+            margin-top: 15px;
+        }
+        
+        .doc-section p {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        
+        .doc-section ul, .doc-section ol {
+            margin-left: 25px;
+            margin-bottom: 12px;
+        }
+        
+        .doc-section li {
+            margin-bottom: 6px;
+        }
+        
+        .evp-container {
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .evp-container h3 {
+            color: #003366;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .evp-item {
+            margin-bottom: 12px;
+        }
+        
+        .evp-item strong {
+            color: #3498db;
+            margin-right: 8px;
+        }
+        
+        .kpo-item {
+            background: #e8f4f8;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            position: relative;
+        }
+        
+        .kpo-number {
+            position: absolute;
+            left: -12px;
+            top: 12px;
+            background: #3498db;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .subtask-item {
+            background: #fff9e6;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #f39c12;
+        }
+        
+        .approval-section {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px solid #e0e6ed;
+        }
+        
+        .approval-section h3 {
+            color: #003366;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 20px;
+        }
+        
+        .approval-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+        }
+        
+        .approval-column {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .signature-line {
+            border-bottom: 2px solid #333;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+        
+        .signature-label {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .format-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .format-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .status-message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .comment-box {
+            background: #fffacd;
+            border: 1px solid #ffd700;
+            padding: 8px;
+            margin: 8px 0;
+            font-style: italic;
+            font-size: 13px;
+        }
+        
+        .editable-content {
+            background-color: #fffef0;
+            border: 1px dashed #3498db;
+            padding: 2px 5px;
+            border-radius: 3px;
+            min-height: 20px;
+            cursor: text;
+        }
+        
+        .editable-content:focus {
+            outline: 2px solid #3498db;
+            background-color: #fff;
+        }
+        
+        .add-comment-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .add-comment-btn:hover {
+            background: #e67e22;
+        }
+        
+        .custom-comment {
+            background: #e8f4f8;
+            border-left: 3px solid #3498db;
+            padding: 10px;
+            margin: 10px 0;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .custom-comment .delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .edit-mode-notice {
+            background: #f39c12;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .edit-mode-notice.active {
+            display: block;
+        }
+        
+        .version-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f39c12;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1024px) {
+            .document-preview {
+                padding: 40px;
+            }
+            
+            .evp-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .approval-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .document-preview {
+                padding: 20px;
+            }
+            
+            .evp-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+            
+            .header, .format-options, .input-panel, .controls {
+                display: none;
+            }
+            
+            .preview-panel {
+                box-shadow: none;
+                padding: 0;
+            }
+            
+            .document-preview {
+                box-shadow: none;
+                padding: 40px;
+            }
+            
+            .btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 PBJD Document Formatter</h1>
+            <p>Format performance-based job descriptions for hiring team review and approval</p>
+        </div>
+
+        <div class="format-options">
+            <h3>📋 Document Options</h3>
+            <div class="option-grid">
+                <div class="option-item">
+                    <input type="checkbox" id="includeApproval" checked>
+                    <label for="includeApproval">Include Approval Section</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="includeComments" checked>
+                    <label for="includeComments">Add Comment Boxes</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="includeVersion" checked>
+                    <label for="includeVersion">Show Version/Draft Info</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="highlightAI">
+                    <label for="highlightAI">Highlight AI-Supported Tasks</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="includeTimeline">
+                    <label for="includeTimeline">Include Timeline Markers</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="compactFormat">
+                    <label for="compactFormat">Compact Format</label>
+                </div>
+                <div class="option-item">
+                    <input type="checkbox" id="editableMode">
+                    <label for="editableMode">Enable Editing Mode</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="input-panel">
+                <div class="panel-header">
+                    <h2>📝 Input Performance-Based Job Description</h2>
+                    <div>
+                        <input type="file" id="fileInput" class="file-input" accept=".json,.txt,.docx">
+                        <button class="btn" onclick="document.getElementById('fileInput').click()">
+                            📁 Import
+                        </button>
+                        <button class="btn btn-secondary" onclick="loadSampleTemplate()">
+                            📋 Load Sample
+                        </button>
+                        <button class="btn btn-danger" onclick="clearContent()">
+                            🗑️ Clear
+                        </button>
+                    </div>
+                </div>
+                <textarea id="inputText" placeholder="Paste your Performance-Based Job Description here, or click 'Load Sample' to see an example.
+
+EXPECTED FORMAT:
+================
+
+Position: [Job Title]
+Company: [Company Name]
+Location: [City, State]
+Employment Type: [Full-Time, Part-Time, etc.]
+
+Role Overview
+[Describe the role, its importance, and key responsibilities...]
+
+Employee Value Proposition (EVP)
+## Purpose
+[Why this role matters and its impact...]
+
+## Growth
+[Career development opportunities...]
+
+## Motivators
+[What drives success in this role...]
+
+Major Performance Objectives (KPOs)
+## 1. [First Major Objective]
+[Detailed description of what success looks like within specific timeframe...]
+
+## 2. [Second Major Objective]
+[Detailed description...]
+
+Critical Subtasks
+## 1. [First Critical Task]
+[Description of specific deliverable or milestone...]
+
+## 2. [Second Critical Task]
+[Description...]
+
+Company Culture Overview
+[Describe the company culture, values, and work environment...]
+
+Culture and Situation Fit
+[Specific traits and characteristics needed to thrive in this role...]
+
+================
+OR simply paste:
+Title
+[Actual Job Title]
+[Company Name]"></textarea>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="format-btn" onclick="formatDocument()">
+                        ✨ Format Document
+                    </button>
+                    <button class="btn btn-warning" onclick="clearAllData()" style="margin-left: 20px;">
+                        🔄 Clear All Saved Data
+                    </button>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="panel-header">
+                    <h2>👁️ Document Preview</h2>
+                    <div>
+                        <button class="btn btn-warning" onclick="printDocument()">
+                            🖨️ Print
+                        </button>
+                        <button class="btn btn-success" onclick="exportToWord()">
+                            📤 Export to Word
+                        </button>
+                    </div>
+                </div>
+                <div class="document-preview" id="documentPreview">
+                    <p style="text-align: center; color: #95a5a6; padding: 100px 20px;">
+                        Your formatted document will appear here...<br><br>
+                        Paste or import a PBJD and click "Format Document"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        // Protection features
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73) || 
+                (e.ctrlKey && e.keyCode == 85)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // File import
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    document.getElementById('inputText').value = content;
+                    showStatus('File imported successfully!', 'success');
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearContent() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('documentPreview').innerHTML = `
+                <p style="text-align: center; color: #95a5a6; padding: 100px 20px;">
+                    Your formatted document will appear here...<br><br>
+                    Paste or import a PBJD and click "Format Document"
+                </p>
+            `;
+            showStatus('Content cleared', 'success');
+        }
+
+        function formatDocument() {
+            const input = document.getElementById('inputText').value.trim();
+            if (!input) {
+                showStatus('Please provide a PBJD to format', 'error');
+                return;
+            }
+
+            const pbjd = parsePBJD(input);
+            console.log('Parsed PBJD:', pbjd); // Debug log
+            const formattedDoc = generateFormattedDocument(pbjd);
+            document.getElementById('documentPreview').innerHTML = formattedDoc;
+            showStatus('Document formatted successfully!', 'success');
+
+            // Save to localStorage
+            const data = {
+                input: input,
+                formatted: formattedDoc,
+                options: getSelectedOptions(),
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('pbjdFormatterData', JSON.stringify(data));
+        }
+
+        function parsePBJD(text) {
+            const pbjd = {
+                position: '',
+                company: '',
+                location: '',
+                employmentType: '',
+                roleOverview: '',
+                evp: {
+                    purpose: '',
+                    growth: '',
+                    motivators: ''
+                },
+                kpos: [],
+                subtasks: [],
+                culture: '',
+                cultureFit: ''
+            };
+
+            // Extract basic info - simplified approach
+            const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+            
+            // Check if first line is just "Title" (placeholder)
+            if (lines[0] && lines[0].toLowerCase() === 'title' && lines[1]) {
+                pbjd.position = lines[1]; // Take the next line as the actual title
+                if (lines[2]) pbjd.company = lines[2]; // And the line after as company
+            } 
+            // Check for "Position Title" format
+            else if (lines[0] && lines[0].toLowerCase() === 'position title' && lines[1]) {
+                pbjd.position = lines[1];
+                if (lines[2]) pbjd.company = lines[2];
+            }
+            // Check for labeled format
+            else {
+                const positionMatch = text.match(/(?:#\s*)?Position:?\s*(.+?)(?:\n|$)/i);
+                const companyMatch = text.match(/(?:#\s*)?Company:?\s*(.+?)(?:\n|$)/i);
+                
+                if (positionMatch) pbjd.position = positionMatch[1].trim();
+                if (companyMatch) pbjd.company = companyMatch[1].trim();
+                
+                // If still no position/company, try to get from first lines
+                if (!pbjd.position && lines[0]) pbjd.position = lines[0];
+                if (!pbjd.company && lines[1]) pbjd.company = lines[1];
+            }
+            
+            // Rest of parsing...
+            const locationMatch = text.match(/(?:#\s*)?Location:?\s*(.+?)(?:\n|$)/i);
+            const employmentMatch = text.match(/(?:#\s*)?Employment Type:?\s*(.+?)(?:\n|$)/i);
+
+            if (locationMatch) pbjd.location = locationMatch[1].trim();
+            if (employmentMatch) pbjd.employmentType = employmentMatch[1].trim();
+
+            // Extract role overview
+            const overviewMatch = text.match(/(?:#\s*)?Role Overview([\s\S]*?)(?=(?:#\s*)?Employee Value|(?:#\s*)?EVP|$)/i);
+            if (overviewMatch) pbjd.roleOverview = overviewMatch[1].trim();
+
+            // Extract EVP
+            const evpMatch = text.match(/(?:#\s*)?(?:Employee Value Proposition|EVP)([\s\S]*?)(?=(?:#\s*)?Major Performance|(?:#\s*)?KPO|$)/i);
+            if (evpMatch) {
+                const evpText = evpMatch[1];
+                const purposeMatch = evpText.match(/(?:##\s*)?Purpose([\s\S]*?)(?=(?:##\s*)?Growth|$)/i);
+                const growthMatch = evpText.match(/(?:##\s*)?Growth([\s\S]*?)(?=(?:##\s*)?Motivator|$)/i);
+                const motivatorMatch = evpText.match(/(?:##\s*)?Motivator([\s\S]*?)$/i);
+
+                if (purposeMatch) pbjd.evp.purpose = purposeMatch[1].trim();
+                if (growthMatch) pbjd.evp.growth = growthMatch[1].trim();
+                if (motivatorMatch) pbjd.evp.motivators = motivatorMatch[1].trim();
+            }
+
+            // Extract KPOs
+            const kpoMatch = text.match(/(?:#\s*)?(?:Major Performance Objectives|KPO)([\s\S]*?)(?=(?:#\s*)?Critical Subtasks|$)/i);
+            if (kpoMatch) {
+                const kpoText = kpoMatch[1];
+                const kpoItems = kpoText.match(/(?:##\s*)?\d+\.?\s*([^\n]+)([\s\S]*?)(?=(?:##\s*)?\d+\.|$)/g);
+                if (kpoItems) {
+                    kpoItems.forEach(item => {
+                        const titleMatch = item.match(/(?:##\s*)?\d+\.?\s*([^\n]+)/);
+                        const descMatch = item.match(/(?:##\s*)?\d+\.?\s*[^\n]+([\s\S]*)/);
+                        if (titleMatch) {
+                            pbjd.kpos.push({
+                                title: titleMatch[1].trim(),
+                                description: descMatch ? descMatch[1].trim() : ''
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Extract Subtasks
+            const subtaskMatch = text.match(/(?:#\s*)?Critical Subtasks([\s\S]*?)(?=(?:#\s*)?Company Culture|$)/i);
+            if (subtaskMatch) {
+                const subtaskText = subtaskMatch[1];
+                const subtaskItems = subtaskText.match(/(?:##\s*)?\d+\.?\s*([^\n]+)([\s\S]*?)(?=(?:##\s*)?\d+\.|$)/g);
+                if (subtaskItems) {
+                    subtaskItems.forEach(item => {
+                        const titleMatch = item.match(/(?:##\s*)?\d+\.?\s*([^\n]+)/);
+                        const descMatch = item.match(/(?:##\s*)?\d+\.?\s*[^\n]+([\s\S]*)/);
+                        if (titleMatch) {
+                            pbjd.subtasks.push({
+                                title: titleMatch[1].trim(),
+                                description: descMatch ? descMatch[1].trim() : ''
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Extract Culture
+            const cultureMatch = text.match(/(?:#\s*)?Company Culture([\s\S]*?)(?=(?:#\s*)?Culture and Situation Fit|$)/i);
+            if (cultureMatch) pbjd.culture = cultureMatch[1].trim();
+
+            // Extract Culture and Situation Fit
+            const cultureFitMatch = text.match(/(?:#\s*)?Culture and Situation Fit([\s\S]*?)$/i);
+            if (cultureFitMatch) pbjd.cultureFit = cultureFitMatch[1].trim();
+
+            return pbjd;
+        }
+
+        function getSelectedOptions() {
+            return {
+                includeApproval: document.getElementById('includeApproval').checked,
+                includeComments: document.getElementById('includeComments').checked,
+                includeVersion: document.getElementById('includeVersion').checked,
+                highlightAI: document.getElementById('highlightAI').checked,
+                includeTimeline: document.getElementById('includeTimeline').checked,
+                compactFormat: document.getElementById('compactFormat').checked,
+                editableMode: document.getElementById('editableMode').checked
+            };
+        }
+
+        function generateFormattedDocument(pbjd) {
+            const options = getSelectedOptions();
+            const date = new Date().toLocaleDateString();
+            
+            let html = `<div class="doc-container">`;
+
+            // Add edit mode notice
+            if (options.editableMode) {
+                html += `<div class="edit-mode-notice active">📝 EDIT MODE: Click on any text to edit. Changes will be saved when exported.</div>`;
+            }
+
+            // Version info
+            if (options.includeVersion) {
+                html += `<div class="version-info">DRAFT v1.0 - ${date}</div>`;
+            }
+
+            // Header - Show actual values or indicate if missing
+            const positionText = pbjd.position || 'Position Title Not Found';
+            const companyText = pbjd.company || 'Company Name Not Found';
+            
+            html += `
+                <div class="doc-header">
+                    <h1 ${options.editableMode ? 'contenteditable="true" class="editable-content"' : ''}>${positionText}</h1>
+                    <div class="company" ${options.editableMode ? 'contenteditable="true" class="editable-content"' : ''}>${companyText}</div>
+                </div>
+            `;
+
+            // Role Overview
+            if (pbjd.roleOverview) {
+                html += `
+                    <div class="doc-section">
+                        <h2>Role Overview ${options.editableMode ? '<button class="add-comment-btn" onclick="addComment(this)">+ Add Comment</button>' : ''}</h2>
+                        <p ${options.editableMode ? 'contenteditable="true" class="editable-content"' : ''}>${formatText(pbjd.roleOverview, options)}</p>
+                        ${options.includeComments ? '<div class="comment-box">💬 Hiring Manager: Please review role scope and responsibilities</div>' : ''}
+                    </div>
+                `;
+            }
+
+            // EVP Section
+            if (pbjd.evp.purpose || pbjd.evp.growth || pbjd.evp.motivators) {
+                html += `
+                    <div class="doc-section">
+                        <h2>Employee Value Proposition (EVP)</h2>
+                        <div class="evp-container">
+                            <h3>Why Top Talent Should Join Our Team</h3>
+                `;
+
+                if (pbjd.evp.purpose) {
+                    html += `<div class="evp-item"><strong>🎯 Purpose:</strong> ${formatText(pbjd.evp.purpose, options)}</div>`;
+                }
+
+                if (pbjd.evp.growth) {
+                    html += `<div class="evp-item"><strong>📈 Growth:</strong> ${formatText(pbjd.evp.growth, options)}</div>`;
+                }
+
+                if (pbjd.evp.motivators) {
+                    html += `<div class="evp-item"><strong>🔥 Motivators:</strong> ${formatText(pbjd.evp.motivators, options)}</div>`;
+                }
+
+                html += `
+                        </div>
+                `;
+
+                if (options.includeComments) {
+                    html += '<div class="comment-box">💬 HR Team: Verify EVP aligns with company messaging and culture</div>';
+                }
+
+                html += `</div>`;
+            }
+
+            // KPOs Section
+            if (pbjd.kpos.length > 0) {
+                html += `
+                    <div class="doc-section">
+                        <h2>Major Performance Objectives (KPOs)</h2>
+                        ${options.includeComments ? '<div class="comment-box">💬 Review Team: Ensure objectives are measurable and achievable within timeframes</div>' : ''}
+                `;
+
+                pbjd.kpos.forEach((kpo, index) => {
+                    html += `
+                        <div class="kpo-item">
+                            <div class="kpo-number">${index + 1}</div>
+                            <h3>${kpo.title}</h3>
+                            <p>${formatText(kpo.description, options)}</p>
+                            ${options.includeTimeline && kpo.description.match(/\d+[\s-]*(days?|months?|quarters?|years?)/i) ? 
+                                '<div style="color: #3498db; font-weight: bold; margin-top: 10px;">⏱️ ' + 
+                                (kpo.description.match(/\d+[\s-]*(days?|months?|quarters?|years?)/i)[0]) + '</div>' : ''}
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            }
+
+            // Subtasks Section
+            if (pbjd.subtasks.length > 0) {
+                html += `
+                    <div class="doc-section">
+                        <h2>Critical Subtasks</h2>
+                `;
+
+                pbjd.subtasks.forEach((subtask, index) => {
+                    html += `
+                        <div class="subtask-item">
+                            <h3>${index + 1}. ${subtask.title}</h3>
+                            <p>${formatText(subtask.description, options)}</p>
+                        </div>
+                    `;
+                });
+
+                if (options.includeComments) {
+                    html += '<div class="comment-box">💬 Department Head: Confirm subtasks align with team capabilities and resources</div>';
+                }
+
+                html += `</div>`;
+            }
+
+            // Culture Section
+            if (pbjd.culture) {
+                html += `
+                    <div class="doc-section">
+                        <h2>Company Culture Overview</h2>
+                        <p>${formatText(pbjd.culture, options)}</p>
+                        ${options.includeComments ? '<div class="comment-box">💬 Culture Team: Verify cultural values and team dynamics description</div>' : ''}
+                    </div>
+                `;
+            }
+
+            // Culture and Situation Fit Section
+            if (pbjd.cultureFit) {
+                html += `
+                    <div class="doc-section">
+                        <h2>Culture and Situation Fit</h2>
+                        <div style="background: #f0f8ff; border-left: 4px solid #27ae60; padding: 15px; margin: 15px 0; border-radius: 0 5px 5px 0;">
+                            <p>${formatText(pbjd.cultureFit, options)}</p>
+                        </div>
+                        ${options.includeComments ? '<div class="comment-box">💬 Hiring Manager: Confirm this accurately reflects the role\'s working environment and team dynamics</div>' : ''}
+                    </div>
+                `;
+            }
+
+            // Approval Section
+            if (options.includeApproval) {
+                html += `
+                    <div class="approval-section">
+                        <h3>Approvals</h3>
+                        <div class="approval-box">
+                            <div class="approval-column">
+                                <div class="signature-line"></div>
+                                <div class="signature-label">Name, Title, Date</div>
+                            </div>
+                            <div class="approval-column">
+                                <div class="signature-line"></div>
+                                <div class="signature-label">Name, Title, Date</div>
+                            </div>
+                            <div class="approval-column">
+                                <div class="signature-line"></div>
+                                <div class="signature-label">Name, Title, Date</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            return html;
+        }
+
+        function formatText(text, options) {
+            let formatted = text;
+
+            // Highlight AI-supported tasks
+            if (options.highlightAI && text.includes('AI-supported')) {
+                formatted = formatted.replace(/(AI-supported[^.]*\.)/g, '<span style="background: #fffacd; padding: 2px 5px; border-radius: 3px;">$1</span>');
+            }
+
+            // Format lists
+            formatted = formatted.replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>');
+            formatted = formatted.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+            // Bold important terms
+            formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            return formatted;
+        }
+
+        function printDocument() {
+            window.print();
+        }
+
+        function addComment(button) {
+            const section = button.closest('.doc-section');
+            const comment = prompt('Add your comment:');
+            if (comment) {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'custom-comment';
+                commentDiv.innerHTML = `
+                    💬 ${comment}
+                    <button class="delete-btn" onclick="this.parentElement.remove()">×</button>
+                `;
+                section.appendChild(commentDiv);
+            }
+        }
+
+        function exportToWord() {
+            // Get the current content including any edits
+            const content = document.getElementById('documentPreview').innerHTML;
+            
+            // Remove edit mode notice and buttons for export
+            let exportContent = content.replace(/<div class="edit-mode-notice[^>]*>.*?<\/div>/g, '');
+            exportContent = exportContent.replace(/<button class="add-comment-btn"[^>]*>.*?<\/button>/g, '');
+            exportContent = exportContent.replace(/contenteditable="true"/g, '');
+            exportContent = exportContent.replace(/class="editable-content"/g, '');
+            exportContent = exportContent.replace(/<button class="delete-btn"[^>]*>.*?<\/button>/g, '');
+            
+            const styles = `
+                <style>
+                    body { font-family: 'Times New Roman', serif; line-height: 1.6; color: #000; }
+                    .doc-header { text-align: center; margin-bottom: 30px; }
+                    .doc-header h1 { font-size: 28px; color: #003366; margin: 0 0 10px 0; font-weight: bold; }
+                    .doc-header .company { font-size: 20px; color: #666; margin: 0; }
+                    .doc-section { margin-bottom: 25px; }
+                    .doc-section h2 { font-size: 18px; color: #003366; margin-bottom: 12px; border-left: 4px solid #3498db; padding-left: 12px; }
+                    .kpo-item { background: #e8f4f8; padding: 15px; margin-bottom: 15px; }
+                    .subtask-item { background: #fff9e6; padding: 12px; margin-bottom: 12px; }
+                    .evp-container { background: #f8f9fa; padding: 15px 20px; margin: 15px 0; }
+                    .comment-box { background: #fffacd; border: 1px solid #ffd700; padding: 8px; margin: 8px 0; font-style: italic; }
+                    .custom-comment { background: #e8f4f8; border-left: 3px solid #3498db; padding: 10px; margin: 10px 0; font-style: italic; }
+                    .approval-section { margin-top: 40px; padding-top: 25px; border-top: 2px solid #e0e6ed; }
+                    @page { margin: 1in; }
+                </style>
+            `;
+
+            const html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Performance-Based Job Description</title>
+                    ${styles}
+                </head>
+                <body>
+                    ${exportContent}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            const position = document.querySelector('.doc-header h1')?.textContent || 'PBJD';
+            a.download = `${position.replace(/[^a-z0-9]/gi, '_')}_PBJD_Review_${new Date().toISOString().split('T')[0]}.doc`;
+            a.click();
+
+            showStatus('Document exported to Word format with all edits and comments!', 'success');
+        }
+
+        // Enable checkbox change to regenerate document
+        document.getElementById('editableMode').addEventListener('change', function() {
+            const input = document.getElementById('inputText').value.trim();
+            if (input) {
+                formatDocument();
+            }
+        });
+
+        // Load saved data
+        window.onload = function() {
+            const savedData = localStorage.getItem('pbjdFormatterData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.input) {
+                    document.getElementById('inputText').value = data.input;
+                }
+                
+                // Restore options
+                if (data.options) {
+                    Object.keys(data.options).forEach(key => {
+                        const checkbox = document.getElementById(key);
+                        if (checkbox) checkbox.checked = data.options[key];
+                    });
+                }
+            }
+        };
+    </script>
+</body>
+</html>
